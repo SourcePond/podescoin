@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+	<!-- According to the CDI specification, this file must be present. This is necessary
+	to let the CDI container know that this bundle is CDI enabled. No content is needed, i.e.
+	configuration of the bundle is done through CDI annotations. Note: this file has no effect
+	in a PAX-CDI/OSGi environment; determining CDI bundles is done there through special 
+	Require-Capability manifest headers. -->
+</beans>
