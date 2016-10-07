@@ -3,7 +3,14 @@ package ch.sourcepond.utils.bci;
 import static ch.sourcepond.utils.bci.BundleInjectorTest.COMPONENT_ID;
 import static ch.sourcepond.utils.bci.BundleInjectorTest.FIELD_NAME;
 import static ch.sourcepond.utils.bci.Injector.injectComponents;
+import static java.lang.Thread.sleep;
+import static java.util.concurrent.Executors.newFixedThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -11,21 +18,64 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.concurrent.ExecutorService;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
 public class InjectorTest {
 
-	public class TestClassLoader extends ClassLoader implements BundleReference {
-		private Class<?> cl;
+	public static class InitComponents implements Runnable {
+		private final Serializable deserializedObject;
+		private final String[][] componentToFields;
 
-		public TestClassLoader() {
+		public InitComponents(final Serializable pDeserializedObject, final String[][] pComponentToFields) {
+			deserializedObject = pDeserializedObject;
+			componentToFields = pComponentToFields;
+		}
+
+		@Override
+		public void run() {
+			Injector.injectComponents(deserializedObject, componentToFields);
+		}
+
+	}
+
+	public static class TimedAnswer implements Answer<BundleInjector> {
+		private final BundleInjector injector;
+		private final long timeout;
+
+		public TimedAnswer(final BundleInjector injector, final long timeout) {
+			this.injector = injector;
+			this.timeout = timeout;
+		}
+
+		@Override
+		public BundleInjector answer(final InvocationOnMock invocation) throws Throwable {
+			sleep(timeout);
+			return injector;
+		}
+
+	}
+
+	public static class TestClassLoader extends ClassLoader implements BundleReference {
+		private Class<?> cl;
+		private Bundle bundle;
+
+		public TestClassLoader(final Bundle pBundle) {
 			super(null);
+			setBundle(pBundle);
+		}
+
+		public void setBundle(final Bundle pBundle) {
+			bundle = pBundle;
 		}
 
 		@Override
@@ -56,7 +106,7 @@ public class InjectorTest {
 		}
 	}
 
-	private final TestClassLoader loader = new TestClassLoader();
+	private TestClassLoader loader;
 
 	@Mock
 	private Bundle bundle;
@@ -76,6 +126,7 @@ public class InjectorTest {
 	@Before
 	public void setup() throws Exception {
 		initMocks(this);
+		loader = new TestClassLoader(bundle);
 		Injector.factory = factory;
 
 		final Class<?> cl = loader.loadClass(TestObject.class.getName());
@@ -85,10 +136,74 @@ public class InjectorTest {
 		when(factory.newInjector(bundle)).thenReturn(injector);
 	}
 
+	@After
+	public void tearDown() {
+		Injector.injectors.clear();
+	}
+
+	@Test
+	public void verifySameInjectorInstanceForAnyThread() throws Exception {
+		final BundleInjector secondInjector = mock(BundleInjector.class);
+		when(factory.newInjector(bundle)).thenAnswer(new TimedAnswer(injector, 100))
+				.thenAnswer(new TimedAnswer(secondInjector, 200));
+
+		final ExecutorService executor = newFixedThreadPool(2);
+		try {
+			executor.execute(new InitComponents(obj, arguments));
+			executor.execute(new InitComponents(obj, arguments));
+		} finally {
+			executor.shutdown();
+			executor.awaitTermination(5, SECONDS);
+		}
+
+		verify(factory, times(2)).newInjector(bundle);
+		verify(context).addServiceListener(injector);
+
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void initComponent_DeserializedObject() {
+		injectComponents(null, arguments);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void initComponent_ArrayIsNull() {
+		injectComponents(obj, null);
+	}
+
+	@Test
+	public void initComponents_ArrayIsEmpty() throws Exception {
+		injectComponents(obj, new String[0][0]);
+		verifyZeroInteractions(injector);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void initComponents_NoBundleFound() throws Exception {
+		loader.setBundle(null);
+		injectComponents(obj, arguments);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void initComponents_ExceptionInInitMethod() throws Exception {
+		final NoSuchFieldException expected = new NoSuchFieldException(FIELD_NAME);
+		doThrow(expected).when(injector).initDeserializedObject(obj, arguments);
+		injectComponents(obj, arguments);
+		verify(injector).initDeserializedObject(obj, arguments);
+	}
+
 	@Test
 	public void initComponents() throws Exception {
 		injectComponents(obj, arguments);
 		verify(injector).initDeserializedObject(obj, arguments);
 	}
 
+	@Test
+	public void verifyInjectorPerBundle() throws Exception {
+		injectComponents(obj, arguments);
+		injectComponents(obj, arguments);
+
+		// Should be called exactly once
+		verify(factory).newInjector(bundle);
+		verify(context).addServiceListener(injector);
+	}
 }

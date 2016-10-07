@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -61,6 +62,11 @@ public class BundleInjectorTest {
 				"(osgi.blueprint.container.symbolicname=anyBundleSymbolicName)")).thenReturn(containerRefs);
 		when(context.getService(containerRef)).thenReturn(container);
 		injector = new BundleInjector(bundle);
+	}
+
+	@After
+	public void tearDown() {
+		Injector.injectors.clear();
 	}
 
 	@Test
