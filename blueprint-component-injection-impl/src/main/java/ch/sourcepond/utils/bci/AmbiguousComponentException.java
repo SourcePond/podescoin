@@ -13,7 +13,7 @@ public class AmbiguousComponentException extends RuntimeException {
 		final StringBuilder builder = new StringBuilder("There are more than one component which match field ")
 				.append(pFieldName).append(". Following components have been found:\n");
 		for (final Map.Entry<String, Object> entry : pAmbiguousComponents.entrySet()) {
-			builder.append("\t").append(entry.getKey()).append(" -> ").append(entry.getValue()).append("\n");
+			builder.append("\t").append(entry.getKey()).append(" -> ").append(entry.getValue().getClass()).append("\n");
 		}
 		return builder.toString();
 	}
