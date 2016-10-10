@@ -1,8 +1,11 @@
 package ch.sourcepond.utils.bci;
 
+import static ch.sourcepond.utils.bci.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.objectweb.asm.ClassReader.SKIP_DEBUG;
@@ -144,12 +147,30 @@ public class SerializableClassVisitorTest {
 		private transient TestComponent component4;
 		@Inject
 		private transient TestComponent component5;
+		@Inject
+		private transient TestComponent component6;
+		@Inject
+		private transient TestComponent component7;
+		@Inject
+		private transient TestComponent component8;
+		@Inject
+		private transient TestComponent component9;
+		@Inject
+		private transient TestComponent component10;
 	}
 
 	@Test
 	public void verifyPushByteConstant() throws Exception {
 		loader = new TestClassLoader(visitor, writer, VerifyPushByteConstant.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstant.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
 
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
@@ -160,7 +181,12 @@ public class SerializableClassVisitorTest {
 						{ "component2", null, TestComponent.class.getName() },
 						{ "component3", null, TestComponent.class.getName() },
 						{ "component4", null, TestComponent.class.getName() },
-						{ "component5", null, TestComponent.class.getName() } }));
+						{ "component5", null, TestComponent.class.getName() },
+						{ "component6", null, TestComponent.class.getName() },
+						{ "component7", null, TestComponent.class.getName() },
+						{ "component8", null, TestComponent.class.getName() },
+						{ "component9", null, TestComponent.class.getName() },
+						{ "component10", null, TestComponent.class.getName() } }));
 	}
 
 	/**
@@ -183,12 +209,35 @@ public class SerializableClassVisitorTest {
 		@Named("componentId5")
 		@Inject
 		private transient TestComponent component5;
+		@Named("componentId6")
+		@Inject
+		private transient TestComponent component6;
+		@Named("componentId7")
+		@Inject
+		private transient TestComponent component7;
+		@Named("componentId8")
+		@Inject
+		private transient TestComponent component8;
+		@Named("componentId9")
+		@Inject
+		private transient TestComponent component9;
+		@Named("componentId10")
+		@Inject
+		private transient TestComponent component10;
 	}
 
 	@Test
 	public void verifyPushByteConstantWithId() throws Exception {
 		loader = new TestClassLoader(visitor, writer, VerifyPushByteConstantWithId.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantWithId.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
 
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
@@ -199,7 +248,12 @@ public class SerializableClassVisitorTest {
 						{ "component2", "componentId2", TestComponent.class.getName() },
 						{ "component3", "componentId3", TestComponent.class.getName() },
 						{ "component4", "componentId4", TestComponent.class.getName() },
-						{ "component5", "componentId5", TestComponent.class.getName() } }));
+						{ "component5", "componentId5", TestComponent.class.getName() },
+						{ "component6", "componentId6", TestComponent.class.getName() },
+						{ "component7", "componentId7", TestComponent.class.getName() },
+						{ "component8", "componentId8", TestComponent.class.getName() },
+						{ "component9", "componentId9", TestComponent.class.getName() },
+						{ "component10", "componentId10", TestComponent.class.getName() } }));
 	}
 
 	/**
@@ -221,7 +275,9 @@ public class SerializableClassVisitorTest {
 		loader = new TestClassLoader(visitor, writer, VerifyPushByteConstantReadObjectAlreadyDefined.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantReadObjectAlreadyDefined.class.getName());
 
-		// This should not throw an exception
+		// This method should exist
+		enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
 		final ObjectInputStream objInStream = mock(ObjectInputStream.class);
 		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, objInStream);
@@ -231,5 +287,73 @@ public class SerializableClassVisitorTest {
 		order.verify(injector).initDeserializedObject(Mockito.same(obj),
 				Mockito.eq(new String[][] { { "component1", "componentId1", TestComponent.class.getName() } }));
 		order.verify(objInStream).defaultReadObject();
+	}
+
+	/**
+	 * Test-class for verifying pushByteConstant
+	 *
+	 */
+	public static class DoNotVisitFinalField implements Serializable {
+		@Named("componentId1")
+		@Inject
+		private transient final TestComponent component1 = new TestComponent();
+
+		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+			in.defaultReadObject();
+		}
+	}
+
+	@Test
+	public void doNotVisitFinalField() throws Exception {
+		loader = new TestClassLoader(visitor, writer, DoNotVisitFinalField.class, bundle);
+		final Class<?> enhancedClass = loader.loadClass(DoNotVisitFinalField.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
+
+		// This should not throw an exception
+		final Serializable obj = (Serializable) enhancedClass.newInstance();
+		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
+
+		verifyZeroInteractions(injector);
+	}
+
+	/**
+	 * Test-class for verifying pushByteConstant
+	 *
+	 */
+	public static class DoNotVisitPersistentField implements Serializable {
+		@Named("componentId1")
+		@Inject
+		private final TestComponent component1 = new TestComponent();
+
+		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+			in.defaultReadObject();
+		}
+	}
+
+	@Test
+	public void doNotVisitPersistentField() throws Exception {
+		loader = new TestClassLoader(visitor, writer, DoNotVisitPersistentField.class, bundle);
+		final Class<?> enhancedClass = loader.loadClass(DoNotVisitPersistentField.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
+
+		// This should not throw an exception
+		final Serializable obj = (Serializable) enhancedClass.newInstance();
+		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
+
+		verifyZeroInteractions(injector);
 	}
 }

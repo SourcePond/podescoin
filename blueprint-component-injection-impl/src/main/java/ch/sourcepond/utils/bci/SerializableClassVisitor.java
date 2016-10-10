@@ -131,7 +131,10 @@ final class SerializableClassVisitor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
-		if (!hasReadObjectMethod && isReadObjectMethod(access, name, desc, exceptions)) {
+		if (isReadObjectMethod(access, name, desc, exceptions)) {
+
+			// We need this information later when we generate the concrete
+			// injection method.
 			hasReadObjectMethod = true;
 
 			if (isReadObjectEnhancementNecessary()) {
