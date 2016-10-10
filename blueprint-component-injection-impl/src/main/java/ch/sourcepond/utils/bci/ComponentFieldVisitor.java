@@ -33,7 +33,7 @@ final class ComponentFieldVisitor extends FieldVisitor {
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
 		if (visible) {
-			if (!inject && INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
+			if (INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
 				inject = true;
 			}
 			if (NAMED_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
