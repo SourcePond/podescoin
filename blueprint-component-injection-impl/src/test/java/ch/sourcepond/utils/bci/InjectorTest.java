@@ -65,6 +65,18 @@ public class InjectorTest {
 
 	}
 
+	public static byte[] readBytes(final InputStream in) throws IOException {
+		final ByteArrayOutputStream out = new ByteArrayOutputStream(64);
+		final byte[] buffer = new byte[64];
+		int read = 0;
+
+		while ((read = in.read(buffer)) != -1) {
+			out.write(buffer, 0, read);
+		}
+
+		return out.toByteArray();
+	}
+
 	public static class TestClassLoader extends ClassLoader implements BundleReference {
 		private Class<?> cl;
 		private Bundle bundle;
@@ -83,15 +95,7 @@ public class InjectorTest {
 			if (cl == null) {
 				try (final InputStream in = InjectorTest.class
 						.getResourceAsStream("/" + name.replace('.', '/') + ".class")) {
-					final ByteArrayOutputStream out = new ByteArrayOutputStream(64);
-					final byte[] buffer = new byte[64];
-					int read = 0;
-
-					while ((read = in.read(buffer)) != -1) {
-						out.write(buffer, 0, read);
-					}
-
-					final byte[] classData = out.toByteArray();
+					final byte[] classData = readBytes(in);
 					cl = defineClass(name, classData, 0, classData.length);
 				} catch (final IOException e) {
 					throw new ClassNotFoundException(e.getMessage(), e);

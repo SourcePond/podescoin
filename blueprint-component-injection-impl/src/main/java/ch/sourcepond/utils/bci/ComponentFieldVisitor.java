@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.bci.impl;
+package ch.sourcepond.utils.bci;
 
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getType;
@@ -23,7 +23,7 @@ final class ComponentFieldVisitor extends FieldVisitor {
 		super(ASM5, pDelegate);
 		classVisitor = pClassVisitor;
 		fieldName = pFieldName;
-		fieldType = pFieldName;
+		fieldType = pFieldType;
 	}
 
 	void setComponentId(final String pComponentId) {

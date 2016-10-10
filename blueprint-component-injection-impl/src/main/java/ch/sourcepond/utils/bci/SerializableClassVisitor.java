@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.bci.impl;
+package ch.sourcepond.utils.bci;
 
 import static org.objectweb.asm.Opcodes.AASTORE;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
@@ -34,8 +34,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-import ch.sourcepond.utils.bci.Injector;
-
 final class SerializableClassVisitor extends ClassVisitor {
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;
@@ -55,8 +53,8 @@ final class SerializableClassVisitor extends ClassVisitor {
 	private static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	private static final String INJECTOR_INTERNAL_NAME = getInternalName(Injector.class);
 	private static final String INJECTOR_METHOD_NAME = "injectComponents";
-	private static final String INJECTOR_METHOD_DESC = getMethodDescriptor(getType(void.class), getType(Object.class),
-			getType(String[][].class));
+	private static final String INJECTOR_METHOD_DESC = getMethodDescriptor(getType(void.class),
+			getType(Serializable.class), getType(String[][].class));
 	private static final String FIRST_DIMENSION_INTERNAL_NAME = getInternalName(String[].class);
 	private static final String SECOND_DIMENSION_INTERNAL_NAME = getInternalName(String.class);
 	private List<String[]> namedComponents;
@@ -103,9 +101,7 @@ final class SerializableClassVisitor extends ClassVisitor {
 		if (ACC_PRIVATE == access && READ_OBJECT_METHOD_NAME.equals(name) && exceptions != null
 				&& exceptions.length == 2) {
 			if (IO_EXCEPTION_INTERNAL_NAME.equals(exceptions[0])
-					&& CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])
-					|| CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[0])
-							&& IO_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])) {
+					&& CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])) {
 				final Type returnType = getReturnType(desc);
 
 				if (VOID_NAME.equals(returnType.getClassName())) {
@@ -191,7 +187,7 @@ final class SerializableClassVisitor extends ClassVisitor {
 		// readObject method has already be enhanced so that
 		// '_$injectBlueprintComponents' is called at the beginning.
 		if (hasReadObjectMethod) {
-			cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
+			return cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
 					getMethodDescriptor(getType(void.class)), null, null);
 		}
 
@@ -238,9 +234,9 @@ final class SerializableClassVisitor extends ClassVisitor {
 				// to the two-dimensional array at the end of the loop.
 				pushByteConstant(mv, idx);
 
-				// Push the the constant value '2' on the operand stack. This is
-				// used as operand for ANEWARRAY to create an array of size 2.
-				mv.visitInsn(ICONST_2);
+				// Push the the constant value '3' on the operand stack. This is
+				// used as operand for ANEWARRAY to create an array of size 3.
+				mv.visitInsn(ICONST_3);
 
 				// Create sub-array of size '2'
 				mv.visitTypeInsn(ANEWARRAY, SECOND_DIMENSION_INTERNAL_NAME);
@@ -293,9 +289,12 @@ final class SerializableClassVisitor extends ClassVisitor {
 				// Store the sub-array into the main-array
 				mv.visitInsn(AASTORE);
 
-				// Push a copy of the main-array reference on the operand stack
-				// (first operand of the last AASTORE in this loop)
-				mv.visitInsn(DUP);
+				if (idx < namedComponentArr.length - 1) {
+					// Push a copy of the main-array reference on the operand
+					// stack
+					// (first operand of the last AASTORE in this loop)
+					mv.visitInsn(DUP);
+				}
 			}
 
 			// Call the static method 'injectComponent' on class
@@ -306,7 +305,7 @@ final class SerializableClassVisitor extends ClassVisitor {
 
 			// Specify maximum operand stack size and maximum local variable
 			// count.
-			mv.visitMaxs(8, 1);
+			mv.visitMaxs(8, 2);
 		}
 	}
 

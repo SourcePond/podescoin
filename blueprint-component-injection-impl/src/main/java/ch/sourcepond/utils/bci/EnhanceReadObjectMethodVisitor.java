@@ -1,6 +1,6 @@
-package ch.sourcepond.utils.bci.impl;
+package ch.sourcepond.utils.bci;
 
-import static ch.sourcepond.utils.bci.impl.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
+import static ch.sourcepond.utils.bci.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
