@@ -5,7 +5,6 @@ import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_TRANSIENT;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ANEWARRAY;
-import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Opcodes.BIPUSH;
 import static org.objectweb.asm.Opcodes.DUP;
 import static org.objectweb.asm.Opcodes.ICONST_0;
@@ -16,13 +15,10 @@ import static org.objectweb.asm.Opcodes.ICONST_4;
 import static org.objectweb.asm.Opcodes.ICONST_5;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.RETURN;
-import static org.objectweb.asm.Type.getArgumentTypes;
 import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
-import static org.objectweb.asm.Type.getReturnType;
 import static org.objectweb.asm.Type.getType;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -32,25 +28,20 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 
-final class ComponentFieldInjectionClassVisitor extends ClassVisitor {
+final class ComponentFieldInjectionClassVisitor extends SerializableClassVisitor {
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;
 	private static final int _ICONST_2 = 2;
 	private static final int _ICONST_3 = 3;
 	private static final int _ICONST_4 = 4;
 	private static final int _ICONST_5 = 5;
-	private static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
 	private static final String CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME = getInternalName(ClassNotFoundException.class);
-	private static final String READ_OBJECT_METHOD_NAME = "readObject";
 	private static final String READ_OBJECT_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(ObjectInputStream.class));
 	private static final String[] READ_OBJECT_METHOD_EXCEPTIONS = new String[] { IO_EXCEPTION_INTERNAL_NAME,
 			CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME };
 	static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME = "_$injectBlueprintComponents";
-	private static final String VOID_NAME = void.class.getName();
-	private static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	private static final String INJECTOR_INTERNAL_NAME = getInternalName(Injector.class);
 	private static final String INJECTOR_METHOD_NAME = "injectComponents";
 	private static final String INJECTOR_METHOD_DESC = getMethodDescriptor(getType(void.class),
@@ -62,7 +53,7 @@ final class ComponentFieldInjectionClassVisitor extends ClassVisitor {
 	private boolean hasReadObjectMethod;
 
 	public ComponentFieldInjectionClassVisitor(final ClassVisitor pWriter) {
-		super(ASM5, pWriter);
+		super(pWriter);
 	}
 
 	@Override
@@ -70,48 +61,6 @@ final class ComponentFieldInjectionClassVisitor extends ClassVisitor {
 			final String superName, final String[] interfaces) {
 		thisClassInternalName = name;
 		super.visit(version, access, name, signature, superName, interfaces);
-	}
-
-	/**
-	 * Determines whether the current method is the readObject method with
-	 * following signature:
-	 * 
-	 * <pre>
-	 * private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
-	 * </pre>
-	 * 
-	 * See {@link Serializable} for further information.
-	 * 
-	 * @param access
-	 *            the method's access flags (see {@link Opcodes}). This
-	 *            parameter also indicates if the method is synthetic and/or
-	 *            deprecated.
-	 * @param name
-	 *            the method's name.
-	 * @param desc
-	 *            the method's descriptor (see {@link Type}).
-	 * @param exceptions
-	 *            the internal names of the method's exception classes (see
-	 *            {@link Type#getInternalName()} ). May be null.
-	 * @return {@code true} if the method specified is the readObject method as
-	 *         described by {@link Serializable}, {@code false} otherwise
-	 */
-	private static boolean isReadObjectMethod(final int access, final String name, final String desc,
-			final String[] exceptions) {
-		if (ACC_PRIVATE == access && READ_OBJECT_METHOD_NAME.equals(name) && exceptions != null
-				&& exceptions.length == 2) {
-			if (IO_EXCEPTION_INTERNAL_NAME.equals(exceptions[0])
-					&& CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])) {
-				final Type returnType = getReturnType(desc);
-
-				if (VOID_NAME.equals(returnType.getClassName())) {
-					final Type[] argumentTypes = getArgumentTypes(desc);
-					return argumentTypes.length == 1
-							&& OBJECT_INPUT_STREAM_NAME.equals(argumentTypes[0].getClassName());
-				}
-			}
-		}
-		return false;
 	}
 
 	@Override
