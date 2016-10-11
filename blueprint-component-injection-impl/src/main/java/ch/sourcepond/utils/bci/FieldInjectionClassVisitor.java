@@ -149,8 +149,10 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 				READ_OBJECT_METHOD_EXCEPTIONS);
 	}
 
-	private void generateInjectionMethod() {
-		// Only do something if at least 1 component is referenced.
+	@Override
+	public void visitEnd() {
+		// Create injection method if necessary; nly do something if at least 1
+		// component is referenced.
 		if (isReadObjectEnhancementNecessary()) {
 			final String[][] namedComponentArr = new String[namedComponents.size()][2];
 			namedComponents.toArray(namedComponentArr);
@@ -260,11 +262,6 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 			// count.
 			mv.visitMaxs(8, 2);
 		}
-	}
-
-	@Override
-	public void visitEnd() {
-		// Create injection method if necessary
-		generateInjectionMethod();
+		super.visitEnd();
 	}
 }
