@@ -8,17 +8,17 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-public class InjectorMethodClassVisitor extends ClassVisitor {
+public class MethodInjectionClassVisitor extends ClassVisitor {
 	private String[][] namedComponents;
 
-	public InjectorMethodClassVisitor(final ClassVisitor cv) {
+	public MethodInjectionClassVisitor(final ClassVisitor cv) {
 		super(ASM5, cv);
 	}
 
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
-		return new ComponentInjectorMethodVisitor(this, super.visitMethod(access, name, desc, signature, exceptions),
+		return new InjectorMethodVisitor(this, super.visitMethod(access, name, desc, signature, exceptions),
 				desc);
 	}
 

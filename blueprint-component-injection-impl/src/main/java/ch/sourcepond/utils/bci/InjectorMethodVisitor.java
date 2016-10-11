@@ -9,11 +9,11 @@ import static org.objectweb.asm.Type.getType;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-class ComponentInjectorMethodVisitor extends MethodVisitor {
-	private final InjectorMethodClassVisitor classVisitor;
+class InjectorMethodVisitor extends MethodVisitor {
+	private final MethodInjectionClassVisitor classVisitor;
 	private final String desc;
 
-	public ComponentInjectorMethodVisitor(final InjectorMethodClassVisitor pClassVisitor, final MethodVisitor mv,
+	public InjectorMethodVisitor(final MethodInjectionClassVisitor pClassVisitor, final MethodVisitor mv,
 			final String pDesc) {
 		super(ASM5, mv);
 		classVisitor = pClassVisitor;
