@@ -29,7 +29,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-final class ComponentFieldInjectionClassVisitor extends SerializableClassVisitor {
+final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;
 	private static final int _ICONST_2 = 2;
@@ -52,7 +52,7 @@ final class ComponentFieldInjectionClassVisitor extends SerializableClassVisitor
 	private String thisClassInternalName;
 	private boolean hasReadObjectMethod;
 
-	public ComponentFieldInjectionClassVisitor(final ClassVisitor pWriter) {
+	public FieldInjectionClassVisitor(final ClassVisitor pWriter) {
 		super(pWriter);
 	}
 
