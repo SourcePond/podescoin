@@ -142,6 +142,7 @@ final class SerializableClassVisitor extends ClassVisitor {
 						super.visitMethod(access, name, desc, signature, exceptions));
 			}
 		}
+
 		return super.visitMethod(access, name, desc, signature, exceptions);
 	}
 

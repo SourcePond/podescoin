@@ -4,10 +4,10 @@ import static org.objectweb.asm.Opcodes.ASM5;
 
 import org.objectweb.asm.AnnotationVisitor;
 
-final class NamedAnnotationVisitor extends AnnotationVisitor {
+final class NamedAnnotationOnFieldVisitor extends AnnotationVisitor {
 	private final ComponentFieldVisitor fieldVisitor;
 
-	NamedAnnotationVisitor(final ComponentFieldVisitor pFieldVisitor, final AnnotationVisitor pDelegate) {
+	NamedAnnotationOnFieldVisitor(final ComponentFieldVisitor pFieldVisitor, final AnnotationVisitor pDelegate) {
 		super(ASM5, pDelegate);
 		fieldVisitor = pFieldVisitor;
 	}

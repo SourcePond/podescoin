@@ -6,6 +6,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
@@ -27,7 +28,11 @@ final class Activator implements BundleActivator, WeavingHook {
 			final ClassReader reader = new ClassReader(wovenClass.getBytes());
 			final ClassWriter writer = new ClassWriter(reader, 0);
 			final SerializableClassVisitor visitor = new SerializableClassVisitor(writer);
-			reader.accept(visitor, 0);
+			try {
+				reader.accept(visitor, 0);
+			} catch (final AmbiguousInjectorMethodsException e) {
+				throw new WeavingException(e.getMessage(), e);
+			}
 			wovenClass.setBytes(writer.toByteArray());
 		}
 	}
