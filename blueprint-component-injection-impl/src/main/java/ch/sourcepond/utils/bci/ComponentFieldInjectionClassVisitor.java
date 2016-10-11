@@ -34,7 +34,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-final class SerializableClassVisitor extends ClassVisitor {
+final class ComponentFieldInjectionClassVisitor extends ClassVisitor {
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;
 	private static final int _ICONST_2 = 2;
@@ -61,7 +61,7 @@ final class SerializableClassVisitor extends ClassVisitor {
 	private String thisClassInternalName;
 	private boolean hasReadObjectMethod;
 
-	public SerializableClassVisitor(final ClassVisitor pWriter) {
+	public ComponentFieldInjectionClassVisitor(final ClassVisitor pWriter) {
 		super(ASM5, pWriter);
 	}
 

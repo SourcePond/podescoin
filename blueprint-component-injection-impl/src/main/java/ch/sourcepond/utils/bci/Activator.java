@@ -27,7 +27,7 @@ final class Activator implements BundleActivator, WeavingHook {
 		if (TRANSFORMING == wovenClass.getState()) {
 			final ClassReader reader = new ClassReader(wovenClass.getBytes());
 			final ClassWriter writer = new ClassWriter(reader, 0);
-			final SerializableClassVisitor visitor = new SerializableClassVisitor(writer);
+			final ComponentFieldInjectionClassVisitor visitor = new ComponentFieldInjectionClassVisitor(writer);
 			try {
 				reader.accept(visitor, 0);
 			} catch (final AmbiguousInjectorMethodsException e) {

@@ -1,6 +1,6 @@
 package ch.sourcepond.utils.bci;
 
-import static ch.sourcepond.utils.bci.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
+import static ch.sourcepond.utils.bci.ComponentFieldInjectionClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -33,16 +33,16 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
-public class SerializableClassVisitorTest {
+public class ComponentFieldInjectionClassVisitorClassVisitorTest {
 
 	public static class TestClassLoader extends ClassLoader implements BundleReference {
-		private final SerializableClassVisitor visitor;
+		private final ComponentFieldInjectionClassVisitor visitor;
 		private final ClassWriter writer;
 		private final Class<?> testSerializableClass;
 		private final Bundle bundle;
 		private Class<?> cl;
 
-		public TestClassLoader(final SerializableClassVisitor pVisitor, final ClassWriter pWriter,
+		public TestClassLoader(final ComponentFieldInjectionClassVisitor pVisitor, final ClassWriter pWriter,
 				final Class<?> pTestSerializableClass, final Bundle pBundle) {
 			super(null);
 			visitor = pVisitor;
@@ -67,7 +67,7 @@ public class SerializableClassVisitorTest {
 				}
 				return cl;
 			}
-			return SerializableClassVisitorTest.class.getClassLoader().loadClass(name);
+			return ComponentFieldInjectionClassVisitorClassVisitorTest.class.getClassLoader().loadClass(name);
 		}
 
 		@Override
@@ -90,7 +90,7 @@ public class SerializableClassVisitorTest {
 	private BundleContext context;
 
 	private TestClassLoader loader;
-	private SerializableClassVisitor visitor;
+	private ComponentFieldInjectionClassVisitor visitor;
 
 	@Before
 	public void setup() {
@@ -98,7 +98,7 @@ public class SerializableClassVisitorTest {
 		when(factory.newInjector(bundle)).thenReturn(injector);
 		when(bundle.getBundleContext()).thenReturn(context);
 		Injector.factory = factory;
-		visitor = new SerializableClassVisitor(writer);
+		visitor = new ComponentFieldInjectionClassVisitor(writer);
 	}
 
 	@After

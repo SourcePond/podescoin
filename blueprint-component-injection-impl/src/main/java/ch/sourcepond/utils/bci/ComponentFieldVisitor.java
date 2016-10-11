@@ -9,13 +9,13 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 
 final class ComponentFieldVisitor extends FieldVisitor {
-	private final SerializableClassVisitor classVisitor;
+	private final ComponentFieldInjectionClassVisitor classVisitor;
 	private final String fieldName;
 	private final String fieldType;
 	private String componentIdOrNull;
 	private boolean inject;
 
-	ComponentFieldVisitor(final SerializableClassVisitor pClassVisitor, final FieldVisitor pDelegate,
+	ComponentFieldVisitor(final ComponentFieldInjectionClassVisitor pClassVisitor, final FieldVisitor pDelegate,
 			final String pFieldName, final String pFieldType) {
 		super(ASM5, pDelegate);
 		classVisitor = pClassVisitor;
