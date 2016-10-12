@@ -21,10 +21,14 @@ class SerializableClassVisitor extends ClassVisitor {
 			ClassNotFoundException.class);
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
-	protected boolean hasReadObjectMethod;
+	private boolean hasReadObjectMethod;
 
 	public SerializableClassVisitor(final ClassVisitor pWriter) {
 		super(ASM5, pWriter);
+	}
+
+	boolean hasReadObjectMethod() {
+		return hasReadObjectMethod;
 	}
 
 	/**

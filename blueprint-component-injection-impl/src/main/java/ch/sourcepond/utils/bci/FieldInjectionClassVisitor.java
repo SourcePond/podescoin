@@ -131,7 +131,7 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 		// complete new method '_$injectBlueprintComponents'. The original
 		// readObject method has already be enhanced so that
 		// '_$injectBlueprintComponents' is called at the beginning.
-		if (hasReadObjectMethod) {
+		if (hasReadObjectMethod()) {
 			return cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
 					getMethodDescriptor(getType(void.class)), null, null);
 		}
