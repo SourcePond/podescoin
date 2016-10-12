@@ -50,7 +50,6 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String SECOND_DIMENSION_INTERNAL_NAME = getInternalName(String.class);
 	private List<String[]> namedComponents;
 	private String thisClassInternalName;
-	private boolean hasReadObjectMethod;
 
 	public FieldInjectionClassVisitor(final ClassVisitor pWriter) {
 		super(pWriter);
@@ -80,16 +79,9 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
-		if (isReadObjectMethod(access, name, desc, exceptions)) {
-
-			// We need this information later when we generate the concrete
-			// injection method.
-			hasReadObjectMethod = true;
-
-			if (isReadObjectEnhancementNecessary()) {
-				return new EnhanceReadObjectMethodVisitor(thisClassInternalName,
-						super.visitMethod(access, name, desc, signature, exceptions));
-			}
+		if (isReadObjectMethod(access, name, desc, exceptions) && isReadObjectEnhancementNecessary()) {
+			return new EnhanceReadObjectMethodVisitor(thisClassInternalName,
+					super.visitMethod(access, name, desc, signature, exceptions));
 		}
 
 		return super.visitMethod(access, name, desc, signature, exceptions);

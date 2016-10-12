@@ -21,6 +21,7 @@ class SerializableClassVisitor extends ClassVisitor {
 			ClassNotFoundException.class);
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
+	protected boolean hasReadObjectMethod;
 
 	public SerializableClassVisitor(final ClassVisitor pWriter) {
 		super(ASM5, pWriter);
@@ -50,7 +51,7 @@ class SerializableClassVisitor extends ClassVisitor {
 	 * @return {@code true} if the method specified is the readObject method as
 	 *         described by {@link Serializable}, {@code false} otherwise
 	 */
-	protected static boolean isReadObjectMethod(final int access, final String name, final String desc,
+	protected boolean isReadObjectMethod(final int access, final String name, final String desc,
 			final String[] exceptions) {
 		if (ACC_PRIVATE == access && READ_OBJECT_METHOD_NAME.equals(name) && exceptions != null
 				&& exceptions.length == 2) {
@@ -60,8 +61,14 @@ class SerializableClassVisitor extends ClassVisitor {
 
 				if (VOID_NAME.equals(returnType.getClassName())) {
 					final Type[] argumentTypes = getArgumentTypes(desc);
-					return argumentTypes.length == 1
+
+					// We need this information later when we generate the
+					// concrete
+					// injection method.
+					hasReadObjectMethod = argumentTypes.length == 1
 							&& OBJECT_INPUT_STREAM_NAME.equals(argumentTypes[0].getClassName());
+
+					return hasReadObjectMethod;
 				}
 			}
 		}
