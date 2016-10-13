@@ -3,27 +3,28 @@ package ch.sourcepond.utils.bci;
 import static ch.sourcepond.utils.bci.Constants.INJECT_ANNOTATION_NAME;
 import static ch.sourcepond.utils.bci.Constants.NAMED_ANNOTATION_NAME;
 import static org.objectweb.asm.Opcodes.ASM5;
-import static org.objectweb.asm.Type.getArgumentTypes;
 import static org.objectweb.asm.Type.getType;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-class InjectorMethodVisitor extends MethodVisitor {
-	private final MethodInjectionClassVisitor classVisitor;
-	private final String desc;
+final class InjectorMethodVisitor extends MethodVisitor {
+	private final InspectForInjectorMethodClassVisitor classVisitor;
+	private final String injectorMethodName;
+	private final String injectorMethodDesc;
 
-	public InjectorMethodVisitor(final MethodInjectionClassVisitor pClassVisitor, final MethodVisitor mv,
-			final String pDesc) {
+	public InjectorMethodVisitor(final InspectForInjectorMethodClassVisitor pClassVisitor, final MethodVisitor mv,
+			final String pInjectorMethodName, final String pInjectorMethodDesc) {
 		super(ASM5, mv);
 		classVisitor = pClassVisitor;
-		desc = pDesc;
+		injectorMethodName = pInjectorMethodName;
+		injectorMethodDesc = pInjectorMethodDesc;
 	}
 
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
 		if (visible && INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
-			classVisitor.initArgumentTypes(getArgumentTypes(this.desc));
+			classVisitor.initArgumentTypes(injectorMethodName, injectorMethodDesc);
 		}
 		return super.visitAnnotation(desc, visible);
 	}

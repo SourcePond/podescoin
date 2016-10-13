@@ -28,7 +28,7 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
  * @author rolandhauser
  *
  */
-class BundleInjector implements ServiceListener {
+class BundleInjector implements ServiceListener, Container {
 	private final Bundle bundle;
 	private final ServiceReference<BlueprintContainer> containerRef;
 	private final BlueprintContainer container;
@@ -140,5 +140,17 @@ class BundleInjector implements ServiceListener {
 		if (UNREGISTERING == event.getType() && containerRef.equals(event.getServiceReference())) {
 			injectors.remove(bundle);
 		}
+	}
+
+	@Override
+	public <T> T getComponentById(final String pComponentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T getComponentByTypeName(final String pTypeName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

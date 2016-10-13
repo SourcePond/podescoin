@@ -4,31 +4,86 @@ import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getArgumentTypes;
 import static org.objectweb.asm.Type.getInternalName;
+import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getReturnType;
+import static org.objectweb.asm.Type.getType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-class SerializableClassVisitor extends ClassVisitor {
+abstract class SerializableClassVisitor extends ClassVisitor {
+	protected static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME = "_$injectBlueprintComponents";
 	protected static final String READ_OBJECT_METHOD_NAME = "readObject";
-	protected static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
+	protected static final String READ_OBJECT_METHOD_DESC = getMethodDescriptor(getType(void.class),
+			getType(ObjectInputStream.class));
 	protected static final String CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME = getInternalName(
 			ClassNotFoundException.class);
+	protected static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
+	protected static final String[] READ_OBJECT_METHOD_EXCEPTIONS = new String[] { IO_EXCEPTION_INTERNAL_NAME,
+			CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME };
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
+	protected String thisClassInternalName;
 	private boolean hasReadObjectMethod;
 
-	public SerializableClassVisitor(final ClassVisitor pWriter) {
+	protected SerializableClassVisitor(final ClassVisitor pWriter) {
 		super(ASM5, pWriter);
 	}
 
-	boolean hasReadObjectMethod() {
+	@Override
+	public void visit(final int version, final int access, final String name, final String signature,
+			final String superName, final String[] interfaces) {
+		thisClassInternalName = name;
+		super.visit(version, access, name, signature, superName, interfaces);
+	}
+
+	@Override
+	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
+			final String[] exceptions) {
+		if (isReadObjectMethod(access, name, desc, exceptions) && isEnhancementNecessary()) {
+			return new EnhanceReadObjectMethodVisitor(thisClassInternalName,
+					super.visitMethod(access, name, desc, signature, exceptions));
+		}
+		return super.visitMethod(access, name, desc, signature, exceptions);
+	}
+
+	protected abstract boolean isEnhancementNecessary();
+
+	protected abstract void enhanceReadObject(MethodVisitor mv);
+
+	private MethodVisitor createMethodVisitor() {
+		// If there is already a readObject method present, we need to create a
+		// complete new method '_$injectBlueprintComponents'. The original
+		// readObject method has already be enhanced so that
+		// '_$injectBlueprintComponents' is called at the beginning.
+		if (hasReadObjectMethod()) {
+			return cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
+					getMethodDescriptor(getType(void.class)), null, null);
+		}
+
+		// If no readObject method could be found, it will be created now.
+		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
+				READ_OBJECT_METHOD_EXCEPTIONS);
+	}
+
+	protected boolean hasReadObjectMethod() {
 		return hasReadObjectMethod;
+	}
+
+	@Override
+	public void visitEnd() {
+		// Create injection method if necessary; nly do something if at least 1
+		// component is referenced.
+		if (isEnhancementNecessary()) {
+			enhanceReadObject(createMethodVisitor());
+		}
+		super.visitEnd();
 	}
 
 	/**
@@ -69,10 +124,13 @@ class SerializableClassVisitor extends ClassVisitor {
 					// We need this information later when we generate the
 					// concrete
 					// injection method.
-					hasReadObjectMethod = argumentTypes.length == 1
+					final boolean b = argumentTypes.length == 1
 							&& OBJECT_INPUT_STREAM_NAME.equals(argumentTypes[0].getClassName());
+					if (b && !hasReadObjectMethod) {
+						hasReadObjectMethod = true;
+					}
 
-					return hasReadObjectMethod;
+					return b;
 				}
 			}
 		}

@@ -4,23 +4,32 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import ch.sourcepond.utils.bci.Container;
 import ch.sourcepond.utils.bci.Injector;
+import ch.sourcepond.utils.bci.TestComponent;
 
 public class TestClass implements Serializable {
 
-	public void injectBlueprintComponents() {
+	public void initObject(final TestComponent pComponent, final TestComponent pComponent1,
+			final TestComponent pComponent2, final TestComponent pComponent3, final TestComponent pComponent4,
+			final TestComponent pComponent5, final TestComponent pComponent6, final TestComponent pComponent7,
+			final TestComponent pComponent8, final TestComponent pComponent9) throws Exception {
 
-		Injector.injectComponents(this,
-				new String[][] { { "field1", "componentId1", "com.some.Type1" },
-						{ "field2", "componentId2", "com.some.Type2" }, { "field3", "componentId3", "com.some.Type3" },
-						{ "field4", "componentId4", "com.some.Type4" }, { "field5", "componentId5", "com.some.Type5" },
-						{ "field6", "componentId6", "com.some.Type6" }, { "field7", "componentId7", "com.some.Type7" },
-						{ "field8", "componentId8", "com.some.Type8" }, { "field9", "componentId9", "com.some.Type9" },
-						{ "field10", "componentId10", "com.some.Type10" },
-						{ "field11", "componentId11", "com.some.Type11" }, { "field12", null, "com.some.Type12" } });
 	}
 
 	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-		injectBlueprintComponents();
+		final Container injector = Injector.getContainer(this);
+		try {
+			initObject(injector.getComponentById("componentId1"), injector.getComponentById("componentId2"),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
+					injector.getComponentById("componentId3"), injector.getComponentById("componentId4"),
+					injector.getComponentById("componentId5"),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
+					injector.getComponentById("componentId6"));
+		} catch (final Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
 	}
 }
