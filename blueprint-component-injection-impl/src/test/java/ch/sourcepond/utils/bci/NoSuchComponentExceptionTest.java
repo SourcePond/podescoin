@@ -8,7 +8,7 @@ public class NoSuchComponentExceptionTest {
 
 	@Test
 	public void verifyMessage() {
-		final NoSuchComponentException ex = new NoSuchComponentException("anyField", Object.class);
+		final NoSuchComponentException ex = new NoSuchComponentException("anyField", 0, Object.class);
 		assertEquals("No component found which matches field 'anyField' with type 'java.lang.Object'", ex.getMessage());
 	}
 }

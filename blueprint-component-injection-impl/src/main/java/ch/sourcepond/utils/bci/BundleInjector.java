@@ -57,33 +57,38 @@ class BundleInjector implements ServiceListener, Container {
 		}
 	}
 
-	private Object getComponent(final String pFieldOrParameterName, final String pComponentIdOrNull,
-			final Class<?> pFieldType) throws ClassNotFoundException {
-		if (pComponentIdOrNull == null || pComponentIdOrNull.isEmpty()) {
-			final Map<String, Object> candidates = new HashMap<>();
-			for (final String componentId : container.getComponentIds()) {
-				String typeName = null;
-				final ComponentMetadata metadata = container.getComponentMetadata(componentId);
-				if (metadata instanceof BeanMetadata) {
-					typeName = ((BeanMetadata) metadata).getClassName();
-				} else if (metadata instanceof ServiceReferenceMetadata) {
-					typeName = ((ServiceReferenceMetadata) metadata).getInterface();
-				}
+	private Map<String, Object> findCandidates(final Class<?> pTargetType) throws ClassNotFoundException {
+		final Map<String, Object> candidates = new HashMap<>();
+		for (final String componentId : container.getComponentIds()) {
+			String typeName = null;
+			final ComponentMetadata metadata = container.getComponentMetadata(componentId);
+			if (metadata instanceof BeanMetadata) {
+				typeName = ((BeanMetadata) metadata).getClassName();
+			} else if (metadata instanceof ServiceReferenceMetadata) {
+				typeName = ((ServiceReferenceMetadata) metadata).getInterface();
+			}
 
-				if (typeName != null) {
-					final Class<?> type = bundle.loadClass(typeName);
+			if (typeName != null) {
+				final Class<?> type = bundle.loadClass(typeName);
 
-					if (pFieldType.isAssignableFrom(type)) {
-						candidates.put(componentId, container.getComponentInstance(componentId));
-					}
+				if (pTargetType.isAssignableFrom(type)) {
+					candidates.put(componentId, container.getComponentInstance(componentId));
 				}
 			}
+		}
+		return candidates;
+	}
+
+	private Object getComponent(final String pFieldNameOrNull, final int pParameterIndex,
+			final String pComponentIdOrNull, final Class<?> pTargetType) throws ClassNotFoundException {
+		if (pComponentIdOrNull == null || pComponentIdOrNull.isEmpty()) {
+			final Map<String, Object> candidates = findCandidates(pTargetType);
 
 			if (candidates.size() > 1) {
-				throw new AmbiguousComponentException(pFieldOrParameterName, candidates);
+				throw new AmbiguousComponentException(pFieldNameOrNull, pParameterIndex, candidates);
 			}
 			if (candidates.isEmpty()) {
-				throw new NoSuchComponentException(pFieldOrParameterName, pFieldType);
+				throw new NoSuchComponentException(pFieldNameOrNull, pParameterIndex, pTargetType);
 			}
 			return candidates.values().iterator().next();
 		}
@@ -118,7 +123,7 @@ class BundleInjector implements ServiceListener, Container {
 					field.setAccessible(true);
 					final String componentIdOrNull = componentToField[1];
 					final Class<?> fieldType = bundle.loadClass(componentToField[2]);
-					final Object component = getComponent(field.getName(), componentIdOrNull, fieldType);
+					final Object component = getComponent(field.getName(), 0, componentIdOrNull, fieldType);
 
 					if (!field.getType().isAssignableFrom(component.getClass())) {
 						throw new ClassCastException(
