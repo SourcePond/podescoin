@@ -57,8 +57,8 @@ class BundleInjector implements ServiceListener, Container {
 		}
 	}
 
-	private Object getComponent(final Field pField, final String pComponentIdOrNull, final Class<?> pFieldType)
-			throws ClassNotFoundException {
+	private Object getComponent(final String pFieldOrParameterName, final String pComponentIdOrNull,
+			final Class<?> pFieldType) throws ClassNotFoundException {
 		if (pComponentIdOrNull == null || pComponentIdOrNull.isEmpty()) {
 			final Map<String, Object> candidates = new HashMap<>();
 			for (final String componentId : container.getComponentIds()) {
@@ -80,10 +80,10 @@ class BundleInjector implements ServiceListener, Container {
 			}
 
 			if (candidates.size() > 1) {
-				throw new AmbiguousComponentException(pField.getName(), candidates);
+				throw new AmbiguousComponentException(pFieldOrParameterName, candidates);
 			}
 			if (candidates.isEmpty()) {
-				throw new NoSuchComponentException(pField.getName(), pFieldType);
+				throw new NoSuchComponentException(pFieldOrParameterName, pFieldType);
 			}
 			return candidates.values().iterator().next();
 		}
@@ -118,7 +118,7 @@ class BundleInjector implements ServiceListener, Container {
 					field.setAccessible(true);
 					final String componentIdOrNull = componentToField[1];
 					final Class<?> fieldType = bundle.loadClass(componentToField[2]);
-					final Object component = getComponent(field, componentIdOrNull, fieldType);
+					final Object component = getComponent(field.getName(), componentIdOrNull, fieldType);
 
 					if (!field.getType().isAssignableFrom(component.getClass())) {
 						throw new ClassCastException(
@@ -143,14 +143,12 @@ class BundleInjector implements ServiceListener, Container {
 	}
 
 	@Override
-	public <T> T getComponentById(final String pComponentId) {
-		// TODO Auto-generated method stub
+	public <T> T getComponentById(final String pComponentId, final String pExpectedTypeName) {
 		return null;
 	}
 
 	@Override
 	public <T> T getComponentByTypeName(final String pTypeName) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
