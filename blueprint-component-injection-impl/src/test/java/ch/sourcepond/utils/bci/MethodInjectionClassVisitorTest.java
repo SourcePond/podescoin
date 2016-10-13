@@ -103,16 +103,16 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 			// noop
 		}
 
-		when(injector.getComponentById("componentId1", TestComponent.class.getName())).thenReturn(component1);
-		when(injector.getComponentById("componentId2", TestComponent.class.getName())).thenReturn(component2);
+		when(injector.getComponentById("componentId1", TestComponent.class.getName(), 0)).thenReturn(component1);
+		when(injector.getComponentById("componentId2", TestComponent.class.getName(), 1)).thenReturn(component2);
 
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
 		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
 
 		final InOrder order = inOrder(injector);
-		order.verify(injector).getComponentById("componentId1", TestComponent.class.getName());
-		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName());
+		order.verify(injector).getComponentById("componentId1", TestComponent.class.getName(), 0);
+		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName(), 1);
 
 		assertSame(component1, getFieldValue("component1", obj));
 		assertSame(component2, getFieldValue("component2", obj));
@@ -143,8 +143,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 			// noop
 		}
 
-		when(injector.getComponentById("componentId1", TestComponent.class.getName())).thenReturn(component1);
-		when(injector.getComponentById("componentId2", TestComponent.class.getName())).thenReturn(component2);
+		when(injector.getComponentById("componentId1", TestComponent.class.getName(), 0)).thenReturn(component1);
+		when(injector.getComponentById("componentId2", TestComponent.class.getName(), 1)).thenReturn(component2);
 
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
@@ -157,7 +157,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		}
 
 		final InOrder order = inOrder(injector);
-		order.verify(injector).getComponentById("componentId1", TestComponent.class.getName());
-		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName());
+		order.verify(injector).getComponentById("componentId1", TestComponent.class.getName(), 0);
+		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName(), 1);
 	}
 }

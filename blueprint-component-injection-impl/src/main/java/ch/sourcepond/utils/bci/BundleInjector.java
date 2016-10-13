@@ -81,6 +81,7 @@ class BundleInjector implements ServiceListener, Container {
 
 	private Object getComponent(final String pFieldNameOrNull, final int pParameterIndex,
 			final String pComponentIdOrNull, final Class<?> pTargetType) throws ClassNotFoundException {
+		final Object component;
 		if (pComponentIdOrNull == null || pComponentIdOrNull.isEmpty()) {
 			final Map<String, Object> candidates = findCandidates(pTargetType);
 
@@ -90,9 +91,22 @@ class BundleInjector implements ServiceListener, Container {
 			if (candidates.isEmpty()) {
 				throw new NoSuchComponentException(pFieldNameOrNull, pParameterIndex, pTargetType);
 			}
-			return candidates.values().iterator().next();
+			component = candidates.values().iterator().next();
+		} else {
+			component = container.getComponentInstance(pComponentIdOrNull);
+			if (!pTargetType.isAssignableFrom(component.getClass())) {
+				if (pFieldNameOrNull != null) {
+					throw new ClassCastException(
+							format("Field '%s' is of type '%s' which is not compatible to component with id '%s' and type '%s'",
+									pFieldNameOrNull, pTargetType.getName(), pComponentIdOrNull,
+									component.getClass().getName()));
+				}
+				throw new ClassCastException(format(
+						"Parameter at index %d is of type '%s' which is not compatible to component with id '%s' and type '%s'",
+						pParameterIndex, pTargetType.getName(), pComponentIdOrNull, component.getClass().getName()));
+			}
 		}
-		return container.getComponentInstance(pComponentIdOrNull);
+		return component;
 	}
 
 	void initDeserializedObject(final Serializable pObj, final String[][] pComponentToFields)
@@ -121,18 +135,8 @@ class BundleInjector implements ServiceListener, Container {
 
 				try {
 					field.setAccessible(true);
-					final String componentIdOrNull = componentToField[1];
-					final Class<?> fieldType = bundle.loadClass(componentToField[2]);
-					final Object component = getComponent(field.getName(), 0, componentIdOrNull, fieldType);
-
-					if (!field.getType().isAssignableFrom(component.getClass())) {
-						throw new ClassCastException(
-								format("Field '%s' is of type '%s' which is not compatible to component with id '%s' and type '%s'",
-										field.getName(), field.getType().getName(), componentIdOrNull,
-										component.getClass().getName()));
-					}
-
-					field.set(pObj, component);
+					field.set(pObj, getComponent(field.getName(), 0, componentToField[1],
+							bundle.loadClass(componentToField[2])));
 				} finally {
 					field.setAccessible(false);
 				}
@@ -148,7 +152,10 @@ class BundleInjector implements ServiceListener, Container {
 	}
 
 	@Override
-	public <T> T getComponentById(final String pComponentId, final String pExpectedTypeName) {
+	public <T> T getComponentById(final String pComponentId, final String pExpectedTypeName,
+			final int pParameterIndex) {
+		// return getComponent(null, pParameterIndex, pComponentIdOrNull,
+		// pTargetType);
 		return null;
 	}
 

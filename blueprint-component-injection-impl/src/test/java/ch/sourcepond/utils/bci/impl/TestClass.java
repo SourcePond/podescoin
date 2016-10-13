@@ -20,16 +20,16 @@ public class TestClass implements Serializable {
 	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
 		final Container injector = Injector.getContainer(this);
 		try {
-			initObject(injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentById("componentId2", "ch.sourcepond.utils.bci.TestComponent"),
+			initObject(injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent", 0),
+					injector.getComponentById("componentId2", "ch.sourcepond.utils.bci.TestComponent", 1),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 2),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 3),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 4),
-					injector.getComponentById("componentId3", "ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentById("componentId4", "ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentById("componentId5", "ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 5),
-					injector.getComponentById("componentId6", "ch.sourcepond.utils.bci.TestComponent"));
+					injector.getComponentById("componentId3", "ch.sourcepond.utils.bci.TestComponent", 5),
+					injector.getComponentById("componentId4", "ch.sourcepond.utils.bci.TestComponent", 6),
+					injector.getComponentById("componentId5", "ch.sourcepond.utils.bci.TestComponent", 7),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 8),
+					injector.getComponentById("componentId6", "ch.sourcepond.utils.bci.TestComponent", 9));
 		} catch (final Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
