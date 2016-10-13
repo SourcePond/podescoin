@@ -33,7 +33,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
-public class FieldInjectionClassVisitorClassVisitorTest {
+public class FieldInjectionClassVisitorTest {
 
 	public static class TestClassLoader extends ClassLoader implements BundleReference {
 		private final FieldInjectionClassVisitor visitor;
@@ -67,7 +67,7 @@ public class FieldInjectionClassVisitorClassVisitorTest {
 				}
 				return cl;
 			}
-			return FieldInjectionClassVisitorClassVisitorTest.class.getClassLoader().loadClass(name);
+			return FieldInjectionClassVisitorTest.class.getClassLoader().loadClass(name);
 		}
 
 		@Override
