@@ -67,13 +67,13 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 			// noop
 		}
 
-		when(injector.getComponentByTypeName(TestComponent.class.getName())).thenReturn(component1);
+		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component1);
 
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
 		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
 
-		verify(injector).getComponentByTypeName(TestComponent.class.getName());
+		verify(injector).getComponentByTypeName(TestComponent.class.getName(), 0);
 		assertSame(component1, getFieldValue("component1", obj));
 	}
 

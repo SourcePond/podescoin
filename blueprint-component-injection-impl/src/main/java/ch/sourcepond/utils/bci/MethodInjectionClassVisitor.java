@@ -36,7 +36,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 			getType(String.class), getType(String.class));
 	private static final String GET_COMPONENT_BY_TYPE_NAME_NAME = "getComponentByTypeName";
 	private static final String GET_COMPONENT_BY_TYPE_DESC = getMethodDescriptor(getType(Object.class),
-			getType(String.class));
+			getType(String.class), getType(int.class));
 	private static final String OBJECT_INPUT_STREAM_INTERNAL_NAME = getInternalName(ObjectInputStream.class);
 	private static final String EXCEPTION_INTERNAL_NAME = getInternalName(Exception.class);
 	private static final String ILLEGAL_EXCEPTION_INTERNAL_NAME = getInternalName(IllegalStateException.class);
@@ -44,7 +44,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String GET_MESSAGE_DESC = getMethodDescriptor(getType(String.class));
 	private static final String CONSTRUCTOR_DESC = getMethodDescriptor(getType(void.class), getType(String.class),
 			getType(Throwable.class));
-	private static final int MIN_STACK_SIZE = 3;
+	private static final int MIN_STACK_SIZE = 4;
 	private final InspectForInjectorMethodClassVisitor inspector;
 
 	public MethodInjectionClassVisitor(final ClassVisitor pVisitor,
@@ -75,7 +75,6 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 
 		final String[][] components = inspector.getComponents();
 
-		boolean increaseStackSizeByOne = false;
 		int stackSize = MIN_STACK_SIZE;
 		for (int i = 0; i < components.length; i++, stackSize++) {
 			mv.visitVarInsn(ALOAD, 2);
@@ -84,12 +83,9 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 				mv.visitLdcInsn(components[i][1]);
 				mv.visitMethodInsn(INVOKEINTERFACE, CONTAINER_INTERNAL_NAME, GET_COMPONENT_BY_ID_NAME,
 						GET_COMPONENT_BY_ID_DESC, true);
-
-				if (!increaseStackSizeByOne) {
-					increaseStackSizeByOne = true;
-				}
 			} else {
 				mv.visitLdcInsn(components[i][1]);
+				pushByteConstant(mv, i);
 				mv.visitMethodInsn(INVOKEINTERFACE, CONTAINER_INTERNAL_NAME, GET_COMPONENT_BY_TYPE_NAME_NAME,
 						GET_COMPONENT_BY_TYPE_DESC, true);
 			}
@@ -117,7 +113,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		mv.visitLabel(l3);
 		mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(increaseStackSizeByOne ? stackSize + 1 : stackSize, 4);
+		mv.visitMaxs(stackSize, 4);
 		mv.visitEnd();
 	}
 }

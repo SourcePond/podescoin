@@ -22,13 +22,13 @@ public class TestClass implements Serializable {
 		try {
 			initObject(injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent"),
 					injector.getComponentById("componentId2", "ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 2),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 3),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 4),
 					injector.getComponentById("componentId3", "ch.sourcepond.utils.bci.TestComponent"),
 					injector.getComponentById("componentId4", "ch.sourcepond.utils.bci.TestComponent"),
 					injector.getComponentById("componentId5", "ch.sourcepond.utils.bci.TestComponent"),
-					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent"),
+					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 5),
 					injector.getComponentById("componentId6", "ch.sourcepond.utils.bci.TestComponent"));
 		} catch (final Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);

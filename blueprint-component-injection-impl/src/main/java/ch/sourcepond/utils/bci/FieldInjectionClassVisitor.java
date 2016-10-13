@@ -11,8 +11,6 @@ import static org.objectweb.asm.Opcodes.ICONST_0;
 import static org.objectweb.asm.Opcodes.ICONST_1;
 import static org.objectweb.asm.Opcodes.ICONST_2;
 import static org.objectweb.asm.Opcodes.ICONST_3;
-import static org.objectweb.asm.Opcodes.ICONST_4;
-import static org.objectweb.asm.Opcodes.ICONST_5;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Type.getInternalName;
@@ -29,12 +27,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 final class FieldInjectionClassVisitor extends SerializableClassVisitor {
-	private static final int _ICONST_0 = 0;
-	private static final int _ICONST_1 = 1;
-	private static final int _ICONST_2 = 2;
-	private static final int _ICONST_3 = 3;
-	private static final int _ICONST_4 = 4;
-	private static final int _ICONST_5 = 5;
 	private static final String INJECTOR_METHOD_NAME = "injectComponents";
 	private static final String INJECTOR_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(Serializable.class), getType(String[][].class));
@@ -66,38 +58,6 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 			namedComponents = new LinkedList<>();
 		}
 		namedComponents.add(new String[] { pFieldName, pComponentIdOrNull, pTypeName });
-	}
-
-	private void pushByteConstant(final MethodVisitor mv, final int idx) {
-		switch (idx) {
-		case _ICONST_0: {
-			mv.visitInsn(ICONST_0);
-			break;
-		}
-		case _ICONST_1: {
-			mv.visitInsn(ICONST_1);
-			break;
-		}
-		case _ICONST_2: {
-			mv.visitInsn(ICONST_2);
-			break;
-		}
-		case _ICONST_3: {
-			mv.visitInsn(ICONST_3);
-			break;
-		}
-		case _ICONST_4: {
-			mv.visitInsn(ICONST_4);
-			break;
-		}
-		case _ICONST_5: {
-			mv.visitInsn(ICONST_5);
-			break;
-		}
-		default: {
-			mv.visitIntInsn(BIPUSH, idx);
-		}
-		}
 	}
 
 	@Override

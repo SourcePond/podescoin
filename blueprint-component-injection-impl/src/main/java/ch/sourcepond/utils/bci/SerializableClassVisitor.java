@@ -2,6 +2,13 @@ package ch.sourcepond.utils.bci;
 
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.BIPUSH;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.ICONST_1;
+import static org.objectweb.asm.Opcodes.ICONST_2;
+import static org.objectweb.asm.Opcodes.ICONST_3;
+import static org.objectweb.asm.Opcodes.ICONST_4;
+import static org.objectweb.asm.Opcodes.ICONST_5;
 import static org.objectweb.asm.Type.getArgumentTypes;
 import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
@@ -18,6 +25,12 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 abstract class SerializableClassVisitor extends ClassVisitor {
+	private static final int _ICONST_0 = 0;
+	private static final int _ICONST_1 = 1;
+	private static final int _ICONST_2 = 2;
+	private static final int _ICONST_3 = 3;
+	private static final int _ICONST_4 = 4;
+	private static final int _ICONST_5 = 5;
 	protected static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME = "_$injectBlueprintComponents";
 	protected static final String READ_OBJECT_METHOD_NAME = "readObject";
 	protected static final String READ_OBJECT_METHOD_DESC = getMethodDescriptor(getType(void.class),
@@ -34,6 +47,38 @@ abstract class SerializableClassVisitor extends ClassVisitor {
 
 	protected SerializableClassVisitor(final ClassVisitor pWriter) {
 		super(ASM5, pWriter);
+	}
+
+	protected void pushByteConstant(final MethodVisitor mv, final int idx) {
+		switch (idx) {
+		case _ICONST_0: {
+			mv.visitInsn(ICONST_0);
+			break;
+		}
+		case _ICONST_1: {
+			mv.visitInsn(ICONST_1);
+			break;
+		}
+		case _ICONST_2: {
+			mv.visitInsn(ICONST_2);
+			break;
+		}
+		case _ICONST_3: {
+			mv.visitInsn(ICONST_3);
+			break;
+		}
+		case _ICONST_4: {
+			mv.visitInsn(ICONST_4);
+			break;
+		}
+		case _ICONST_5: {
+			mv.visitInsn(ICONST_5);
+			break;
+		}
+		default: {
+			mv.visitIntInsn(BIPUSH, idx);
+		}
+		}
 	}
 
 	@Override

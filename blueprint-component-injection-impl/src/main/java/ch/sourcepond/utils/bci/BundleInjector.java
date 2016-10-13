@@ -148,7 +148,7 @@ class BundleInjector implements ServiceListener, Container {
 	}
 
 	@Override
-	public <T> T getComponentByTypeName(final String pTypeName) {
+	public <T> T getComponentByTypeName(final String pTypeName, final int pParameterIndex) {
 		return null;
 	}
 }
