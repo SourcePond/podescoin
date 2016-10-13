@@ -3,6 +3,7 @@ package ch.sourcepond.utils.bci;
 import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -25,15 +26,22 @@ final class Activator implements BundleActivator, WeavingHook {
 	@Override
 	public void weave(final WovenClass wovenClass) {
 		if (TRANSFORMING == wovenClass.getState()) {
-			final ClassReader reader = new ClassReader(wovenClass.getBytes());
-			final ClassWriter writer = new ClassWriter(reader, 0);
-			final FieldInjectionClassVisitor visitor = new FieldInjectionClassVisitor(
-					new InspectForInjectorMethodClassVisitor(writer));
+			ClassReader reader = new ClassReader(wovenClass.getBytes());
+			ClassWriter writer = new ClassWriter(reader, 0);
+
+			final InspectForInjectorMethodClassVisitor inspector = new InspectForInjectorMethodClassVisitor(writer);
+			ClassVisitor visitor = new FieldInjectionClassVisitor(inspector);
 			try {
 				reader.accept(visitor, 0);
 			} catch (final AmbiguousInjectorMethodsException e) {
 				throw new WeavingException(e.getMessage(), e);
 			}
+
+			reader = new ClassReader(writer.toByteArray());
+			writer = new ClassWriter(reader, 0);
+			visitor = new MethodInjectionClassVisitor(writer, inspector);
+			reader.accept(visitor, 0);
+
 			wovenClass.setBytes(writer.toByteArray());
 		}
 	}

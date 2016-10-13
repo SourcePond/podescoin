@@ -52,7 +52,8 @@ public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 
 	@Override
 	protected boolean isEnhancementNecessary() {
-		return inspector.getComponents().length > 0;
+		final String[][] components = inspector.getComponents();
+		return components != null && components.length > 0;
 	}
 
 	@Override
