@@ -1,5 +1,6 @@
 package ch.sourcepond.utils.bci;
 
+import static ch.sourcepond.utils.bci.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.bci.Constants.INJECTOR_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASTORE;
@@ -38,7 +39,6 @@ public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String ILLEGAL_EXCEPTION_INTERNAL_NAME = getInternalName(IllegalStateException.class);
 	private static final String GET_MESSAGE_NAME = "getMessage";
 	private static final String GET_MESSAGE_DESC = getMethodDescriptor(getType(String.class));
-	private static final String CONSTRUCTOR_NAME = "<init>";
 	private static final String CONSTRUCTOR_DESC = getMethodDescriptor(getType(void.class), getType(String.class),
 			getType(Throwable.class));
 	private static final int MIN_STACK_SIZE = 3;
@@ -66,8 +66,8 @@ public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESTATIC, INJECTOR_INTERNAL_NAME, GET_CONTAINER_METHOD_NAME, GET_CONTAINER_METHOD_DESC,
 				false);
-		mv.visitLabel(l0);
 		mv.visitVarInsn(ASTORE, 2);
+		mv.visitLabel(l0);
 		mv.visitVarInsn(ALOAD, 0);
 
 		final String[][] components = inspector.getComponents();

@@ -1,5 +1,6 @@
 package ch.sourcepond.utils.bci;
 
+import static ch.sourcepond.utils.bci.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.bci.Constants.INJECT_ANNOTATION_NAME;
 import static java.lang.String.format;
 import static org.objectweb.asm.Opcodes.ASM5;
@@ -22,8 +23,11 @@ final class InspectForInjectorMethodClassVisitor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
-		return new InjectorMethodVisitor(this, super.visitMethod(access, name, desc, signature, exceptions), name,
-				desc);
+		if (!CONSTRUCTOR_NAME.equals(name)) {
+			return new InjectorMethodVisitor(this, super.visitMethod(access, name, desc, signature, exceptions), name,
+					desc);
+		}
+		return super.visitMethod(access, name, desc, signature, exceptions);
 	}
 
 	void addNamedComponent(final String pComponentId, final int pParameterIndex) {

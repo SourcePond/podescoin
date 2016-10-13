@@ -1,135 +1,29 @@
 package ch.sourcepond.utils.bci;
 
-import static ch.sourcepond.utils.bci.FieldInjectionClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
+import static ch.sourcepond.utils.bci.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.objectweb.asm.ClassReader.SKIP_DEBUG;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
+import org.objectweb.asm.ClassVisitor;
 
-public class FieldInjectionClassVisitorTest {
+public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
-	public static class TestClassLoader extends ClassLoader implements BundleReference {
-		private final FieldInjectionClassVisitor visitor;
-		private final ClassWriter writer;
-		private final Class<?> testSerializableClass;
-		private final Bundle bundle;
-		private Class<?> cl;
-
-		public TestClassLoader(final FieldInjectionClassVisitor pVisitor, final ClassWriter pWriter,
-				final Class<?> pTestSerializableClass, final Bundle pBundle) {
-			super(null);
-			visitor = pVisitor;
-			writer = pWriter;
-			testSerializableClass = pTestSerializableClass;
-			bundle = pBundle;
-		}
-
-		@Override
-		protected Class<?> findClass(final String name) throws ClassNotFoundException {
-			if (name.equals(testSerializableClass.getName())) {
-				if (cl == null) {
-					try (final InputStream in = getClass()
-							.getResourceAsStream("/" + name.replace('.', '/') + ".class")) {
-						final ClassReader reader = new ClassReader(in);
-						reader.accept(visitor, SKIP_DEBUG);
-						final byte[] classData = writer.toByteArray();
-						cl = defineClass(name, classData, 0, classData.length);
-					} catch (final IOException e) {
-						throw new ClassNotFoundException(e.getMessage(), e);
-					}
-				}
-				return cl;
-			}
-			return FieldInjectionClassVisitorTest.class.getClassLoader().loadClass(name);
-		}
-
-		@Override
-		public Bundle getBundle() {
-			return bundle;
-		}
-	}
-
-	private final ClassWriter writer = new ClassWriter(0);
-	@Mock
-	private BundleInjector injector;
-
-	@Mock
-	private BundleInjectorFactory factory;
-
-	@Mock
-	private Bundle bundle;
-
-	@Mock
-	private BundleContext context;
-
-	private TestClassLoader loader;
-	private FieldInjectionClassVisitor visitor;
-
-	@Before
-	public void setup() {
-		initMocks(this);
-		when(factory.newInjector(bundle)).thenReturn(injector);
-		when(bundle.getBundleContext()).thenReturn(context);
-		Injector.factory = factory;
-		visitor = new FieldInjectionClassVisitor(writer);
-	}
-
-	@After
-	public void tearDown() {
-		Injector.injectors.clear();
-	}
-
-	private void setComponent(final Object pObj, final String pFieldName, final TestComponent pComponent)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		final Field field = pObj.getClass().getDeclaredField(pFieldName);
-		field.setAccessible(true);
-		try {
-			field.set(pObj, pComponent);
-		} finally {
-			field.setAccessible(false);
-		}
-	}
-
-	private TestComponent getComponent(final Object pObj, final String pFieldName)
-			throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		final Field field = pObj.getClass().getDeclaredField(pFieldName);
-		field.setAccessible(true);
-		return (TestComponent) field.get(pObj);
-	}
-
-	private Method getMethod(final Object pObj, final String pName, final Class<?>... pArgumentTypes)
-			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
-		final Method method = pObj.getClass().getDeclaredMethod(pName, pArgumentTypes);
-		method.setAccessible(true);
-		return method;
+	@Override
+	protected ClassVisitor newVisitor() {
+		return new FieldInjectionClassVisitor(writer);
 	}
 
 	/**
