@@ -6,6 +6,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ObjectInputStream;
@@ -42,6 +43,38 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		} finally {
 			f.setAccessible(false);
 		}
+	}
+
+	public static class NoReadObjectSpecified_WithType implements Serializable {
+		private TestComponent component1;
+
+		@Inject
+		public void injectServices(final TestComponent pComponent1) {
+			component1 = pComponent1;
+		}
+	}
+
+	@Test
+	public void noReadObjectSpecified_WithType() throws Exception {
+		loader = new MethodInjectorTestClassLoader(visitor, writer, NoReadObjectSpecified_WithType.class, bundle);
+		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithType.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
+
+		when(injector.getComponentByTypeName(TestComponent.class.getName())).thenReturn(component1);
+
+		// This should not throw an exception
+		final Serializable obj = (Serializable) enhancedClass.newInstance();
+		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
+
+		verify(injector).getComponentByTypeName(TestComponent.class.getName());
+		assertSame(component1, getFieldValue("component1", obj));
 	}
 
 	public static class NoReadObjectSpecified_WithComponentId implements Serializable {
@@ -87,14 +120,10 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	public static class NoReadObjectSpecified_WithComponentId_ThrowException implements Serializable {
 		private final Exception exception = new Exception();
-		private TestComponent component1;
-		private TestComponent component2;
 
 		@Inject
 		public void injectServices(@Named("componentId1") final TestComponent pComponent1,
 				@Named("componentId2") final TestComponent pComponent2) throws Exception {
-			component1 = pComponent1;
-			component2 = pComponent2;
 			throw exception;
 		}
 	}
@@ -130,8 +159,5 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		final InOrder order = inOrder(injector);
 		order.verify(injector).getComponentById("componentId1");
 		order.verify(injector).getComponentById("componentId2");
-
-		assertSame(component1, getFieldValue("component1", obj));
-		assertSame(component2, getFieldValue("component2", obj));
 	}
 }

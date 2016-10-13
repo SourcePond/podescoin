@@ -26,7 +26,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class MethodInjectionClassVisitor extends SerializableClassVisitor {
+class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String CONTAINER_INTERNAL_NAME = getInternalName(Container.class);
 	private static final String GET_CONTAINER_METHOD_NAME = "getContainer";
 	private static final String GET_CONTAINER_METHOD_DESC = getMethodDescriptor(getType(Container.class),
