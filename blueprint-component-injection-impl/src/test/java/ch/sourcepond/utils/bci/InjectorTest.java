@@ -30,6 +30,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
+import ch.sourcepond.utils.bci.internal.BundleInjector;
+
 public class InjectorTest {
 
 	public static class InitComponents implements Runnable {

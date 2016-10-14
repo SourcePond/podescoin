@@ -11,6 +11,8 @@ import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 
+import ch.sourcepond.utils.bci.internal.FieldInjectionClassVisitorTest;
+
 public class TestClassLoader extends ClassLoader implements BundleReference {
 	private final Class<?> testSerializableClass;
 	private final Bundle bundle;

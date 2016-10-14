@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
 import static org.objectweb.asm.Opcodes.ASM5;
 

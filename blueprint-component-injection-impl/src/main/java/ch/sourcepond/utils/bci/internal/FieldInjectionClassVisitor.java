@@ -1,6 +1,6 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
-import static ch.sourcepond.utils.bci.Constants.INJECTOR_INTERNAL_NAME;
+import static ch.sourcepond.utils.bci.internal.Constants.INJECTOR_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.AASTORE;
 import static org.objectweb.asm.Opcodes.ACC_TRANSIENT;
 import static org.objectweb.asm.Opcodes.ALOAD;

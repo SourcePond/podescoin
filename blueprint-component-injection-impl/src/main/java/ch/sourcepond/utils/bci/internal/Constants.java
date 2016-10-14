@@ -1,9 +1,11 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
 import static org.objectweb.asm.Type.getInternalName;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import ch.sourcepond.utils.bci.Injector;
 
 final class Constants {
 	static final String INJECT_ANNOTATION_NAME = Inject.class.getName();

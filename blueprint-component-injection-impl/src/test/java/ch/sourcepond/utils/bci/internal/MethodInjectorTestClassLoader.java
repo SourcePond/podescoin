@@ -1,9 +1,13 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
+
+import ch.sourcepond.utils.bci.TestClassLoader;
+import ch.sourcepond.utils.bci.internal.InspectForInjectorMethodClassVisitor;
+import ch.sourcepond.utils.bci.internal.MethodInjectionClassVisitor;
 
 public class MethodInjectorTestClassLoader extends TestClassLoader {
 

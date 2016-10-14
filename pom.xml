@@ -28,7 +28,6 @@
 	</description>
 
 	<modules>
-		<module>blueprint-component-injection-api</module>
 		<module>blueprint-component-injection-impl</module>
 		<module>blueprint-component-injection-test</module>
 	</modules>

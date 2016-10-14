@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.osgi.framework.Bundle;
 
+import ch.sourcepond.utils.bci.internal.BundleInjector;
+
 public final class Injector {
 	static final ConcurrentMap<Bundle, BundleInjector> injectors = new ConcurrentHashMap<>();
 	static BundleInjectorFactory factory = new BundleInjectorFactory();

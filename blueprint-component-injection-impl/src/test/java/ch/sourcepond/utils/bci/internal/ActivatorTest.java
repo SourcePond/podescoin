@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
 import static ch.sourcepond.utils.bci.InjectorTest.readBytes;
 import static org.mockito.Mockito.doAnswer;
@@ -18,6 +18,9 @@ import org.mockito.stubbing.Answer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+
+import ch.sourcepond.utils.bci.TestObject;
+import ch.sourcepond.utils.bci.internal.Activator;
 
 public class ActivatorTest {
 

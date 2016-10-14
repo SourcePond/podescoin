@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
 import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
 
@@ -11,7 +11,7 @@ import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
-final class Activator implements BundleActivator, WeavingHook {
+public final class Activator implements BundleActivator, WeavingHook {
 
 	@Override
 	public void start(final BundleContext context) throws Exception {

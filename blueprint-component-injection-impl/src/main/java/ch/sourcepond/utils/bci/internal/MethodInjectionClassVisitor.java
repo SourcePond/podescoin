@@ -1,7 +1,7 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
-import static ch.sourcepond.utils.bci.Constants.CONSTRUCTOR_NAME;
-import static ch.sourcepond.utils.bci.Constants.INJECTOR_INTERNAL_NAME;
+import static ch.sourcepond.utils.bci.internal.Constants.CONSTRUCTOR_NAME;
+import static ch.sourcepond.utils.bci.internal.Constants.INJECTOR_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.ATHROW;
@@ -25,6 +25,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import ch.sourcepond.utils.bci.Container;
 
 class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String CONTAINER_INTERNAL_NAME = getInternalName(Container.class);

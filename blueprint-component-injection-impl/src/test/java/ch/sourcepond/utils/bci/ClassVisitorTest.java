@@ -14,6 +14,8 @@ import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import ch.sourcepond.utils.bci.internal.BundleInjector;
+
 public abstract class ClassVisitorTest {
 	protected final ClassWriter writer = new ClassWriter(0);
 	@Mock
@@ -37,7 +39,7 @@ public abstract class ClassVisitorTest {
 		when(factory.newInjector(bundle)).thenReturn(injector);
 		when(bundle.getBundleContext()).thenReturn(context);
 		Injector.factory = factory;
-		visitor = new FieldInjectionClassVisitor(writer);
+		visitor = newVisitor();
 	}
 
 	protected abstract ClassVisitor newVisitor();

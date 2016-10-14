@@ -1,6 +1,6 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
-import static ch.sourcepond.utils.bci.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
+import static ch.sourcepond.utils.bci.internal.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -18,6 +18,11 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.objectweb.asm.ClassVisitor;
+
+import ch.sourcepond.utils.bci.ClassVisitorTest;
+import ch.sourcepond.utils.bci.TestClassLoader;
+import ch.sourcepond.utils.bci.TestComponent;
+import ch.sourcepond.utils.bci.internal.FieldInjectionClassVisitor;
 
 public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 

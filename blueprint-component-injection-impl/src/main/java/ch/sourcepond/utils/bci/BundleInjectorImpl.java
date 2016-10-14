@@ -24,16 +24,18 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 
+import ch.sourcepond.utils.bci.internal.BundleInjector;
+
 /**
  * @author rolandhauser
  *
  */
-class BundleInjector implements ServiceListener, Container {
+final class BundleInjectorImpl implements ServiceListener, Container, BundleInjector {
 	private final Bundle bundle;
 	private final ServiceReference<BlueprintContainer> containerRef;
 	private final BlueprintContainer container;
 
-	BundleInjector(final Bundle pBundle) {
+	BundleInjectorImpl(final Bundle pBundle) {
 		bundle = pBundle;
 		containerRef = getContainerRef();
 		container = pBundle.getBundleContext().getService(containerRef);
@@ -109,7 +111,15 @@ class BundleInjector implements ServiceListener, Container {
 		return component;
 	}
 
-	void initDeserializedObject(final Serializable pObj, final String[][] pComponentToFields)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.utils.bci.IBundleInjector#initDeserializedObject(java.io.
+	 * Serializable, java.lang.String[][])
+	 */
+	@Override
+	public void initDeserializedObject(final Serializable pObj, final String[][] pComponentToFields)
 			throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
 		for (int i = 0; i < pComponentToFields.length; i++) {
 			final String[] componentToField = pComponentToFields[i];

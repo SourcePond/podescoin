@@ -25,15 +25,21 @@
 	<inceptionYear>2015</inceptionYear>
 	<packaging>bundle</packaging>
 	<description>
-		Simple facade to wrap executor services into SLF4J MDC aware proxies.
+		OSGi weaving hook to enhance serializable classes so that blueprint components 
+		can be injected before readObject is executed.
 	</description>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>ch.sourcepond.utils</groupId>
-				<artifactId>blueprint-component-injection-api</artifactId>
-				<version>0.1-SNAPSHOT</version>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>5.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.osgi</groupId>
+				<artifactId>org.osgi.enterprise</artifactId>
+				<version>5.0.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -49,27 +55,23 @@
 		</dependency>
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-all</artifactId>
+			<artifactId>asm</artifactId>
 		</dependency>
 		<dependency>
-    <groupId>org.osgi</groupId>
-    <artifactId>org.osgi.enterprise</artifactId>
-    <version>5.0.0</version>
-</dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.enterprise</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-						<Bundle-Activator>ch.sourcepond.utils.bci.impl.DefaultMdcWrapper</Bundle-Activator>
+						<Embed-Dependency>asm</Embed-Dependency>
+						<Bundle-Activator>ch.sourcepond.utils.bci.internal.Activator</Bundle-Activator>
 					</instructions>
 				</configuration>
 			</plugin>

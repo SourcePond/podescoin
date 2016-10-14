@@ -1,6 +1,5 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
-import static ch.sourcepond.utils.bci.FieldInjectionClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
@@ -22,7 +21,8 @@ final class EnhanceReadObjectMethodVisitor extends MethodVisitor {
 	public void visitCode() {
 		super.visitCode();
 		visitVarInsn(ALOAD, 0);
-		visitMethodInsn(INVOKEVIRTUAL, thisClassInternalName, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
+		visitMethodInsn(INVOKEVIRTUAL, thisClassInternalName,
+				FieldInjectionClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
 				INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC, false);
 	}
 }

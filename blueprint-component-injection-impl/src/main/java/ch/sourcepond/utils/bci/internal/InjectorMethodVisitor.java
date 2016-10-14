@@ -1,7 +1,7 @@
-package ch.sourcepond.utils.bci;
+package ch.sourcepond.utils.bci.internal;
 
-import static ch.sourcepond.utils.bci.Constants.INJECT_ANNOTATION_NAME;
-import static ch.sourcepond.utils.bci.Constants.NAMED_ANNOTATION_NAME;
+import static ch.sourcepond.utils.bci.internal.Constants.INJECT_ANNOTATION_NAME;
+import static ch.sourcepond.utils.bci.internal.Constants.NAMED_ANNOTATION_NAME;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getType;
 

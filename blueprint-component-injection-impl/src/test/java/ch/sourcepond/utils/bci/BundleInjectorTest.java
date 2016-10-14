@@ -50,7 +50,7 @@ public class BundleInjectorTest {
 	@Mock
 	private BlueprintContainer container;
 	private Collection<ServiceReference<BlueprintContainer>> containerRefs;
-	private BundleInjector injector;
+	private BundleInjectorImpl injector;
 
 	@Before
 	public void setup() throws Exception {
@@ -61,7 +61,7 @@ public class BundleInjectorTest {
 		when(context.getServiceReferences(BlueprintContainer.class,
 				"(osgi.blueprint.container.symbolicname=anyBundleSymbolicName)")).thenReturn(containerRefs);
 		when(context.getService(containerRef)).thenReturn(container);
-		injector = new BundleInjector(bundle);
+		injector = new BundleInjectorImpl(bundle);
 	}
 
 	@After
@@ -98,7 +98,7 @@ public class BundleInjectorTest {
 		when(context.getServiceReferences(BlueprintContainer.class,
 				"(osgi.blueprint.container.symbolicname=anyBundleSymbolicName)")).thenReturn(Collections.emptyList());
 		try {
-			new BundleInjector(bundle);
+			new BundleInjectorImpl(bundle);
 			fail("Exception expected");
 		} catch (final IllegalStateException expected) {
 			assertEquals("No blueprint-container found with id 'anyBundleSymbolicName'", expected.getMessage());
@@ -111,7 +111,7 @@ public class BundleInjectorTest {
 		Mockito.doThrow(expected).when(context).getServiceReferences(BlueprintContainer.class,
 				"(osgi.blueprint.container.symbolicname=anyBundleSymbolicName)");
 		try {
-			new BundleInjector(bundle);
+			new BundleInjectorImpl(bundle);
 			fail("Exception expected");
 		} catch (final IllegalStateException e) {
 			assertSame(expected, e.getCause());
