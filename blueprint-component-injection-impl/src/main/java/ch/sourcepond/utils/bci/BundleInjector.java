@@ -151,16 +151,24 @@ class BundleInjector implements ServiceListener, Container {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getComponentById(final String pComponentId, final String pExpectedTypeName,
 			final int pParameterIndex) {
-		// return getComponent(null, pParameterIndex, pComponentIdOrNull,
-		// pTargetType);
-		return null;
+		try {
+			return (T) getComponent(null, pParameterIndex, pComponentId, bundle.loadClass(pExpectedTypeName));
+		} catch (final ClassNotFoundException e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getComponentByTypeName(final String pTypeName, final int pParameterIndex) {
-		return null;
+		try {
+			return (T) getComponent(null, pParameterIndex, null, bundle.loadClass(pTypeName));
+		} catch (final ClassNotFoundException e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
 	}
 }

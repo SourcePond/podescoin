@@ -128,18 +128,22 @@ public class BundleInjectorTest {
 		public transient TestComponent testComponent;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void initDeserializedObject() throws Exception {
 		when(container.getComponentInstance(COMPONENT_ID)).thenReturn(testComponent);
+		when(bundle.loadClass(TestComponent.class.getName())).thenReturn((Class) TestComponent.class);
 		final InitDeserializedObject obj = new InitDeserializedObject();
 		injector.initDeserializedObject(obj,
 				new String[][] { { FIELD_NAME, COMPONENT_ID, TestComponent.class.getName() } });
 		assertSame(testComponent, obj.testComponent);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void initDeserializedObject_ComponentIsNotCompatible() throws Exception {
 		when(container.getComponentInstance(COMPONENT_ID)).thenReturn(new Object());
+		when(bundle.loadClass(TestComponent.class.getName())).thenReturn((Class) TestComponent.class);
 		final InitDeserializedObject obj = new InitDeserializedObject();
 
 		try {
