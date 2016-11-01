@@ -36,6 +36,7 @@
 			<artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
 		</dependency>
 		<dependency>
+			<scope>provided</scope>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
 		</dependency>

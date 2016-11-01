@@ -235,3 +235,7 @@ Caused by: java.lang.ClassNotFoundException: org.objectweb.asm.commons.SerialVer
 22:25:41.218 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
 22:25:41.269 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
 22:25:42.854 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+22:30:10.348 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.2) created.
+22:30:10.391 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+22:30:10.438 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+22:30:11.883 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
