@@ -11,28 +11,40 @@
 		under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
 		OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 		the specific language governing permissions and limitations under the License. -->
+
 	<parent>
 		<groupId>ch.sourcepond</groupId>
-		<artifactId>build</artifactId>
+		<artifactId>bundle-test</artifactId>
 		<version>0.6.3</version>
 		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.utils</groupId>
-	<artifactId>bci</artifactId>
+	<artifactId>bci-test</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<inceptionYear>2015</inceptionYear>
-	<packaging>pom</packaging>
 	<description>
-		Simple static dependency injector. It is useful during object de-serialization.
+		OSGi integration test for bundle mdcwrapper-impl.
 	</description>
 
-	<modules>
-		<module>bci-impl</module>
-		<module>bci-test</module>
-		<module>bci-testbundle</module>
-		<module>bci-testservice</module>
-	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>ch.sourcepond.utils</groupId>
+			<artifactId>bci-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.sourcepond.utils</groupId>
+			<artifactId>bci-testbundle</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.sourcepond.utils</groupId>
+			<artifactId>bci-testservice</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
 	<!-- Remove this when MNG-3244, MNG-5951 are resolved -->
 	<url>https://sourcepond.github.io/${repo.project}</url>

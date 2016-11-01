@@ -1,0 +1,55 @@
+17:54:55.726 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+17:54:55.754 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+17:54:55.889 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+17:54:57.681 [FelixDispatchQueue] ERROR o.o.p.e.n.i.NativeTestContainer - Framework ERROR event org.osgi.framework.FrameworkEvent[source=BuildByTinyBundles857268bf-6c17-4b93-9918-e11b6476cb89 [21]]
+org.osgi.framework.BundleException: Unable to resolve BuildByTinyBundles857268bf-6c17-4b93-9918-e11b6476cb89 [21](R 21.0): missing requirement [BuildByTinyBundles857268bf-6c17-4b93-9918-e11b6476cb89 [21](R 21.0)] osgi.wiring.package; (osgi.wiring.package=ch.sourcepond.utils.bci.testservice) Unresolved requirements: [[BuildByTinyBundles857268bf-6c17-4b93-9918-e11b6476cb89 [21](R 21.0)] osgi.wiring.package; (osgi.wiring.package=ch.sourcepond.utils.bci.testservice)]
+	at org.apache.felix.framework.Felix.resolveBundleRevision(Felix.java:4112)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:2118)
+	at org.apache.felix.framework.Felix.setActiveStartLevel(Felix.java:1372)
+	at org.apache.felix.framework.FrameworkStartLevelImpl.run(FrameworkStartLevelImpl.java:308)
+	at java.lang.Thread.run(Thread.java:745)
+17:54:57.683 [main] ERROR o.o.p.e.n.i.NativeTestContainer - Bundle [BuildByTinyBundles857268bf-6c17-4b93-9918-e11b6476cb89 [21]] is not resolved
+17:54:57.686 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+17:56:24.924 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+17:56:24.954 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+17:56:25.087 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+17:56:37.005 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+18:32:45.625 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+18:32:45.667 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+18:32:45.884 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+18:38:00.838 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+18:38:00.876 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+18:38:01.055 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+18:40:20.738 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+18:40:20.776 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+18:40:20.977 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+10:00:12.582 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:00:12.620 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:01:17.563 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:01:17.596 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:04:05.222 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:04:05.251 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:05:14.939 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:05:14.980 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:05:15.189 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+10:05:27.531 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+10:07:01.638 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:07:01.679 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:07:01.888 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+10:07:04.155 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+10:12:05.479 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:12:05.519 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:12:05.567 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+10:12:07.889 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+10:15:09.115 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:15:09.143 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:15:09.198 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+10:15:11.161 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+10:21:13.070 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+10:21:13.109 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+10:21:13.151 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+10:21:15.536 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
+19:59:53.738 [main] INFO  o.o.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.9.1) created.
+19:59:53.771 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - creating PaxExam runner for class ch.sourcepond.utils.bci.WeavingHookTest
+19:59:53.815 [main] INFO  o.o.pax.exam.junit.impl.ProbeRunner - running test class ch.sourcepond.utils.bci.WeavingHookTest
+19:59:57.447 [main] INFO  o.o.p.e.spi.reactors.ReactorManager - suite finished
