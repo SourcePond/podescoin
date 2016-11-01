@@ -28,10 +28,10 @@
 	</description>
 
 	<modules>
-		<module>bci-impl</module>
-		<module>bci-test</module>
-		<module>bci-testbundle</module>
-		<module>bci-testservice</module>
+		<module>podescoin-impl</module>
+		<module>podescoin-test</module>
+		<module>podescoin-testbundle</module>
+		<module>podescoin-testservice</module>
 	</modules>
 
 	<!-- Remove this when MNG-3244, MNG-5951 are resolved -->
