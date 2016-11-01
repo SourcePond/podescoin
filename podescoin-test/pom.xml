@@ -15,12 +15,12 @@
 	<parent>
 		<groupId>ch.sourcepond</groupId>
 		<artifactId>bundle-test</artifactId>
-		<version>0.6.3</version>
+		<version>0.6-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.utils</groupId>
-	<artifactId>bci-test</artifactId>
+	<artifactId>podescoin-test</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<inceptionYear>2015</inceptionYear>
 	<description>
@@ -30,19 +30,27 @@
 
 	<dependencies>
 		<dependency>
+			<scope>test</scope>
 			<groupId>ch.sourcepond.utils</groupId>
-			<artifactId>bci-impl</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<artifactId>podescoin-impl</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<scope>test</scope>
 			<groupId>ch.sourcepond.utils</groupId>
-			<artifactId>bci-testbundle</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<artifactId>podescoin-testbundle</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<scope>test</scope>
 			<groupId>ch.sourcepond.utils</groupId>
-			<artifactId>bci-testservice</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<artifactId>podescoin-testservice</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<scope>test</scope>
+			<groupId>org.ops4j.pax.exam</groupId>
+			<artifactId>pax-exam</artifactId>
 		</dependency>
 	</dependencies>
 

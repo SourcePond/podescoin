@@ -25,9 +25,10 @@ public class WeavingHookTest {
 
 	@Configuration
 	public Option[] configure() {
-		return options(mavenBundle("ch.sourcepond.utils", "bci-impl").versionAsInProject(),
-				mavenBundle("ch.sourcepond.utils", "bci-testbundle").versionAsInProject(),
-				mavenBundle("ch.sourcepond.utils", "bci-testservice").versionAsInProject(), blueprintBundles(),
+		return options(
+				mavenBundle("ch.sourcepond.utils", "podescoin-impl").versionAsInProject(),
+				mavenBundle("ch.sourcepond.utils", "podescoin-testbundle").versionAsInProject(),
+				mavenBundle("ch.sourcepond.utils", "podescoin-testservice").versionAsInProject(), blueprintBundles(),
 				junitBundles());
 	}
 

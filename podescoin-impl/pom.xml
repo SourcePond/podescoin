@@ -13,36 +13,18 @@
 		the specific language governing permissions and limitations under the License. -->
 
 	<parent>
-		<groupId>ch.sourcepond</groupId>
-		<artifactId>bundle</artifactId>
-		<version>0.6.3</version>
-		<relativePath />
+		<groupId>ch.sourcepond.utils</groupId>
+		<artifactId>podescoin</artifactId>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ch.sourcepond.utils</groupId>
-	<artifactId>bci-impl</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<artifactId>podescoin-impl</artifactId>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>bundle</packaging>
 	<description>
 		OSGi weaving hook to enhance serializable classes so that blueprint components 
 		can be injected before readObject is executed.
 	</description>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>5.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.enterprise</artifactId>
-				<version>5.0.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -64,17 +46,7 @@
 	</dependencies>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-shade-plugin</artifactId>
-					<version>2.4.3</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>

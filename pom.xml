@@ -13,13 +13,13 @@
 		the specific language governing permissions and limitations under the License. -->
 	<parent>
 		<groupId>ch.sourcepond</groupId>
-		<artifactId>build</artifactId>
-		<version>0.6.3</version>
+		<artifactId>bundle</artifactId>
+		<version>0.6-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.utils</groupId>
-	<artifactId>bci</artifactId>
+	<artifactId>podescoin</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>pom</packaging>
@@ -29,6 +29,7 @@
 
 	<modules>
 		<module>podescoin-impl</module>
+		<module>podescoin-feature</module>
 		<module>podescoin-test</module>
 		<module>podescoin-testbundle</module>
 		<module>podescoin-testservice</module>
