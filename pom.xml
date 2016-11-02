@@ -27,6 +27,10 @@
 		Simple static dependency injector. It is useful during object de-serialization.
 	</description>
 
+	<properties>
+		<repo.project>${project.artifactId}</repo.project>
+	</properties>
+
 	<modules>
 		<module>podescoin-impl</module>
 		<module>podescoin-feature</module>
@@ -42,6 +46,6 @@
 	<scm>
 		<url>https://${repo.domain}/${repo.path}</url>
 		<connection>scm:git:${project.scm.url}.git</connection>
-		<developerConnection>scm:git:ssh://git@${repo.domain}/${project.artifactId}.git</developerConnection>
+		<developerConnection>scm:git:ssh://git@${repo.domain}/${repo.path}.git</developerConnection>
 	</scm>
 </project>
