@@ -9,16 +9,6 @@
 	<artifactId>podescoin-testbundle</artifactId>
 	<packaging>bundle</packaging>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>ch.sourcepond.utils</groupId>
-				<artifactId>podescoin-testservice</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
@@ -27,6 +17,7 @@
 		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-testservice</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

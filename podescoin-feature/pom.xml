@@ -9,20 +9,11 @@
 	<artifactId>podescoin-feature</artifactId>
 	<packaging>feature</packaging>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>ch.sourcepond.utils</groupId>
-				<artifactId>podescoin-impl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-impl</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
