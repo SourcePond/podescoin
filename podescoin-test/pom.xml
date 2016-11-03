@@ -27,6 +27,9 @@
 		OSGi integration test for bundle mdcwrapper-impl.
 	</description>
 
+	<properties>
+		<repo.project>podescoin</repo.project>
+	</properties>
 
 	<dependencies>
 		<dependency>
