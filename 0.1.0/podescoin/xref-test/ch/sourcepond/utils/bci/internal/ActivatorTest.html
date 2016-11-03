@@ -34,10 +34,10 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  @Ignore
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../ch/sourcepond/utils/bci/internal/ActivatorTest.html">ActivatorTest</a> {
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../ch/sourcepond/utils/bci/InjectorTest.html">TestClassLoader</a> <strong class="jxr_keyword">extends</strong> ClassLoader {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../ch/sourcepond/utils/bci/TestClassLoader.html">TestClassLoader</a> <strong class="jxr_keyword">extends</strong> ClassLoader {
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> byte[] code;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  		<strong class="jxr_keyword">public</strong> <a href="../../../../../ch/sourcepond/utils/bci/InjectorTest.html">TestClassLoader</a>(<strong class="jxr_keyword">final</strong> byte[] pCode) {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  		<strong class="jxr_keyword">public</strong> <a href="../../../../../ch/sourcepond/utils/bci/TestClassLoader.html">TestClassLoader</a>(<strong class="jxr_keyword">final</strong> byte[] pCode) {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  			<strong class="jxr_keyword">super</strong>(<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  			code = pCode;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  		}
@@ -87,7 +87,7 @@
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  		}
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  		activator.weave(wovenClass);
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  		<strong class="jxr_keyword">final</strong> <a href="../../../../../ch/sourcepond/utils/bci/InjectorTest.html">TestClassLoader</a> loader = <strong class="jxr_keyword">new</strong> <a href="../../../../../ch/sourcepond/utils/bci/InjectorTest.html">TestClassLoader</a>(transformedCode);
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  		<strong class="jxr_keyword">final</strong> <a href="../../../../../ch/sourcepond/utils/bci/TestClassLoader.html">TestClassLoader</a> loader = <strong class="jxr_keyword">new</strong> <a href="../../../../../ch/sourcepond/utils/bci/TestClassLoader.html">TestClassLoader</a>(transformedCode);
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		<strong class="jxr_keyword">final</strong> Class&lt;?&gt; cl = loader.loadClass(TestObject.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  		<em class="jxr_comment">// This method should be present</em>
