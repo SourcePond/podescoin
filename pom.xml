@@ -15,6 +15,7 @@
 		<groupId>ch.sourcepond</groupId>
 		<artifactId>bundle</artifactId>
 		<version>0.6-SNAPSHOT</version>
+		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.utils</groupId>
@@ -51,7 +52,7 @@
 	<distributionManagement>
 		<site>
 			<id>www.sourcepond.ch</id>
-			<url>${distribution.repository.website}/${project.groupId}/${project.artifactId}/${project.version}/</url>
+			<url>${site.distribution.url}/${project.groupId}/${project.artifactId}/${project.version}/</url>
 		</site>
 	</distributionManagement>
 </project>
