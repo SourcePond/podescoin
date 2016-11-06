@@ -15,7 +15,6 @@
 		<groupId>ch.sourcepond</groupId>
 		<artifactId>bundle</artifactId>
 		<version>0.6-SNAPSHOT</version>
-		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.utils</groupId>
