@@ -52,7 +52,7 @@
 	<distributionManagement>
 		<site>
 			<id>www.sourcepond.ch</id>
-			<url>file:///site-target/${project.groupId}/${project.artifactId}/${project.version}</url>
+			<url>file:///site-target/${project.groupId}</url>
 		</site>
 	</distributionManagement>
 </project>
