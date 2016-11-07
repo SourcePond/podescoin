@@ -22,7 +22,7 @@
 	<inceptionYear>2015</inceptionYear>
 	<packaging>bundle</packaging>
 	<description>
-		OSGi weaving hook to enhance serializable classes so that blueprint components 
+		Implementation: OSGi weaving hook to enhance serializable classes so that Blueprint components 
 		can be injected before readObject is executed.
 	</description>
 

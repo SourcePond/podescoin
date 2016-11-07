@@ -24,7 +24,8 @@
 	<inceptionYear>2015</inceptionYear>
 	<packaging>pom</packaging>
 	<description>
-		Simple static dependency injector. It is useful during object de-serialization.
+		Base-project: OSGi weaving hook to enhance serializable classes so that Blueprint components 
+		can be injected before readObject is executed.
 	</description>
 
 	<properties>
