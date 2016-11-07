@@ -19,6 +19,7 @@ import ch.sourcepond.utils.podescoin.testbundle.FieldInjectionObject;
 import ch.sourcepond.utils.podescoin.testbundle.FieldInjectionObjectWithComponentId;
 import ch.sourcepond.utils.podescoin.testbundle.Injected;
 import ch.sourcepond.utils.podescoin.testbundle.InjectorMethodObject;
+import ch.sourcepond.utils.podescoin.testbundle.InjectorMethodObjectWithComponentId;
 import ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory;
 
 @RunWith(PaxExam.class)
@@ -60,4 +61,11 @@ public class WeavingHookTest {
 		final InjectorMethodObject obj = factory.getInjectorMethodObject();
 		verifyService(obj, "testservice.date", "testservice.name");
 	}
+	
+	@Test
+	public void verifyInjectorMethodWithComponentId() throws Exception {
+		final InjectorMethodObjectWithComponentId obj = factory.getInjectorMethodObjectWithComponentId();
+		verifyService(obj, "testservice.ambiguousDate2", "testservice.ambiguousName1");
+	}
+	
 }

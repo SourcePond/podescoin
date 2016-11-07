@@ -7,4 +7,6 @@ public interface TestObjectFactory {
 	FieldInjectionObjectWithComponentId getFieldInjectionObjectWithComponentId() throws Exception;
 
 	InjectorMethodObject getInjectorMethodObject() throws Exception;
+
+	InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception;
 }

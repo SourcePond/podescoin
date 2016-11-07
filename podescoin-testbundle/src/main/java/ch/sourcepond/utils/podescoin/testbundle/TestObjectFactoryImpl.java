@@ -42,4 +42,12 @@ public class TestObjectFactoryImpl implements TestObjectFactory {
 	public InjectorMethodObject getInjectorMethodObject() throws Exception {
 		return serializeDeserialize(new InjectorMethodObject());
 	}
+
+	/* (non-Javadoc)
+	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#getInjectorMethodObjectWithComponentId()
+	 */
+	@Override
+	public InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception {
+		return serializeDeserialize(new InjectorMethodObjectWithComponentId());
+	}
 }
