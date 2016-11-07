@@ -1,10 +1,9 @@
 package ch.sourcepond.utils.podescoin.testservice;
 
-public class NameServiceImpl implements NameService {
+public class NameServiceImpl extends TestServiceImpl implements NameService {
 
-	@Override
-	public String getName() {
-		return "anyName";
+	public NameServiceImpl(String pId) {
+		super(pId);
 	}
 
 }

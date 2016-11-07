@@ -1,12 +1,9 @@
 package ch.sourcepond.utils.podescoin.testservice;
 
-import java.util.Date;
+public class DateServiceImpl extends TestServiceImpl implements DateService {
 
-public class DateServiceImpl implements DateService {
-
-	@Override
-	public Date getDate() {
-		return new Date();
+	public DateServiceImpl(String pId) {
+		super(pId);
 	}
 
 }

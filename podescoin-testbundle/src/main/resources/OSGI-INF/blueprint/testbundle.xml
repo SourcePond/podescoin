@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-	<bean id="testbundle.objectFactor" class="ch.sourcepond.utils.podescoin.testbundle.TestObjectFactoryImpl" />
-	
-	<reference id="OSGi_dateService"
-		interface="ch.sourcepond.utils.podescoin.testservice.DateService" />
-	<reference id="OSGi_nameService"
-		interface="ch.sourcepond.utils.podescoin.testservice.NameService" />
-		
-	<service ref="testbundle.objectFactor" interface="ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory" />
-	
+	<bean id="testbundle.objectFactor"
+		class="ch.sourcepond.utils.podescoin.testbundle.TestObjectFactoryImpl" />
+
+	<reference id="testservice.date"
+		interface="ch.sourcepond.utils.podescoin.testservice.DateService"
+		filter="(test-id=testservice.date)" />
+	<reference id="testservice.name"
+		interface="ch.sourcepond.utils.podescoin.testservice.NameService"
+		filter="(test-id=testservice.name)" />
+
+	<reference id="testservice.ambiguousDate1"
+		interface="ch.sourcepond.utils.podescoin.testservice.AmbiguousDateService"
+		filter="(test-id=testservice.ambiguousDate1)" />
+	<reference id="testservice.ambiguousDate2"
+		interface="ch.sourcepond.utils.podescoin.testservice.AmbiguousDateService"
+		filter="(test-id=testservice.ambiguousDate2)" />
+
+	<reference id="testservice.ambiguousName1"
+		interface="ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService"
+		filter="(test-id=testservice.ambiguousName1)" />
+	<reference id="testservice.ambiguousName2"
+		interface="ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService"
+		filter="(test-id=testservice.ambiguousName2)" />
+
+
+	<service ref="testbundle.objectFactor"
+		interface="ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory" />
+
 </blueprint>

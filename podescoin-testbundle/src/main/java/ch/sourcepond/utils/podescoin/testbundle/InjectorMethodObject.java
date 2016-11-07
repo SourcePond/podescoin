@@ -6,18 +6,22 @@ import ch.sourcepond.utils.podescoin.testservice.DateService;
 import ch.sourcepond.utils.podescoin.testservice.NameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
-public class FieldInjectionObject implements Injected {
+public class InjectorMethodObject implements Injected {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public transient NameService nameService;
+	
+	public transient DateService dateService;
 
 	@Inject
-	private transient NameService nameService;
-	
-	@Inject
-	private transient DateService dateService;
+	public void inject(final NameService pNameService, final DateService pDateService) {
+		nameService = pNameService;
+		dateService = pDateService;
+	}
 
 	@Override
 	public TestService getDateService() {
@@ -28,5 +32,4 @@ public class FieldInjectionObject implements Injected {
 	public TestService getNameService() {
 		return nameService;
 	}
-
 }
