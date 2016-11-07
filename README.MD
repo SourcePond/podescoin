@@ -39,7 +39,7 @@ public class Foo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	public transient BarService bar;
+	private transient BarService bar;
 }
 ```
 
@@ -59,7 +59,7 @@ public class Foo implements Serializable {
 
 	@Inject
 	@Named("myComponent")
-	public transient BarService bar;
+	private transient BarService bar;
 }
 ```
 
