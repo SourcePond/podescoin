@@ -25,7 +25,7 @@ There is also a Karaf feature available:
 ```
 
 ## Usage
-As mentioned, the usage of PodesCoin requires an OSGi Blueprint container available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. Even if not recommended, you can use both mechanisms at the same time in the same class.
+As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. Even if not recommended, you can use both mechanisms at the same time in the same class.
 
 ### Field injection
 
@@ -42,7 +42,7 @@ public class Foo implements Serializable {
 }
 ```
 
-The example above assumes that exactly one service of type "ch.sourcepond.foo.BarService" is available in the bundles
+The example above assumes that exactly one service of type "ch.sourcepond.foo.BarService" is available in the bundles Blueprint container. If not, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.AmbiguousComponentException". You can use "javax.inject.Named" to bind a field to a uniquely named component as shown in the example below:
 
 Note: A field will only be considered by PodesCoin to be injectable when it's declared **transient** and **non-final**.
 
@@ -56,7 +56,9 @@ public class Foo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	@Named("myComponentId")
+	@Named("myComponent")
 	public transient BarService bar;
 }
 ```
+
+In the example above, we bind component "myComponent" to the field. If no component with the name specified is registered with the Blueprint container, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.NoSuchComponentException".
