@@ -47,7 +47,7 @@
               <relocations>
                 <relocation>
                   <pattern>org.objectweb.asm</pattern>
-                  <shadedPattern>ch.sourcepond.utils.bci.asm</shadedPattern>
+                  <shadedPattern>ch.sourcepond.utils.podescoin.asm</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -60,7 +60,7 @@
         <configuration>
           <instructions>
             <Import-Package>!org.objectweb.asm.*,*</Import-Package>
-            <Bundle-Activator>ch.sourcepond.utils.bci.internal.Activator</Bundle-Activator>
+            <Bundle-Activator>ch.sourcepond.utils.podescoin.internal.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>

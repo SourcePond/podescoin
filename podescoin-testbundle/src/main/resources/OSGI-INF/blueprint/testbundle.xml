@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-	<bean id="testbundle.objectFactor" class="ch.sourcepond.utils.bci.testbundle.TestObjectFactoryImpl" />
+	<bean id="testbundle.objectFactor" class="ch.sourcepond.utils.podescoin.testbundle.TestObjectFactoryImpl" />
 	
 	<reference id="OSGi_dateService"
-		interface="ch.sourcepond.utils.bci.testservice.DateService" />
+		interface="ch.sourcepond.utils.podescoin.testservice.DateService" />
 	<reference id="OSGi_nameService"
-		interface="ch.sourcepond.utils.bci.testservice.NameService" />
+		interface="ch.sourcepond.utils.podescoin.testservice.NameService" />
 		
-	<service ref="testbundle.objectFactor" interface="ch.sourcepond.utils.bci.testbundle.TestObjectFactory" />
+	<service ref="testbundle.objectFactor" interface="ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory" />
 	
 </blueprint>
