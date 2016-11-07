@@ -31,6 +31,7 @@ As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender availab
 
 ```
 import ch.sourcepond.foo.BarService;
+import java.io.Serializable;
 import javax.inject.Inject;
 
 public class Foo implements Serializable {
@@ -48,6 +49,7 @@ The example above assumes that exactly one service of type "ch.sourcepond.foo.Ba
 
 ```
 import ch.sourcepond.foo.BarService;
+import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -68,9 +70,10 @@ In the example above, we bind component "myComponent" to the field. If no compon
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
+import java.io.Serializable;
 import javax.inject.Inject;
 
-public class Foo implements Injected {
+public class Foo implements Serializable {
 
 	/**
 	 * 
@@ -89,10 +92,11 @@ The example above assumes that exactly one instance of each service with type "c
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
+import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class Foo implements Injected {
+public class Foo implements Serializable {
 
 	/**
 	 * 
