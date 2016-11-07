@@ -66,5 +66,21 @@ In the example above, we bind component "myComponent" to the field. If no compon
 ### Injector method
 
 ```
+import ch.sourcepond.foo.BarService;
+import ch.sourcepond.foo.FoobarService;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+public class Foo implements Injected {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Inject
+	public void inject(BarService b, FoobarService pDateService) {
+		// Do awesome stuff here 
+	}
+}
 ```
