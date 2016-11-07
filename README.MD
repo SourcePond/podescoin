@@ -69,6 +69,27 @@ In the example above, we bind component "myComponent" to the field. If no compon
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
 import javax.inject.Inject;
+
+public class Foo implements Injected {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Inject
+	public void inject(BarService b, FoobarService d) {
+		// Do awesome stuff here 
+	}
+}
+```
+
+The example above assumes that exactly one instance of each service with type "ch.sourcepond.foo.BarService" and "ch.sourcepond.foo.FoobarService" is available in the bundles Blueprint container. If not, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.AmbiguousComponentException". You can use "javax.inject.Named" to bind a parameter to a uniquely named component as shown in the example below:
+
+```
+import ch.sourcepond.foo.BarService;
+import ch.sourcepond.foo.FoobarService;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 public class Foo implements Injected {
@@ -79,8 +100,10 @@ public class Foo implements Injected {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	public void inject(BarService b, FoobarService pDateService) {
+	public void inject(@Named("bar") BarService b, @Named("foobar") FoobarService d) {
 		// Do awesome stuff here 
 	}
 }
 ```
+
+In the example above, we bind component "bar" to the first parameter and component "foobar" to the second parameter. If any component with the name specified could not be found in the Blueprint container, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.NoSuchComponentException".
