@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="podescoin-feature">
-    <feature name="podescoin-feature">
-        <bundle>mvn:ch.sourcepond.utils/podescoin-impl/${project.version}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${org.apache.servicemix.bundles.javax-inject.version}</bundle>
+    <feature name="podescoin-feature" description="podescoin-feature">
+        <details>Base-project: OSGi weaving hook to enhance serializable classes so that Blueprint components 
+		can be injected before readObject is executed.</details>
+        <bundle dependency="true">mvn:org.slf4j/slf4j-api/[1.7,2.0)</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_2</bundle>
     </feature>
 </features>
