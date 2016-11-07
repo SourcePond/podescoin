@@ -1,7 +1,7 @@
 # Quick Overview
 PodesCoin (**PO**st **DES**erialization **CO**mponent **IN**jection) is an OSGi component which aims to inject [Blueprint](https://www.ibm.com/developerworks/library/os-osgiblueprint/) components into objects being de-serialized. To specify injection-points in your serializable class, JSR-330 standard annotations [javax.inject.Inject](http://docs.oracle.com/javaee/7/api/javax/inject/Inject.html) and [javax.inject.Named](http://docs.oracle.com/javaee/7/api/javax/inject/Named.html) are used.
 
-It allows to work with external services without tight coupling which makes your code better testable. To achieve this, PodesCoin installs an [OSGi Weaving Hook](https://osgi.org/javadoc/r4v43/core/org/osgi/framework/hooks/weaving/WeavingHook.html) which creates (or enhances an existing) readObject method for injecting components from a Blueprint container into the object, See [JavaDoc of Serializable](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html) for further information about readObject.
+It allows to work with external services without tight coupling which makes your code better testable. To achieve this, PodesCoin installs an [OSGi Weaving Hook](https://osgi.org/javadoc/r4v43/core/org/osgi/framework/hooks/weaving/WeavingHook.html) which creates (or enhances an existing) readObject method for injecting components from a Blueprint container into the object, see [JavaDoc of Serializable](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html) for further information about readObject.
 
 ## Installation
 Bundle PodesCoin is available from Maven Central:
