@@ -1,7 +1,6 @@
 package ch.sourcepond.utils.bci.internal;
 
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
-import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Opcodes.BIPUSH;
 import static org.objectweb.asm.Opcodes.ICONST_0;
 import static org.objectweb.asm.Opcodes.ICONST_1;
@@ -14,6 +13,7 @@ import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getReturnType;
 import static org.objectweb.asm.Type.getType;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,8 +23,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.slf4j.Logger;
 
-abstract class SerializableClassVisitor extends ClassVisitor {
+abstract class SerializableClassVisitor extends NamedClassVisitor {
+	private static final Logger LOG = getLogger(SerializableClassVisitor.class);
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;
 	private static final int _ICONST_2 = 2;
@@ -42,13 +44,12 @@ abstract class SerializableClassVisitor extends ClassVisitor {
 			CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME };
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
-	protected String thisClassInternalName;
 	private boolean hasReadObjectMethod;
 
 	protected SerializableClassVisitor(final ClassVisitor pWriter) {
-		super(ASM5, pWriter);
+		super(pWriter);
 	}
-
+	
 	protected void pushByteConstant(final MethodVisitor mv, final int idx) {
 		switch (idx) {
 		case _ICONST_0: {
@@ -82,17 +83,10 @@ abstract class SerializableClassVisitor extends ClassVisitor {
 	}
 
 	@Override
-	public void visit(final int version, final int access, final String name, final String signature,
-			final String superName, final String[] interfaces) {
-		thisClassInternalName = name;
-		super.visit(version, access, name, signature, superName, interfaces);
-	}
-
-	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
 		if (isReadObjectMethod(access, name, desc, exceptions) && isEnhancementNecessary()) {
-			return new EnhanceReadObjectMethodVisitor(thisClassInternalName,
+			return new EnhanceReadObjectMethodVisitor(getInternalClassName(),
 					super.visitMethod(access, name, desc, signature, exceptions));
 		}
 		return super.visitMethod(access, name, desc, signature, exceptions);
@@ -108,8 +102,15 @@ abstract class SerializableClassVisitor extends ClassVisitor {
 		// readObject method has already be enhanced so that
 		// '_$injectBlueprintComponents' is called at the beginning.
 		if (hasReadObjectMethod()) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("{} : enhancing existing readObject method", getClassName());
+			}
 			return cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
 					getMethodDescriptor(getType(void.class)), null, null);
+		}
+
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("{} : create new readObject method", getClassName());
 		}
 
 		// If no readObject method could be found, it will be created now.

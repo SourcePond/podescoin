@@ -4,11 +4,14 @@ import static ch.sourcepond.utils.bci.internal.Constants.INJECT_ANNOTATION_NAME;
 import static ch.sourcepond.utils.bci.internal.Constants.NAMED_ANNOTATION_NAME;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getType;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.slf4j.Logger;
 
 final class ComponentFieldVisitor extends FieldVisitor {
+	private static final Logger LOG = getLogger(ComponentFieldVisitor.class);
 	private final FieldInjectionClassVisitor classVisitor;
 	private final String fieldName;
 	private final String fieldType;
@@ -43,6 +46,7 @@ final class ComponentFieldVisitor extends FieldVisitor {
 	@Override
 	public void visitEnd() {
 		if (inject) {
+			LOG.debug("{} : registering injection field {} with id {} and type {}", classVisitor.getClassName(), fieldName, componentIdOrNull, fieldType);
 			classVisitor.addNamedComponent(fieldName, componentIdOrNull, fieldType);
 		}
 	}

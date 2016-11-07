@@ -100,7 +100,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 			mv.visitTypeInsn(CHECKCAST, components[i][1].replace('.', '/'));
 		}
 
-		mv.visitMethodInsn(INVOKEVIRTUAL, thisClassInternalName, inspector.getInjectorMethodName(),
+		mv.visitMethodInsn(INVOKEVIRTUAL, inspector.getInternalClassName(), inspector.getInjectorMethodName(),
 				inspector.getInjectorMethodDesc(), false);
 
 		mv.visitLabel(l1);
@@ -108,7 +108,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		mv.visitJumpInsn(GOTO, l3);
 		mv.visitLabel(l2);
 		mv.visitFrame(Opcodes.F_FULL, 3,
-				new Object[] { thisClassInternalName, OBJECT_INPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
+				new Object[] { inspector.getInternalClassName(), OBJECT_INPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
 				new Object[] { EXCEPTION_INTERNAL_NAME });
 		mv.visitVarInsn(ASTORE, 3);
 		mv.visitTypeInsn(NEW, ILLEGAL_EXCEPTION_INTERNAL_NAME);

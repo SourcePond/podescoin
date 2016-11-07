@@ -3,21 +3,20 @@ package ch.sourcepond.utils.bci.internal;
 import static ch.sourcepond.utils.bci.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.bci.internal.Constants.INJECT_ANNOTATION_NAME;
 import static java.lang.String.format;
-import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getArgumentTypes;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-final class InspectForInjectorMethodClassVisitor extends ClassVisitor {
+final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
 	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 
 	InspectForInjectorMethodClassVisitor(final ClassVisitor pWriter) {
-		super(ASM5, pWriter);
+		super(pWriter);
 	}
 
 	@Override
