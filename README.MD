@@ -10,7 +10,7 @@ Bundle PodesCoin is available from Maven Central:
 <dependency>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-impl</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 </dependency>
 ```
 
@@ -20,9 +20,12 @@ There is also a Karaf feature available:
 <dependency>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-feature</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 </dependency>
 ```
+
+## Initialization order
+As mentioned in the introduction section, PodesCoin enhances an existing readObject method (or generates it if not existing). Injectable fields will be initialized **before** the body of readObject is executed. This insures, that your services are available when your de-serialization logic is running. The same applies if you declared an injector method; it will be executed **before** the body of readObject runs.
 
 ## Usage
 As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. Even if not recommended, you can use both mechanisms at the same time in the same class.
@@ -66,6 +69,8 @@ public class Foo implements Serializable {
 In the example above, we bind component "myComponent" to the field. If no component with the name specified is registered with the Blueprint container, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.NoSuchComponentException".
 
 ### Injector method
+
+An injector method can have an arbitrary name, an arbitrary visibility, and, an arbitrary number of arguments. If you need the ObjectInputStream passed to readObject, then you must declare an ObjectInputStream parameter as first argument of your injector method.
 
 ```
 import ch.sourcepond.foo.BarService;
@@ -111,3 +116,48 @@ public class Foo implements Serializable {
 ```
 
 In the example above, we bind component "bar" to the first parameter and component "foobar" to the second one. If any component with the name specified could not be found in the Blueprint container, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.NoSuchComponentException".
+
+```
+import ch.sourcepond.foo.BarService;
+import ch.sourcepond.foo.FoobarService;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import javax.inject.Inject;
+
+public class Foo implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Inject
+	public void inject(ObjectInputStream in, BarService b, FoobarService d) {
+		// Do awesome stuff here 
+	}
+}
+```
+
+The code above is almost the same as in the first example, but, with crucial difference: the first parameter is the ObjectInputStream taken as argument by the readObject method. If you need the ObjectInputStream, for instance for extracting parameter values which are necessary for calling methods on your injected components, then you can do so by declaring an ObjectInputStream parameter as first argument of your injection method. Of course, the same applies if the component parameters are named:
+
+```
+import ch.sourcepond.foo.BarService;
+import ch.sourcepond.foo.FoobarService;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+public class Foo implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Inject
+	public void inject(ObjectInputStream in, @Named("bar") BarService b, @Named("foobar") FoobarService d) {
+		// Do awesome stuff here 
+	}
+}
+```
