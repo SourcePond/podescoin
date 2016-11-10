@@ -28,7 +28,7 @@ There is also a Karaf feature available:
 As mentioned in the introduction section, PodesCoin enhances an existing readObject method (or generates it if not existing). Injectable fields will be initialized **before** the body of readObject is executed. This insures, that your services are available when your de-serialization logic is running. The same applies, if you declared an injector method; it will be executed **before** the body of readObject. If you declared both, field injection **and** an injector method, then firstly the field injection will be applied before the injector method is executed.
 
 ## Usage
-As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. Even if not recommended, you can use both mechanisms at the same time in the same class.
+As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. You can use both mechanisms at the same time in the same class.
 
 ### Field injection
 
