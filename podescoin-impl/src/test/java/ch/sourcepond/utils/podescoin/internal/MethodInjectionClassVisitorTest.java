@@ -9,7 +9,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +22,7 @@ import javax.inject.Named;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.objectweb.asm.ClassVisitor;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
@@ -81,6 +84,42 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		verify(injector).getComponentByTypeName(TestComponent.class.getName(), 0);
 		assertSame(component1, getFieldValue("component1", obj));
 	}
+	
+	public static class NoReadObjectSpecified_WithType_And_ObjectInputStream implements Serializable {
+		private TestComponent component1;
+
+		@Inject
+		public void injectServices(final ObjectInputStream in, final TestComponent pComponent1) throws ClassNotFoundException, IOException {
+			in.defaultReadObject();
+			component1 = pComponent1;
+		}
+	}
+	
+	@Test
+	public void noReadObjectSpecified_WithType_And_ObjectInputStream() throws Exception {
+		loader = new MethodInjectorTestClassLoader(visitor, writer, NoReadObjectSpecified_WithType_And_ObjectInputStream.class, bundle);
+		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithType_And_ObjectInputStream.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
+
+		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component1);
+
+		// This should not throw an exception
+		final Serializable obj = (Serializable) enhancedClass.newInstance();
+		final ObjectInputStream in = mock(ObjectInputStream.class);
+		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, in);
+
+		verify(injector).getComponentByTypeName(TestComponent.class.getName(), 0);
+		verify(in).defaultReadObject();
+		assertSame(component1, getFieldValue("component1", obj));
+	}
+	
 
 	public static class NoReadObjectSpecified_WithComponentId implements Serializable {
 		private TestComponent component1;
@@ -122,6 +161,56 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component1, getFieldValue("component1", obj));
 		assertSame(component2, getFieldValue("component2", obj));
 	}
+	
+	
+	public static class NoReadObjectSpecified_WithComponentId_And_ObjectInputStream implements Serializable {
+		private TestComponent component1;
+		private TestComponent component2;
+
+		@Inject
+		public void injectServices(ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
+				@Named("componentId2") final TestComponent pComponent2) throws IOException, ClassNotFoundException {
+			in.defaultReadObject();
+			component1 = pComponent1;
+			component2 = pComponent2;
+			
+			System.out.println(in);
+			System.out.println(component1);
+			System.out.println(component2);
+		}
+	}
+
+	@Test
+	public void noReadObjectSpecified_WithComponentId_And_ObjectInputStream() throws Exception {
+		loader = new MethodInjectorTestClassLoader(visitor, writer, NoReadObjectSpecified_WithComponentId_And_ObjectInputStream.class,
+				bundle);
+		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithComponentId_And_ObjectInputStream.class.getName());
+
+		try {
+			// This method should NOT exist
+			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			fail("Exception expected");
+		} catch (final NoSuchMethodException expected) {
+			// noop
+		}
+
+		when(injector.getComponentById("componentId1", TestComponent.class.getName(), 0)).thenReturn(component1);
+		when(injector.getComponentById("componentId2", TestComponent.class.getName(), 1)).thenReturn(component2);
+
+		// This should not throw an exception
+		final Serializable obj = (Serializable) enhancedClass.newInstance();
+		final ObjectInputStream in = mock(ObjectInputStream.class);
+		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, in);
+
+		verify(in).defaultReadObject();
+		final InOrder order = inOrder(injector);
+		order.verify(injector).getComponentById("componentId1", TestComponent.class.getName(), 0);
+		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName(), 1);
+
+		assertSame(component1, getFieldValue("component1", obj));
+		assertSame(component2, getFieldValue("component2", obj));
+	}
+	
 
 	public static class NoReadObjectSpecified_WithComponentId_ThrowException implements Serializable {
 		private final Exception exception = new Exception();
@@ -157,7 +246,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 			getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
 			fail("Exception expected here");
 		} catch (final InvocationTargetException expected) {
-			assertEquals(IllegalStateException.class, expected.getTargetException().getClass());
+			assertEquals(IOException.class, expected.getTargetException().getClass());
 			assertSame(expected.getTargetException().getCause(), getFieldValue("exception", obj));
 		}
 

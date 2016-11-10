@@ -18,6 +18,7 @@ import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getType;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
@@ -41,7 +42,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 			getType(String.class), getType(int.class));
 	private static final String OBJECT_INPUT_STREAM_INTERNAL_NAME = getInternalName(ObjectInputStream.class);
 	private static final String EXCEPTION_INTERNAL_NAME = getInternalName(Exception.class);
-	private static final String ILLEGAL_EXCEPTION_INTERNAL_NAME = getInternalName(IllegalStateException.class);
+	private static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
 	private static final String GET_MESSAGE_NAME = "getMessage";
 	private static final String GET_MESSAGE_DESC = getMethodDescriptor(getType(String.class));
 	private static final String CONSTRUCTOR_DESC = getMethodDescriptor(getType(void.class), getType(String.class),
@@ -74,11 +75,16 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		mv.visitVarInsn(ASTORE, 2);
 		mv.visitLabel(l0);
 		mv.visitVarInsn(ALOAD, 0);
+		
+		int stackSize = MIN_STACK_SIZE;		
+		if (inspector.hasObjectInputStream()) {
+			mv.visitVarInsn(ALOAD, 1);
+			stackSize++;
+		}
 
 		final String[][] components = inspector.getComponents();
 
 		boolean increaseByOne = false;
-		int stackSize = MIN_STACK_SIZE;
 		for (int i = 0; i < components.length; i++, stackSize++) {
 			mv.visitVarInsn(ALOAD, 2);
 			if (components[i][0] != null) {
@@ -111,12 +117,12 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 				new Object[] { inspector.getInternalClassName(), OBJECT_INPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
 				new Object[] { EXCEPTION_INTERNAL_NAME });
 		mv.visitVarInsn(ASTORE, 3);
-		mv.visitTypeInsn(NEW, ILLEGAL_EXCEPTION_INTERNAL_NAME);
+		mv.visitTypeInsn(NEW, IO_EXCEPTION_INTERNAL_NAME);
 		mv.visitInsn(DUP);
 		mv.visitVarInsn(ALOAD, 3);
 		mv.visitMethodInsn(INVOKEVIRTUAL, EXCEPTION_INTERNAL_NAME, GET_MESSAGE_NAME, GET_MESSAGE_DESC, false);
 		mv.visitVarInsn(ALOAD, 3);
-		mv.visitMethodInsn(INVOKESPECIAL, ILLEGAL_EXCEPTION_INTERNAL_NAME, CONSTRUCTOR_NAME, CONSTRUCTOR_DESC, false);
+		mv.visitMethodInsn(INVOKESPECIAL, IO_EXCEPTION_INTERNAL_NAME, CONSTRUCTOR_NAME, CONSTRUCTOR_DESC, false);
 		mv.visitInsn(ATHROW);
 		mv.visitLabel(l3);
 		mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);

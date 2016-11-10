@@ -3,6 +3,7 @@ package ch.sourcepond.utils.podescoin.internal;
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
 import static java.lang.String.format;
+import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
 
 import org.objectweb.asm.ClassVisitor;
@@ -14,6 +15,7 @@ final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
+	private boolean hasObjectInputStream;
 
 	InspectForInjectorMethodClassVisitor(final ClassVisitor pWriter) {
 		super(pWriter);
@@ -30,7 +32,7 @@ final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 	}
 
 	void addNamedComponent(final String pComponentId, final int pParameterIndex) {
-		namedComponents[pParameterIndex][0] = pComponentId;
+		namedComponents[hasObjectInputStream ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
 	}
 
 	boolean isArgumentTypesInitialized() {
@@ -41,16 +43,28 @@ final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 		return namedComponents;
 	}
 
-	void initArgumentTypes(final String pInjectorMethodName, final String pInjectorMethodDesc) {
+	boolean hasObjectInputStream() {
+		return hasObjectInputStream;
+	}
+
+	void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
+			final String pInjectorMethodDesc) {
 		if (isArgumentTypesInitialized()) {
 			throw new AmbiguousInjectorMethodsException(
 					format("More than one method detected which is annotated with %s", INJECT_ANNOTATION_NAME));
 		}
 
+		hasObjectInputStream = pHasObjectInputStream;
 		injectorMethodName = pInjectorMethodName;
 		injectorMethodDesc = pInjectorMethodDesc;
 
-		final Type[] argumentTypes = getArgumentTypes(pInjectorMethodDesc);
+		Type[] argumentTypes = getArgumentTypes(pInjectorMethodDesc);
+		if (hasObjectInputStream) {
+			Type[] reducedArgumentTypes = new Type[argumentTypes.length - 1];
+			arraycopy(argumentTypes, 1, reducedArgumentTypes, 0, reducedArgumentTypes.length);
+			argumentTypes = reducedArgumentTypes;
+		}
+
 		if (argumentTypes.length > 0) {
 			namedComponents = new String[argumentTypes.length][2];
 			for (int i = 0; i < argumentTypes.length; i++) {

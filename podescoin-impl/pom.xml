@@ -48,10 +48,28 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.enterprise</artifactId>
 		</dependency>
+		<dependency>
+			<scope>test</scope>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-util</artifactId>
+			<version>${asm.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Classes in devel package print ASM code to console which helps 
+						development, but, they do not test anything -->
+					<excludes>
+						<exclude>**/devel/*.java</exclude>
+						<exclude>**/devel/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
