@@ -138,7 +138,7 @@ public class Foo implements Serializable {
 }
 ```
 
-The code above is almost the same as in the first example, but, with crucial difference: the first parameter is the ObjectInputStream taken as argument by the readObject method. If you need the ObjectInputStream, for instance for extracting parameter values which are necessary for calling methods on your injected components, then you can do so by declaring an ObjectInputStream parameter as first argument of your injection method. Of course, the same applies if the component parameters are named:
+The code above is almost the same as in the first example, but, with a crucial difference: the first parameter is the ObjectInputStream taken as argument by the readObject method. If you need the ObjectInputStream, for instance for extracting parameter values which are necessary for calling methods on your injected components, then you can do so by declaring an ObjectInputStream parameter as first argument of your injection method. Of course, the same applies if the component parameters are named:
 
 ```
 import ch.sourcepond.foo.BarService;
