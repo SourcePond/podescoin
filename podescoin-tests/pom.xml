@@ -20,7 +20,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.utils</groupId>
-	<artifactId>podescoin-test</artifactId>
+	<artifactId>podescoin-tests</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<inceptionYear>2015</inceptionYear>
 	<description>

@@ -35,7 +35,8 @@
 	<modules>
 		<module>podescoin-impl</module>
 		<module>podescoin-feature</module>
-		<module>podescoin-test</module>
+		<module>podescoin-testing</module>
+		<module>podescoin-tests</module>
 		<module>podescoin-testbundle</module>
 		<module>podescoin-testservice</module>
 	</modules>

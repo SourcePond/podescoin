@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ch.sourcepond.utils</groupId>
+		<artifactId>podescoin</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>podescoin-testing</artifactId>
+	<packaging>bundle</packaging>
+
+	<properties>
+		<!-- For proper feature generation we need a version range for SLF4J -->
+		<slf4j-api.version>[1.7,2.0)</slf4j-api.version>
+	</properties>
+
+	<dependencies>
+	      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>[1.7,2.0)</version>
+      </dependency>
+		<dependency>
+			<groupId>ch.sourcepond.utils</groupId>
+			<artifactId>podescoin-impl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Skip dependency analysis here -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>analyze</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.karaf.tooling</groupId>
+				<artifactId>karaf-maven-plugin</artifactId>
+				<configuration>
+					<useVersionRange>true</useVersionRange>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<site>
+			<id>www.sourcepond.ch</id>
+			<url>${site.distribution.url}/${project.groupId}/${project.artifactId}/${project.version}/</url>
+		</site>
+	</distributionManagement>
+</project>
