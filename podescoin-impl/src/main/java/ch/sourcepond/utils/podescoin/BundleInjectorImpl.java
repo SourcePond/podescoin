@@ -31,6 +31,7 @@ import ch.sourcepond.utils.podescoin.internal.BundleInjector;
  *
  */
 final class BundleInjectorImpl implements ServiceListener, Container, BundleInjector {
+	static final String OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME = "(osgi.blueprint.container.symbolicname=%s)";
 	private final Bundle bundle;
 	private final ServiceReference<BlueprintContainer> containerRef;
 	private final BlueprintContainer container;
@@ -46,7 +47,7 @@ final class BundleInjectorImpl implements ServiceListener, Container, BundleInje
 			final BundleContext context = bundle.getBundleContext();
 			final Collection<ServiceReference<BlueprintContainer>> refs = context.getServiceReferences(
 					BlueprintContainer.class,
-					format("(osgi.blueprint.container.symbolicname=%s)", bundle.getSymbolicName()));
+					format(OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME, bundle.getSymbolicName()));
 			final Iterator<ServiceReference<BlueprintContainer>> it = refs.iterator();
 			if (!it.hasNext()) {
 				throw new IllegalStateException(

@@ -1,7 +1,5 @@
 package ch.sourcepond.utils.podescoin;
 
-import static org.osgi.framework.FrameworkUtil.getBundle;
-
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -12,13 +10,14 @@ import ch.sourcepond.utils.podescoin.internal.BundleInjector;
 
 public final class Injector {
 	static final ConcurrentMap<Bundle, BundleInjector> injectors = new ConcurrentHashMap<>();
+	static BundleDetector detector = new BundleDetectorImpl();
 	static BundleInjectorFactory factory = new BundleInjectorFactory();
 
 	private static final BundleInjector getInjector(final Serializable pDeserializedObject) {
 		if (pDeserializedObject == null) {
 			throw new NullPointerException("Deserialized object cannot be null!");
 		}
-		final Bundle bundle = getBundle(pDeserializedObject.getClass());
+		final Bundle bundle = detector.getBundle(pDeserializedObject.getClass());
 		if (bundle == null) {
 			throw new IllegalStateException("No OSGi environment detected!");
 		}
