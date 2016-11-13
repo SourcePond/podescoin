@@ -23,6 +23,11 @@
 			<artifactId>asm-all</artifactId>
 		</dependency>
 		<dependency>
+			<scope>compile</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-impl</artifactId>
 			<version>${project.version}</version>

@@ -3,6 +3,7 @@ package ch.sourcepond.utils.podescoin;
 import java.io.Serializable;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  *
@@ -10,8 +11,8 @@ import org.osgi.framework.Bundle;
 final class BundleDetectorImpl implements BundleDetector {
 
 	@Override
-	public Bundle getBundle(Class<? extends Serializable> pClass) {
-		return getBundle(pClass);
+	public Bundle getBundle(final Class<? extends Serializable> pClass) {
+		return FrameworkUtil.getBundle(pClass);
 	}
 
 }
