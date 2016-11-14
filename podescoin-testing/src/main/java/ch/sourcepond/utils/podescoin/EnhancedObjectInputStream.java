@@ -15,7 +15,10 @@ public class EnhancedObjectInputStream extends ObjectInputStream {
 
 	@Override
 	protected Class<?> resolveClass(final ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-		return loader.loadClass(desc.getName());
+		if (loader.isRegistered(desc.getName())) {			
+			return loader.loadClass(desc.getName());
+		}
+		return super.resolveClass(desc);
 	}
 
 }

@@ -22,8 +22,8 @@ import javax.inject.Inject;
 import ch.sourcepond.utils.podescoin.internal.Activator;
 
 final class EnhancedClassLoader extends ClassLoader {
-	private final Map<Class<?>, Class<?>> enhancedClasses = new HashMap<>();
-	private final Map<Class<?>, Class<?>> originalClasses = new HashMap<>();
+	private final Map<String, Class<?>> enhancedClasses = new HashMap<>();
+	private final Map<String, Class<?>> originalClasses = new HashMap<>();
 
 	EnhancedClassLoader(final ClassLoader pParent) {
 		super(pParent);
@@ -33,7 +33,7 @@ final class EnhancedClassLoader extends ClassLoader {
 	protected Class<?> findClass(final String name) throws ClassNotFoundException {
 		Class<?> cl = enhancedClasses.get(name);
 		if (cl == null) {
-			cl = super.findClass(name);
+			cl = getParent().loadClass(name);
 		} else {
 			System.out.println(cl);
 		}
@@ -96,7 +96,7 @@ final class EnhancedClassLoader extends ClassLoader {
 
 	private void register(final Class<?> pClass, final Field pField, final Set<Class<?>> pVisitedClasses)
 			throws ClassNotFoundException {
-		if (pClass != null && !pVisitedClasses.contains(pClass) && !enhancedClasses.containsKey(pClass)) {
+		if (pClass != null && !pVisitedClasses.contains(pClass) && !enhancedClasses.containsKey(pClass.getName())) {
 			pVisitedClasses.add(pClass);
 			if (pClass.isArray()) {
 				register(pClass.getComponentType(), null, pVisitedClasses);
@@ -109,8 +109,8 @@ final class EnhancedClassLoader extends ClassLoader {
 				if (hasAnnotation(pClass, cl -> cl.getDeclaredFields(), tester)
 						|| hasAnnotation(pClass, cl -> cl.getDeclaredMethods(), tester)) {
 					final Class<?> enhancedClass = enhanceClass(pClass);
-					enhancedClasses.put(pClass, enhancedClass);
-					originalClasses.put(enhancedClass, pClass);
+					enhancedClasses.put(pClass.getName(), enhancedClass);
+					originalClasses.put(enhancedClass.getName(), pClass);
 				}
 			}
 
@@ -120,15 +120,33 @@ final class EnhancedClassLoader extends ClassLoader {
 			register(pClass.getSuperclass(), pField, pVisitedClasses);
 		}
 	}
-
-	public Class<?> getOriginalClass(final Class<?> pEnhancedClass) throws ClassNotFoundException {
-		return originalClasses.get(pEnhancedClass);
+	
+	public Class<?> swap(Class<?> pClass) {
+		Class<?> result = null;
+		if (equals(pClass.getClassLoader())) {
+			result = originalClasses.get(pClass.getName());
+		} else {
+			result = enhancedClasses.get(pClass.getName());
+		}
+		
+		if (result == null) {
+			result = pClass;
+		}
+		return result;
 	}
 
-	public boolean isRegistered(final Class<?> pClass) throws ClassNotFoundException {
-		return originalClasses.containsKey(pClass);
+	public Class<?> getOriginalClass(final Class<?> pClass) {
+		return originalClasses.get(pClass.getName());
 	}
 
+	public Class<?> getEnhancedClass(final Class<?> pClass) {
+		return enhancedClasses.get(pClass.getName());
+	}
+
+	public boolean isRegistered(final String pName) {
+		return enhancedClasses.containsKey(pName);
+	}
+	
 	public void register(final Class<?> pClass) throws ClassNotFoundException {
 		register(pClass, null, new HashSet<>());
 	}

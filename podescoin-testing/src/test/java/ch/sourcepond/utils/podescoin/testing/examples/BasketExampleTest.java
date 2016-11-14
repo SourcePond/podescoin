@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import ch.sourcepond.utils.podescoin.CloneContext;
-import ch.sourcepond.utils.podescoin.Cloner;
+import ch.sourcepond.utils.podescoin.CloneContextFactory;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -35,7 +35,7 @@ public class BasketExampleTest {
 		when(address.getAddressId()).thenReturn(ADDRESS_ID);
 		when(product.getProductId()).thenReturn(PRODUCT_ID);
 
-		final CloneContext ctx = Cloner.newContext().addComponent(addressService, AddressService.class)
+		final CloneContext ctx = CloneContextFactory.newContext().addComponent(addressService, AddressService.class)
 				.addComponent(productService, "product.service", ProductService.class);
 
 		final Basket basket = new Basket(address);
