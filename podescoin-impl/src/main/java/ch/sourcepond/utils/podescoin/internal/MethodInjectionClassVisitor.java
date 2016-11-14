@@ -74,7 +74,6 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 
 	@Override
 	protected void enhanceReadObject(final MethodVisitor mv) {
-		mv.visitCode();
 		final Label l0 = new Label();
 		final Label l1 = new Label();
 		final Label l2 = new Label();
@@ -138,6 +137,5 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(increaseByOne ? stackSize + 1 : stackSize, 4);
-		mv.visitEnd();
 	}
 }

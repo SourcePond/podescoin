@@ -16,10 +16,13 @@ import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getType;
 
+import java.io.ObjectInputStream;
+
 import org.objectweb.asm.MethodVisitor;
 
 final class EnhanceReadObjectMethodVisitor extends MethodVisitor {
-	private static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC = getMethodDescriptor(getType(void.class));
+	static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC = getMethodDescriptor(getType(void.class),
+			getType(ObjectInputStream.class));
 	private final String thisClassInternalName;
 
 	EnhanceReadObjectMethodVisitor(final String pThisClassInternalName, final MethodVisitor pDelegate) {
@@ -31,6 +34,7 @@ final class EnhanceReadObjectMethodVisitor extends MethodVisitor {
 	public void visitCode() {
 		super.visitCode();
 		visitVarInsn(ALOAD, 0);
+		visitVarInsn(ALOAD, 1);
 		visitMethodInsn(INVOKEVIRTUAL, thisClassInternalName,
 				FieldInjectionClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
 				INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC, false);

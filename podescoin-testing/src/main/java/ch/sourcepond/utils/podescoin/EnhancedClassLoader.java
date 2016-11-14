@@ -14,6 +14,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -34,6 +35,8 @@ import ch.sourcepond.utils.podescoin.internal.Activator;
 final class EnhancedClassLoader extends ClassLoader {
 	private final Map<String, Class<?>> enhancedClasses = new HashMap<>();
 	private final Map<String, Class<?>> originalClasses = new HashMap<>();
+	private final Set<String> registeredInterfaces = new HashSet<>();
+	private final Set<String> detectedInterfaces = new HashSet<>();
 
 	EnhancedClassLoader(final ClassLoader pParent) {
 		super(pParent);
@@ -74,6 +77,10 @@ final class EnhancedClassLoader extends ClassLoader {
 						result[i] = getClass().getClassLoader().loadClass(actualTypeArguments[i].getTypeName());
 					} catch (final ClassNotFoundException e) {
 						result[i] = Object.class;
+					}
+
+					if (result[i].isInterface()) {
+						detectedInterfaces.add(result[i].getName());
 					}
 				}
 			}
@@ -125,12 +132,14 @@ final class EnhancedClassLoader extends ClassLoader {
 			}
 
 			for (final Field f : pClass.getDeclaredFields()) {
-				register(f.getType(), f, pVisitedClasses);
+				if (!f.getType().getName().startsWith("java.lang.")) {
+					register(f.getType(), f, pVisitedClasses);
+				}
 			}
 			register(pClass.getSuperclass(), pField, pVisitedClasses);
 		}
 	}
-	
+
 	public Class<?> swap(Class<?> pClass) {
 		Class<?> result = null;
 		if (equals(pClass.getClassLoader())) {
@@ -138,7 +147,7 @@ final class EnhancedClassLoader extends ClassLoader {
 		} else {
 			result = enhancedClasses.get(pClass.getName());
 		}
-		
+
 		if (result == null) {
 			result = pClass;
 		}
@@ -156,8 +165,26 @@ final class EnhancedClassLoader extends ClassLoader {
 	public boolean isRegistered(final String pName) {
 		return enhancedClasses.containsKey(pName);
 	}
-	
+
 	public void register(final Class<?> pClass) throws ClassNotFoundException {
 		register(pClass, null, new HashSet<>());
+
+		detectedInterfaces.removeAll(registeredInterfaces);		
+		if (!detectedInterfaces.isEmpty()) {
+			final StringBuilder builder = new StringBuilder(
+					"Following interfaces are NOT mapped to an implementation class! Use CloneContext.registerImplementation to do so.\n");
+			for (final String line : detectedInterfaces) {
+				builder.append(String.format("\t%s\n", line));
+			}
+			throw new IllegalStateException(builder.toString());
+		}
+	}
+
+	public void registerImplementation(Class<?> pInterface,
+			Class<? extends Serializable> pImplementation) throws ClassNotFoundException {
+		final Class<?> enhancedClass = enhanceClass(pImplementation);
+		originalClasses.put(pImplementation.getName(), pImplementation);
+		enhancedClasses.put(pImplementation.getName(), enhancedClass);
+		registeredInterfaces.add(pInterface.getName());
 	}
 }

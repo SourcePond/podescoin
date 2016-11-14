@@ -185,7 +185,7 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantReadObjectAlreadyDefined.class.getName());
 
 		// This method should exist
-		enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+		enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME, ObjectInputStream.class);
 
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
 		final ObjectInputStream objInStream = mock(ObjectInputStream.class);

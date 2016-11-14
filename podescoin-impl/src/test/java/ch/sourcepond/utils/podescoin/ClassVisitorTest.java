@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.mockito.Mock;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -29,7 +30,7 @@ import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.internal.BundleInjector;
 
 public abstract class ClassVisitorTest {
-	protected final ClassWriter writer = new ClassWriter(0);
+	protected final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 	@Mock
 	protected BundleInjector injector;
 

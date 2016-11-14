@@ -75,8 +75,6 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 		final String[][] namedComponentArr = new String[namedComponents.size()][2];
 		namedComponents.toArray(namedComponentArr);
 
-		mv.visitCode();
-
 		// Load 'this' reference on operand stack (first operand for calling
 		// static method ch.sourcepond.utils.podescoin.Injector#injectComponent)
 		mv.visitVarInsn(ALOAD, 0);

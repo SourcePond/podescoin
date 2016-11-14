@@ -27,7 +27,7 @@ public class InjectorMethodClass implements Serializable {
 
 	}
 
-	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private void _$injectBlueprintComponents(final ObjectInputStream in) throws IOException, ClassNotFoundException {
 		final Container injector = Injector.getContainer(this);
 		try {
 			initObject(injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent", 0),
@@ -43,5 +43,9 @@ public class InjectorMethodClass implements Serializable {
 		} catch (final Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
+	}
+	
+	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+		_$injectBlueprintComponents(in);
 	}
 }

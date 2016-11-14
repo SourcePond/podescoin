@@ -10,6 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
+import static ch.sourcepond.utils.podescoin.internal.EnhanceReadObjectMethodVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.BIPUSH;
 import static org.objectweb.asm.Opcodes.ICONST_0;
@@ -59,7 +60,7 @@ abstract class SerializableClassVisitor extends NamedClassVisitor {
 	protected SerializableClassVisitor(final ClassVisitor pWriter) {
 		super(pWriter);
 	}
-	
+
 	protected void pushByteConstant(final MethodVisitor mv, final int idx) {
 		switch (idx) {
 		case _ICONST_0: {
@@ -107,6 +108,8 @@ abstract class SerializableClassVisitor extends NamedClassVisitor {
 	protected abstract void enhanceReadObject(MethodVisitor mv);
 
 	private MethodVisitor createMethodVisitor() {
+		MethodVisitor visitor;
+
 		// If there is already a readObject method present, we need to create a
 		// complete new method '_$injectBlueprintComponents'. The original
 		// readObject method has already be enhanced so that
@@ -115,17 +118,18 @@ abstract class SerializableClassVisitor extends NamedClassVisitor {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("{} : enhancing existing readObject method", getClassName());
 			}
-			return cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
-					getMethodDescriptor(getType(void.class)), null, null);
-		}
+			visitor = cv.visitMethod(ACC_PRIVATE, INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME,
+					INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC, null, READ_OBJECT_METHOD_EXCEPTIONS);
+		} else {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("{} : create new readObject method", getClassName());
+			}
 
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("{} : create new readObject method", getClassName());
+			// If no readObject method could be found, it will be created now.
+			visitor = cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
+					READ_OBJECT_METHOD_EXCEPTIONS);
 		}
-
-		// If no readObject method could be found, it will be created now.
-		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
-				READ_OBJECT_METHOD_EXCEPTIONS);
+		return visitor;
 	}
 
 	protected boolean hasReadObjectMethod() {
@@ -133,11 +137,14 @@ abstract class SerializableClassVisitor extends NamedClassVisitor {
 	}
 
 	@Override
-	public void visitEnd() {
-		// Create injection method if necessary; nly do something if at least 1
+	public final void visitEnd() {
+		// Create injection method if necessary; only do something if at least 1
 		// component is referenced.
 		if (isEnhancementNecessary()) {
-			enhanceReadObject(createMethodVisitor());
+			final MethodVisitor visitor = createMethodVisitor();
+			visitor.visitCode();
+			enhanceReadObject(visitor);
+			visitor.visitEnd();
 		}
 		super.visitEnd();
 	}

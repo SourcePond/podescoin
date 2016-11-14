@@ -13,8 +13,8 @@ package ch.sourcepond.utils.podescoin;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -47,7 +47,8 @@ final class Cloner {
 		source = pSource;
 	}
 
-	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType, Map<Field, Field> pCollectedFields) throws NoSuchFieldException, SecurityException {
+	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType,
+			Map<Field, Field> pCollectedFields) throws NoSuchFieldException, SecurityException {
 		if (pSourceType != null) {
 			for (final Field f : pSourceType.getDeclaredFields()) {
 				if (!Modifier.isStatic(f.getModifiers())) {
@@ -58,9 +59,10 @@ final class Cloner {
 		}
 		return pCollectedFields;
 	}
-	
-	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType) throws NoSuchFieldException, SecurityException {
-		return getDeclaredFields(pSourceType, pTargetType, new HashMap<>());
+
+	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType)
+			throws NoSuchFieldException, SecurityException {
+		return getDeclaredFields(pSourceType, pTargetType, new LinkedHashMap<>());
 	}
 
 	private Object copyState(final Function<Class<?>, Class<?>> pClassDetermination, final Class<?> pSourceType,
@@ -97,9 +99,14 @@ final class Cloner {
 									if (targetComponentType == null) {
 										targetElementValue = sourceElementValue;
 									} else {
-										targetElementValue = copyState(pClassDetermination,
-												loader.swap(targetComponentType), targetComponentType,
-												sourceElementValue, UNSAFE.allocateInstance(targetComponentType));
+										final Class<?> swappedType = loader.swap(targetComponentType);
+										if (!swappedType.equals(sourceElementValue.getClass())) {
+											targetElementValue = sourceElementValue;
+										} else {
+											targetElementValue = copyState(pClassDetermination, swappedType,
+													targetComponentType, sourceElementValue,
+													UNSAFE.allocateInstance(targetComponentType));
+										}
 									}
 
 									Array.set(targetValue, i, targetElementValue);

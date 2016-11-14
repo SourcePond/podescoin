@@ -21,19 +21,19 @@ import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.wiring.BundleWiring;
 
 import ch.sourcepond.utils.podescoin.TestObject;
-import ch.sourcepond.utils.podescoin.internal.Activator;
 
-@Ignore
 public class ActivatorTest {
 
 	public static final class TestClassLoader extends ClassLoader {
@@ -54,10 +54,29 @@ public class ActivatorTest {
 		}
 	}
 
+	private final Bundle wovenClassBundle = mock(Bundle.class);
+	private final BundleWiring wiring = mock(BundleWiring.class);
 	private final BundleContext context = mock(BundleContext.class);
+	private final Bundle bundle = mock(Bundle.class);
 	private final WovenClass wovenClass = mock(WovenClass.class);
 	private final Activator activator = new Activator();
 	private byte[] transformedCode;
+	
+	@Before
+	public void setup() {
+		when(context.getBundle()).thenReturn(bundle);
+		when(wovenClass.getBundleWiring()).thenReturn(wiring);
+		when(wiring.getBundle()).thenReturn(wovenClassBundle);
+		when(wovenClass.getState()).thenReturn(TRANSFORMING);
+		doAnswer(new Answer<byte[]>() {
+
+			@Override
+			public byte[] answer(final InvocationOnMock invocation) throws Throwable {
+				transformedCode = invocation.getArgument(0);
+				return null;
+			}
+		}).when(wovenClass).setBytes(Mockito.any());
+	}
 
 	@Test
 	public void start() throws Exception {
@@ -73,15 +92,7 @@ public class ActivatorTest {
 
 	@Test
 	public void verifyWeave() throws Exception {
-		when(wovenClass.getState()).thenReturn(TRANSFORMING);
-		doAnswer(new Answer<byte[]>() {
-
-			@Override
-			public byte[] answer(final InvocationOnMock invocation) throws Throwable {
-				transformedCode = invocation.getArgument(0);
-				return null;
-			}
-		}).when(wovenClass).setBytes(Mockito.any());
+		activator.start(context);
 		try (final InputStream in = getClass()
 				.getResourceAsStream("/" + TestObject.class.getName().replace('.', '/') + ".class")) {
 			final byte[] code = readBytes(in);

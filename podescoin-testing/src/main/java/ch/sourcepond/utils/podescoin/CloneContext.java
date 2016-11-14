@@ -66,6 +66,11 @@ public class CloneContext {
 		when(bundleContext.getService(blueprintContainerRef)).thenReturn(blueprintContainer);
 		when(blueprintContainer.getComponentIds()).thenReturn(componentIds);
 	}
+	
+	public CloneContext registerImplementation(final Class<?> pInterface, final Class<? extends Serializable> pClass) throws ClassNotFoundException {
+		loader.registerImplementation(pInterface, pClass);
+		return this;
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private CloneContext addComponentMetadata(final Object pComponent, final String componentId, final Class<?> pType) {
@@ -98,15 +103,13 @@ public class CloneContext {
 
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try (final ObjectOutputStream oout = new ObjectOutputStream(out)) {
-			 Cloner cloner = new Cloner(loader, cl -> loader.getEnhancedClass(cl), obj);
-			final Object clone = cloner.copyState();
-			oout.writeObject(clone);
+			oout.writeObject(obj);
 
 			try (final ObjectInputStream in = new EnhancedObjectInputStream(loader,
 					new ByteArrayInputStream(out.toByteArray()))) {
 				final Object deserialized = in.readObject();
-				cloner = new Cloner(loader, cl -> loader.getOriginalClass(cl), deserialized);
-				return (T)cloner.copyState();
+				final Cloner cloner = new Cloner(loader, cl -> loader.getOriginalClass(cl), deserialized);
+				return (T) cloner.copyState();
 			}
 		} catch (final Exception e) {
 			throw new IOException(e.getMessage(), e);
