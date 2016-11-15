@@ -28,17 +28,17 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestClassLoader;
 import ch.sourcepond.utils.podescoin.TestComponent;
-import ch.sourcepond.utils.podescoin.internal.FieldInjectionClassVisitor;
 
 public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Override
 	protected ClassVisitor newVisitor() {
-		return new FieldInjectionClassVisitor(writer);
+		return new FieldInjectionClassVisitor(new ClassWriter(ClassWriter.COMPUTE_MAXS));
 	}
 
 	/**
@@ -70,7 +70,8 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void verifyPushByteConstant() throws Exception {
-		loader = new TestClassLoader(visitor, writer, VerifyPushByteConstant.class, bundle);
+		loader = new TestClassLoader(newVisitor(), new ClassWriter(ClassWriter.COMPUTE_MAXS),
+				VerifyPushByteConstant.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstant.class.getName());
 
 		try {
@@ -137,7 +138,8 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void verifyPushByteConstantWithId() throws Exception {
-		loader = new TestClassLoader(visitor, writer, VerifyPushByteConstantWithId.class, bundle);
+		loader = new TestClassLoader(newVisitor(), new ClassWriter(ClassWriter.COMPUTE_MAXS),
+				VerifyPushByteConstantWithId.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantWithId.class.getName());
 
 		try {
@@ -181,7 +183,8 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void verifyPushByteConstantReadObjectAlreadyDefined() throws Exception {
-		loader = new TestClassLoader(visitor, writer, VerifyPushByteConstantReadObjectAlreadyDefined.class, bundle);
+		loader = new TestClassLoader(newVisitor(), new ClassWriter(ClassWriter.COMPUTE_MAXS),
+				VerifyPushByteConstantReadObjectAlreadyDefined.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantReadObjectAlreadyDefined.class.getName());
 
 		// This method should exist
@@ -214,7 +217,8 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void doNotVisitFinalField() throws Exception {
-		loader = new TestClassLoader(visitor, writer, DoNotVisitFinalField.class, bundle);
+		loader = new TestClassLoader(visitor, new ClassWriter(ClassWriter.COMPUTE_MAXS), DoNotVisitFinalField.class,
+				bundle);
 		final Class<?> enhancedClass = loader.loadClass(DoNotVisitFinalField.class.getName());
 
 		try {
@@ -248,7 +252,8 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void doNotVisitPersistentField() throws Exception {
-		loader = new TestClassLoader(visitor, writer, DoNotVisitPersistentField.class, bundle);
+		loader = new TestClassLoader(visitor, new ClassWriter(ClassWriter.COMPUTE_MAXS),
+				DoNotVisitPersistentField.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(DoNotVisitPersistentField.class.getName());
 
 		try {

@@ -35,8 +35,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
+import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
+
 public class CloneContext {
-	private static final EnhancedClassLoader loader = new EnhancedClassLoader(CloneContext.class.getClassLoader());;
+	private static final TestingClassLoader loader = new TestingClassLoader();
 	private static final String TEST_BUNDLE_SYMBOLIC_NAME = "PodesCoinTestBundleInjector";
 	private final BundleDetector detector = mock(BundleDetector.class);
 	private final Bundle bundle = mock(Bundle.class);
@@ -47,6 +49,7 @@ public class CloneContext {
 	private final Collection<ServiceReference<BlueprintContainer>> blueprintContainerRefs = asList(
 			blueprintContainerRef);
 	private final Set<String> componentIds = new HashSet<>();
+	private final Cloner cloner = new Cloner(loader);
 
 	protected CloneContext() {
 		Injector.detector = detector;
@@ -65,11 +68,6 @@ public class CloneContext {
 		}
 		when(bundleContext.getService(blueprintContainerRef)).thenReturn(blueprintContainer);
 		when(blueprintContainer.getComponentIds()).thenReturn(componentIds);
-	}
-	
-	public CloneContext registerImplementation(final Class<?> pInterface, final Class<? extends Serializable> pClass) throws ClassNotFoundException {
-		loader.registerImplementation(pInterface, pClass);
-		return this;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -99,17 +97,12 @@ public class CloneContext {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> T deepClone(final T obj) throws IOException, ClassNotFoundException {
-		loader.register(obj.getClass());
-
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try (final ObjectOutputStream oout = new ObjectOutputStream(out)) {
 			oout.writeObject(obj);
-
-			try (final ObjectInputStream in = new EnhancedObjectInputStream(loader,
+			try (final ObjectInputStream in = new PodesCoinObjectInputStream(loader,
 					new ByteArrayInputStream(out.toByteArray()))) {
-				final Object deserialized = in.readObject();
-				final Cloner cloner = new Cloner(loader, cl -> loader.getOriginalClass(cl), deserialized);
-				return (T) cloner.copyState();
+				return (T) cloner.copyState(in.readObject());
 			}
 		} catch (final Exception e) {
 			throw new IOException(e.getMessage(), e);

@@ -20,12 +20,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,9 +46,17 @@ import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
 import ch.sourcepond.utils.podescoin.internal.InspectForInjectorMethodClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.MethodInjectionClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.ReadObjectCallOrderTest.Child;
+import ch.sourcepond.utils.podescoin.internal.ReadObjectCallOrderTest.Parent;
 
 public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
+	public static final String PARENT = "parent";
+	public static final String CHILD = "child";
+	public static List<String> readObjectCalls = new LinkedList<>();
+	public static List<String> injectCalls = new ArrayList<>(2);
+
+	
 	@Mock
 	private TestComponent component1;
 
@@ -63,6 +76,68 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		} finally {
 			f.setAccessible(false);
 		}
+	}
+	
+
+	public static class Parent implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		void doInject(TestComponent pComponent) {
+			injectCalls.add(PARENT);
+		}
+
+		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+			readObjectCalls.add(PARENT);
+		}
+	}
+
+	public static class Child extends Parent {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		void doInject(TestComponent pComponent) {
+			injectCalls.add(CHILD);
+		}
+
+		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+			readObjectCalls.add(CHILD);
+		}
+	}
+	
+	@Test
+	public void verifyCallOrderWhenChildExtendsParent() throws Exception {
+		loader = new MethodInjectorTestClassLoader(visitor, writer, Child.class, bundle);
+		final Object testObject = loader.loadClass(Child.class.getName()).newInstance();
+		
+		final TestComponent component = mock(TestComponent.class);
+		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component);
+		
+
+		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		try (final ObjectOutputStream out = new ObjectOutputStream(bout)) {
+			out.writeObject(testObject);
+		}
+
+		try (final ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
+			in.readObject();
+		}
+		
+		assertEquals(2, readObjectCalls.size());
+		assertEquals(PARENT, readObjectCalls.get(0));
+		assertEquals(CHILD, readObjectCalls.get(1));
+		
+		assertEquals(2, injectCalls.size());
+		assertEquals(PARENT, injectCalls.get(0));
+		assertEquals(CHILD, injectCalls.get(1));
 	}
 
 	public static class ReadObjectSpecified_WithType implements Serializable {

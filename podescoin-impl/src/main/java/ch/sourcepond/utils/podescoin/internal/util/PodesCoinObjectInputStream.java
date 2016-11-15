@@ -8,27 +8,30 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.utils.podescoin;
+package ch.sourcepond.utils.podescoin.internal.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 
-public class EnhancedObjectInputStream extends ObjectInputStream {
-	private final EnhancedClassLoader loader;
+public class PodesCoinObjectInputStream extends ObjectInputStream {
+	private final PodesCoinClassLoader loader;
 
-	public EnhancedObjectInputStream(final EnhancedClassLoader pLoader, final InputStream in) throws IOException {
+	public PodesCoinObjectInputStream(final PodesCoinClassLoader pLoader, final InputStream in)
+			throws IOException {
 		super(in);
 		loader = pLoader;
 	}
 
 	@Override
 	protected Class<?> resolveClass(final ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-		if (loader.isRegistered(desc.getName())) {			
-			return loader.loadClass(desc.getName());
+		Class<?> cl = null;
+		try {
+			cl = loader.loadClass(desc.getName());
+		} catch (final ClassNotFoundException ex) {
+			cl = super.resolveClass(desc);
 		}
-		return super.resolveClass(desc);
+		return cl;
 	}
-
 }

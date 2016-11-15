@@ -14,6 +14,8 @@ import static org.objectweb.asm.ClassReader.SKIP_DEBUG;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -28,15 +30,16 @@ public class TestClassLoader extends ClassLoader implements BundleReference {
 	private final Bundle bundle;
 	protected ClassVisitor visitor;
 	protected ClassWriter writer;
-	private Class<?> cl;
+	private Map<String, Class<?>> enhanced = new HashMap<>();
 
 	public TestClassLoader(final ClassVisitor pVisitor, final ClassWriter pWriter,
 			final Class<?> pTestSerializableClass, final Bundle pBundle) {
 		super(null);
 		visitor = pVisitor;
 		writer = pWriter;
-		testSerializableClass = pTestSerializableClass;
 		bundle = pBundle;
+		testSerializableClass = pTestSerializableClass;
+		enhanced.put(pTestSerializableClass.getName(), null);
 	}
 
 	protected byte[] secondPass(final byte[] pClassData) {
@@ -44,18 +47,42 @@ public class TestClassLoader extends ClassLoader implements BundleReference {
 		return pClassData;
 	}
 
+	public boolean isEnhanced(final String pClassName) {
+		return enhanced.containsKey(pClassName);
+	}
+
+	private Class<?> enhance(final Class<?> pOriginal) throws ClassNotFoundException {
+		Class<?> enhanced = null;
+		if (pOriginal != null) {
+			try (final InputStream in = getClass()
+					.getResourceAsStream("/" + pOriginal.getName().replace('.', '/') + ".class")) {
+				final ClassReader reader = new ClassReader(in);
+				reader.accept(visitor, SKIP_DEBUG);
+				byte[] classData = writer.toByteArray();
+				classData = secondPass(classData);
+				enhanced = defineClass(pOriginal.getName(), classData, 0, classData.length);
+			} catch (final IOException e) {
+				throw new ClassNotFoundException(e.getMessage(), e);
+			}
+		}
+		return enhanced;
+	}
+
 	@Override
 	protected Class<?> findClass(final String name) throws ClassNotFoundException {
-		if (name.equals(testSerializableClass.getName())) {
+		if (enhanced.containsKey(name)) {
+			Class<?> cl = enhanced.get(name);
 			if (cl == null) {
-				try (final InputStream in = getClass().getResourceAsStream("/" + name.replace('.', '/') + ".class")) {
-					final ClassReader reader = new ClassReader(in);
-					reader.accept(visitor, SKIP_DEBUG);
-					byte[] classData = writer.toByteArray();
-					classData = secondPass(classData);
-					cl = defineClass(name, classData, 0, classData.length);
-				} catch (final IOException e) {
-					throw new ClassNotFoundException(e.getMessage(), e);
+				Class<?> current = testSerializableClass;
+				while (current != null) {
+					Class<?> enhancedClass = enhance(current);
+
+					if (cl == null) {
+						cl = enhancedClass;
+					}
+
+					enhanced.put(enhancedClass.getName(), enhancedClass);
+					current = Object.class.equals(current.getSuperclass()) ? null : current.getSuperclass();
 				}
 			}
 			return cl;

@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 import sun.misc.Unsafe;
 
@@ -36,19 +35,14 @@ final class Cloner {
 	}
 
 	private final Set<Object> visited = new HashSet<>();
-	private final Function<Class<?>, Class<?>> classDetermination;
-	private final Object source;
-	private final EnhancedClassLoader loader;
+	private final TestingClassLoader loader;
 
-	public Cloner(final EnhancedClassLoader pLoader, final Function<Class<?>, Class<?>> pClassDetermination,
-			final Object pSource) {
+	public Cloner(final TestingClassLoader pLoader) {
 		loader = pLoader;
-		classDetermination = pClassDetermination;
-		source = pSource;
 	}
 
 	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType,
-			Map<Field, Field> pCollectedFields) throws NoSuchFieldException, SecurityException {
+			final Map<Field, Field> pCollectedFields) throws NoSuchFieldException, SecurityException {
 		if (pSourceType != null) {
 			for (final Field f : pSourceType.getDeclaredFields()) {
 				if (!Modifier.isStatic(f.getModifiers())) {
@@ -65,10 +59,9 @@ final class Cloner {
 		return getDeclaredFields(pSourceType, pTargetType, new LinkedHashMap<>());
 	}
 
-	private Object copyState(final Function<Class<?>, Class<?>> pClassDetermination, final Class<?> pSourceType,
-			final Class<?> pTargetType, final Object pSource, final Object pTarget)
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException,
-			InstantiationException, ClassNotFoundException {
+	private Object copyState(final Class<?> pSourceType, final Class<?> pTargetType, final Object pSource,
+			final Object pTarget) throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException, InstantiationException, ClassNotFoundException {
 		for (final Map.Entry<Field, Field> fieldEntry : getDeclaredFields(pSourceType, pTargetType).entrySet()) {
 			final Field sourceField = fieldEntry.getKey();
 			sourceField.setAccessible(true);
@@ -78,55 +71,47 @@ final class Cloner {
 			if (!sourceField.getType().isPrimitive()) {
 				// Only do something if there is something to copy
 				if (sourceValue != null) {
-					final Class<?> sourceType = sourceValue.getClass();
+					Class<?> targetType = null;
+					Class<?> sourceType = sourceValue.getClass();
+
 					if (sourceType.isArray()) {
 						final int size = Array.getLength(sourceValue);
-						final Class<?> sourceComponentType = sourceType.getComponentType();
-						if (size > 0 && !sourceComponentType.isPrimitive()) {
-							Class<?> targetComponentType = pClassDetermination.apply(sourceComponentType);
+						sourceType = sourceType.getComponentType();
+						if (size > 0 && !sourceType.isPrimitive()) {
+							targetType = loader.getOriginalClass(sourceType);
 
-							if (targetComponentType == null) {
-								targetComponentType = sourceComponentType;
+							if (targetType == null) {
+								targetType = sourceType;
 							}
 
-							targetValue = Array.newInstance(targetComponentType, size);
+							targetValue = Array.newInstance(targetType, size);
 							for (int i = 0; i < size; i++) {
 								final Object sourceElementValue = Array.get(sourceValue, i);
 								if (sourceElementValue != null) {
-									targetComponentType = pClassDetermination.apply(sourceElementValue.getClass());
-
+									sourceType = sourceElementValue.getClass();
+									targetType = loader.getOriginalClass(sourceType);
 									final Object targetElementValue;
-									if (targetComponentType == null) {
+									if (sourceType.equals(targetType)) {
 										targetElementValue = sourceElementValue;
 									} else {
-										final Class<?> swappedType = loader.swap(targetComponentType);
-										if (!swappedType.equals(sourceElementValue.getClass())) {
-											targetElementValue = sourceElementValue;
-										} else {
-											targetElementValue = copyState(pClassDetermination, swappedType,
-													targetComponentType, sourceElementValue,
-													UNSAFE.allocateInstance(targetComponentType));
-										}
+										targetElementValue = copyState(sourceType, targetType, sourceElementValue,
+												UNSAFE.allocateInstance(targetType));
 									}
 
 									Array.set(targetValue, i, targetElementValue);
 								}
 							}
 						}
-					} else {
-						Class<?> targetType = pClassDetermination.apply(sourceType);
-
-						if (targetType != null) {
-							targetValue = copyState(pClassDetermination, sourceType, targetType, sourceValue,
+					} else if (!visited.contains(sourceValue)) {
+						visited.add(sourceValue);
+						targetType = loader.getOriginalClass(sourceType);
+						if (sourceType.equals(targetType)) {
+							targetValue = copyState(sourceType, sourceType, sourceValue, sourceValue);
+						} else {
+							targetValue = copyState(sourceType, targetType, sourceValue,
 									UNSAFE.allocateInstance(targetType));
-						} else if (!visited.contains(sourceValue)) {
-							visited.add(sourceValue);
-							targetValue = copyState(pClassDetermination, sourceType, sourceType, sourceValue,
-									sourceValue);
 						}
 					}
-				} else {
-					targetValue = sourceValue;
 				}
 			}
 
@@ -141,10 +126,8 @@ final class Cloner {
 		return pTarget;
 	}
 
-	public Object copyState() throws InstantiationException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
-		final Class<?> targetType = classDetermination.apply(source.getClass());
-		return copyState(classDetermination, source.getClass(), targetType, source,
-				UNSAFE.allocateInstance(targetType));
+	public Object copyState(final Object pSource) throws Exception {
+		final Class<?> targetType = loader.getOriginalClass(pSource.getClass());
+		return copyState(pSource.getClass(), targetType, pSource, UNSAFE.allocateInstance(targetType));
 	}
 }

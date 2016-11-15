@@ -29,8 +29,8 @@ public class MethodInjectorTestClassLoader extends TestClassLoader {
 	@Override
 	protected byte[] secondPass(final byte[] pClassData) {
 		final ClassReader reader = new ClassReader(writer.toByteArray());
-		writer = new ClassWriter(reader, 0);
-		visitor = new MethodInjectionClassVisitor(writer, (InspectForInjectorMethodClassVisitor) visitor);
+		ClassWriter writer = new ClassWriter(reader, 0);
+		MethodInjectionClassVisitor visitor = new MethodInjectionClassVisitor(writer, (InspectForInjectorMethodClassVisitor) this.visitor);
 		reader.accept(visitor, 0);
 		return writer.toByteArray();
 	}
