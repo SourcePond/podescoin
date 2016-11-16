@@ -23,4 +23,8 @@ public class Access {
 	public static boolean isTransient(final int access) {
 		return (access & Opcodes.ACC_TRANSIENT) != 0;
 	}
+
+	public static boolean isVolatile(final int access) {
+		return (access & Opcodes.ACC_VOLATILE) != 0;
+	}
 }

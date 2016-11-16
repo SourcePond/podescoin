@@ -25,15 +25,17 @@ final class ComponentFieldVisitor extends FieldVisitor {
 	private final FieldInjectionClassVisitor classVisitor;
 	private final String fieldName;
 	private final String fieldType;
+	private final int access;
 	private String componentIdOrNull;
 	private boolean inject;
 
 	ComponentFieldVisitor(final FieldInjectionClassVisitor pClassVisitor, final FieldVisitor pDelegate,
-			final String pFieldName, final String pFieldType) {
+			final String pFieldName, final String pFieldType, final int pAccess) {
 		super(ASM5, pDelegate);
 		classVisitor = pClassVisitor;
 		fieldName = pFieldName;
 		fieldType = pFieldType;
+		access = pAccess;
 	}
 
 	void setComponentId(final String pComponentId) {
@@ -44,6 +46,11 @@ final class ComponentFieldVisitor extends FieldVisitor {
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
 		if (visible) {
 			if (INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
+
+				if (!Access.isTransient(access) || Access.isFinal(access)) {
+					classVisitor.addIllegalField(fieldName, fieldType, access);
+				}
+
 				inject = true;
 			}
 			if (NAMED_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
@@ -56,7 +63,8 @@ final class ComponentFieldVisitor extends FieldVisitor {
 	@Override
 	public void visitEnd() {
 		if (inject) {
-			LOG.debug("{} : registering injection field {} with id {} and type {}", classVisitor.getClassName(), fieldName, componentIdOrNull, fieldType);
+			LOG.debug("{} : registering injection field {} with id {} and type {}", classVisitor.getClassName(),
+					fieldName, componentIdOrNull, fieldType);
 			classVisitor.addNamedComponent(fieldName, componentIdOrNull, fieldType);
 		}
 	}

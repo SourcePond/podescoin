@@ -12,7 +12,6 @@ package ch.sourcepond.utils.podescoin.internal;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECTOR_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.AASTORE;
-import static org.objectweb.asm.Opcodes.ACC_TRANSIENT;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ANEWARRAY;
 import static org.objectweb.asm.Opcodes.BIPUSH;
@@ -34,7 +33,8 @@ import java.util.List;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+
+import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 
 final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String INJECTOR_METHOD_NAME = "injectComponents";
@@ -42,20 +42,45 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 			getType(Serializable.class), getType(String[][].class));
 	private static final String FIRST_DIMENSION_INTERNAL_NAME = getInternalName(String[].class);
 	private static final String SECOND_DIMENSION_INTERNAL_NAME = getInternalName(String.class);
+	private List<String> illegalFields;
 	private List<String[]> namedComponents;
 
 	public FieldInjectionClassVisitor(final ClassVisitor pWriter) {
 		super(pWriter);
 	}
 
+	public void addIllegalField(final String fieldName, final String fieldType, final int access) {
+		if (illegalFields == null) {
+			illegalFields = new LinkedList<>();
+		}
+
+		final StringBuilder builder = new StringBuilder();
+		if (Access.isPrivate(access)) {
+			builder.append("private ");
+		} else if (Access.isProtected(access)) {
+			builder.append("protected ");
+		} else if (Access.isPublic(access)) {
+			builder.append("public ");
+		}
+
+		if (Access.isTransient(access)) {
+			builder.append("transient ");
+		}
+		if (Access.isVolatile(access)) {
+			builder.append("volatile ");
+		}
+		if (Access.isFinal(access)) {
+			builder.append("final ");
+		}
+
+		illegalFields.add(builder.append(fieldType).append(" ").append(fieldName).toString());
+	}
+
 	@Override
 	public FieldVisitor visitField(final int access, final String name, final String desc, final String signature,
 			final Object value) {
-		if ((access & ACC_TRANSIENT) != 0 && (access & Opcodes.ACC_FINAL) == 0) {
-			return new ComponentFieldVisitor(this, cv.visitField(access, name, desc, signature, value), name,
-					getType(desc).getClassName());
-		}
-		return super.visitField(access, name, desc, signature, value);
+		return new ComponentFieldVisitor(this, cv.visitField(access, name, desc, signature, value), name,
+				getType(desc).getClassName(), access);
 	}
 
 	@Override
@@ -72,6 +97,16 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 
 	@Override
 	protected void generateInjectionBody(final MethodVisitor mv) {
+		if (illegalFields != null) {
+			final StringBuilder errorMessage = new StringBuilder(
+					"Injectable fields must be transient and non-final! Illegal declarations:\n");
+			for (final String illegalField : illegalFields) {
+				errorMessage.append("\t").append(illegalField).append("\n");
+			}
+
+			throw new IllegalFieldDeclarationException(errorMessage.toString());
+		}
+
 		final String[][] namedComponentArr = new String[namedComponents.size()][2];
 		namedComponents.toArray(namedComponentArr);
 
@@ -168,7 +203,8 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 		}
 
 		// Call the static method 'injectComponent' on class
-		// 'ch.sourcepond.utils.podescoin.Injector'. The first and only operand on
+		// 'ch.sourcepond.utils.podescoin.Injector'. The first and only operand
+		// on
 		// the operand stack is the main-array.
 		mv.visitMethodInsn(INVOKESTATIC, INJECTOR_INTERNAL_NAME, INJECTOR_METHOD_NAME, INJECTOR_METHOD_DESC, false);
 		mv.visitInsn(RETURN);

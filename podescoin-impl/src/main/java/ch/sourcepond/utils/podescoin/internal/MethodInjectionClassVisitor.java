@@ -36,10 +36,13 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.sourcepond.utils.podescoin.Container;
 
 class MethodInjectionClassVisitor extends SerializableClassVisitor {
+	private static final Logger LOG = LoggerFactory.getLogger(MethodInjectionClassVisitor.class);
 	private static final String CONTAINER_INTERNAL_NAME = getInternalName(Container.class);
 	private static final String GET_CONTAINER_METHOD_NAME = "getContainer";
 	private static final String GET_CONTAINER_METHOD_DESC = getMethodDescriptor(getType(Container.class),
@@ -84,8 +87,8 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		mv.visitVarInsn(ASTORE, 2);
 		mv.visitLabel(l0);
 		mv.visitVarInsn(ALOAD, 0);
-		
-		int stackSize = MIN_STACK_SIZE;		
+
+		int stackSize = MIN_STACK_SIZE;
 		if (inspector.hasObjectInputStream()) {
 			mv.visitVarInsn(ALOAD, 1);
 			stackSize++;
@@ -122,8 +125,8 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 		final Label l3 = new Label();
 		mv.visitJumpInsn(GOTO, l3);
 		mv.visitLabel(l2);
-		mv.visitFrame(Opcodes.F_FULL, 3,
-				new Object[] { inspector.getInternalClassName(), OBJECT_INPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
+		mv.visitFrame(Opcodes.F_FULL, 3, new Object[] { inspector.getInternalClassName(),
+				OBJECT_INPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
 				new Object[] { EXCEPTION_INTERNAL_NAME });
 		mv.visitVarInsn(ASTORE, 3);
 		mv.visitTypeInsn(NEW, IO_EXCEPTION_INTERNAL_NAME);
