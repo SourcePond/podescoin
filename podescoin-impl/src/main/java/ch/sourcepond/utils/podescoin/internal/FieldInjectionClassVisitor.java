@@ -71,7 +71,7 @@ final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	}
 
 	@Override
-	protected void enhanceReadObject(final MethodVisitor mv) {
+	protected void generateInjectionBody(final MethodVisitor mv) {
 		final String[][] namedComponentArr = new String[namedComponents.size()][2];
 		namedComponents.toArray(namedComponentArr);
 

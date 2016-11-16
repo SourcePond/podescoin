@@ -105,7 +105,7 @@ abstract class SerializableClassVisitor extends NamedClassVisitor {
 
 	protected abstract boolean isEnhancementNecessary();
 
-	protected abstract void enhanceReadObject(MethodVisitor mv);
+	protected abstract void generateInjectionBody(MethodVisitor mv);
 
 	private MethodVisitor createMethodVisitor() {
 		MethodVisitor visitor;
@@ -143,7 +143,7 @@ abstract class SerializableClassVisitor extends NamedClassVisitor {
 		if (isEnhancementNecessary()) {
 			final MethodVisitor visitor = createMethodVisitor();
 			visitor.visitCode();
-			enhanceReadObject(visitor);
+			generateInjectionBody(visitor);
 			visitor.visitEnd();
 		}
 		super.visitEnd();

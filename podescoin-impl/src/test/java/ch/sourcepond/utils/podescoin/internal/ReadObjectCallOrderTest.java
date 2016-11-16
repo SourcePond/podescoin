@@ -1,3 +1,13 @@
+/*Copyright (C) 2016 Roland Hauser, <sourcepond@gmail.com>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +32,7 @@ import org.objectweb.asm.ClassWriter;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
 
 public class ReadObjectCallOrderTest extends ClassVisitorTest {
 	public static final String PARENT = "parent";
@@ -37,7 +48,7 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		private static final long serialVersionUID = 1L;
 
 		@Inject
-		void doInject(TestComponent pComponent) {
+		void doInject(final TestComponent pComponent) {
 			injectCalls.add(PARENT);
 		}
 
@@ -53,8 +64,9 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		@Inject
-		void doInject(TestComponent pComponent) {
+		void doInject(final TestComponent pComponent) {
 			injectCalls.add(CHILD);
 		}
 
@@ -65,33 +77,33 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 
 	@Override
 	protected ClassVisitor newVisitor() {
-		return new MethodInjectionClassVisitor(new ClassWriter(ClassWriter.COMPUTE_MAXS), new InspectForInjectorMethodClassVisitor(null));
+		return new MethodInjectionClassVisitor(new ClassWriter(ClassWriter.COMPUTE_MAXS),
+				new InspectForInjectorMethodClassVisitor(null));
 	}
 
 	@Test
 	public void verifyCallOrderWhenChildExtendsParent() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, new ClassWriter(ClassWriter.COMPUTE_MAXS), Child.class, bundle);
 		final Object testObject = loader.loadClass(Child.class.getName()).newInstance();
-		
+
 		final TestComponent component = mock(TestComponent.class);
 		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component);
-		
 
 		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		try (final ObjectOutputStream out = new ObjectOutputStream(bout)) {
 			out.writeObject(testObject);
 		}
 
-		try (final ObjectInputStream in = new EnhancedClassAwareObjectInputStream(loader, new ByteArrayInputStream(bout.toByteArray()))) {
+		try (final ObjectInputStream in = new PodesCoinObjectInputStream(loader,
+				new ByteArrayInputStream(bout.toByteArray()))) {
 			in.readObject();
 		}
-		
+
 		assertEquals(2, readObjectCalls.size());
-		assertEquals(PARENT, readObjectCalls.get(0));
-		assertEquals(CHILD, readObjectCalls.get(1));
-		
+		assertEquals(CHILD, readObjectCalls.get(0));
+		assertEquals(PARENT, readObjectCalls.get(1));
+
 		assertEquals(2, injectCalls.size());
-		assertEquals(PARENT, injectCalls.get(0));
-		assertEquals(CHILD, injectCalls.get(1));
+		assertEquals(CHILD, injectCalls.get(0));
+		assertEquals(PARENT, injectCalls.get(1));
 	}
 }

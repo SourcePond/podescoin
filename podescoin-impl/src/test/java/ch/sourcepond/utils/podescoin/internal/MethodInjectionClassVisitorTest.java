@@ -20,43 +20,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.objectweb.asm.ClassVisitor;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
-import ch.sourcepond.utils.podescoin.internal.InspectForInjectorMethodClassVisitor;
-import ch.sourcepond.utils.podescoin.internal.MethodInjectionClassVisitor;
-import ch.sourcepond.utils.podescoin.internal.ReadObjectCallOrderTest.Child;
-import ch.sourcepond.utils.podescoin.internal.ReadObjectCallOrderTest.Parent;
 
 public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
-	public static final String PARENT = "parent";
-	public static final String CHILD = "child";
-	public static List<String> readObjectCalls = new LinkedList<>();
-	public static List<String> injectCalls = new ArrayList<>(2);
-
-	
 	@Mock
 	private TestComponent component1;
 
@@ -77,68 +59,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 			f.setAccessible(false);
 		}
 	}
-	
-
-	public static class Parent implements Serializable {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Inject
-		void doInject(TestComponent pComponent) {
-			injectCalls.add(PARENT);
-		}
-
-		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-			readObjectCalls.add(PARENT);
-		}
-	}
-
-	public static class Child extends Parent {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Inject
-		void doInject(TestComponent pComponent) {
-			injectCalls.add(CHILD);
-		}
-
-		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-			readObjectCalls.add(CHILD);
-		}
-	}
-	
-	@Test
-	public void verifyCallOrderWhenChildExtendsParent() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer, Child.class, bundle);
-		final Object testObject = loader.loadClass(Child.class.getName()).newInstance();
-		
-		final TestComponent component = mock(TestComponent.class);
-		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component);
-		
-
-		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		try (final ObjectOutputStream out = new ObjectOutputStream(bout)) {
-			out.writeObject(testObject);
-		}
-
-		try (final ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
-			in.readObject();
-		}
-		
-		assertEquals(2, readObjectCalls.size());
-		assertEquals(PARENT, readObjectCalls.get(0));
-		assertEquals(CHILD, readObjectCalls.get(1));
-		
-		assertEquals(2, injectCalls.size());
-		assertEquals(PARENT, injectCalls.get(0));
-		assertEquals(CHILD, injectCalls.get(1));
-	}
 
 	public static class ReadObjectSpecified_WithType implements Serializable {
 		private boolean injectCalledBeforeInject;
@@ -156,7 +76,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void readObjectSpecified_WithType() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer, ReadObjectSpecified_WithType.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(ReadObjectSpecified_WithType.class.getName());
 
 		try {
@@ -175,7 +94,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 		verify(injector).getComponentByTypeName(TestComponent.class.getName(), 0);
 		assertSame(component1, getFieldValue("component1", obj));
-		assertTrue((Boolean)getFieldValue("injectCalledBeforeInject", obj));
+		assertTrue((Boolean) getFieldValue("injectCalledBeforeInject", obj));
 	}
 
 	public static class NoReadObjectSpecified_WithType implements Serializable {
@@ -189,7 +108,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void noReadObjectSpecified_WithType() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer, NoReadObjectSpecified_WithType.class, bundle);
 		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithType.class.getName());
 
 		try {
@@ -223,8 +141,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void noReadObjectSpecified_WithType_And_ObjectInputStream() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer,
-				NoReadObjectSpecified_WithType_And_ObjectInputStream.class, bundle);
 		final Class<?> enhancedClass = loader
 				.loadClass(NoReadObjectSpecified_WithType_And_ObjectInputStream.class.getName());
 
@@ -262,8 +178,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void noReadObjectSpecified_WithComponentId() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer, NoReadObjectSpecified_WithComponentId.class,
-				bundle);
 		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithComponentId.class.getName());
 
 		try {
@@ -294,7 +208,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private TestComponent component2;
 
 		@Inject
-		public void injectServices(ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
+		public void injectServices(final ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
 				@Named("componentId2") final TestComponent pComponent2) throws IOException, ClassNotFoundException {
 			in.defaultReadObject();
 			component1 = pComponent1;
@@ -308,8 +222,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void noReadObjectSpecified_WithComponentId_And_ObjectInputStream() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer,
-				NoReadObjectSpecified_WithComponentId_And_ObjectInputStream.class, bundle);
 		final Class<?> enhancedClass = loader
 				.loadClass(NoReadObjectSpecified_WithComponentId_And_ObjectInputStream.class.getName());
 
@@ -350,8 +262,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void noReadObjectSpecified_WithComponentId_ThrowException() throws Exception {
-		loader = new MethodInjectorTestClassLoader(visitor, writer,
-				NoReadObjectSpecified_WithComponentId_ThrowException.class, bundle);
 		final Class<?> enhancedClass = loader
 				.loadClass(NoReadObjectSpecified_WithComponentId_ThrowException.class.getName());
 

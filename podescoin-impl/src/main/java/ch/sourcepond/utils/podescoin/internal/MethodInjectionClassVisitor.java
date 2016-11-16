@@ -73,7 +73,7 @@ class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	}
 
 	@Override
-	protected void enhanceReadObject(final MethodVisitor mv) {
+	protected void generateInjectionBody(final MethodVisitor mv) {
 		final Label l0 = new Label();
 		final Label l1 = new Label();
 		final Label l2 = new Label();

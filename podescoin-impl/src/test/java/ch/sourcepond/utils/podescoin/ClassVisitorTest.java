@@ -19,20 +19,23 @@ import java.lang.reflect.Method;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-import ch.sourcepond.utils.podescoin.BundleInjectorFactory;
-import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.internal.BundleInjector;
+import ch.sourcepond.utils.podescoin.internal.util.PodesCoinClassLoader;
 
 public abstract class ClassVisitorTest {
+	protected static PodesCoinClassLoader loader = new PodesCoinClassLoader();
 	protected final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 	@Mock
 	protected BundleInjector injector;
+
+	@Mock
+	protected BundleDetector detector;
 
 	@Mock
 	protected BundleInjectorFactory factory;
@@ -43,7 +46,6 @@ public abstract class ClassVisitorTest {
 	@Mock
 	protected BundleContext context;
 
-	protected TestClassLoader loader;
 	protected ClassVisitor visitor;
 
 	@Before
@@ -51,7 +53,9 @@ public abstract class ClassVisitorTest {
 		initMocks(this);
 		when(factory.newInjector(bundle)).thenReturn(injector);
 		when(bundle.getBundleContext()).thenReturn(context);
+		when(detector.getBundle(Mockito.any())).thenReturn(bundle);
 		Injector.factory = factory;
+		Injector.detector = detector;
 		visitor = newVisitor();
 	}
 
