@@ -15,6 +15,7 @@ import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+@Recipient
 public class TestObject implements Serializable {
 
 	@Inject

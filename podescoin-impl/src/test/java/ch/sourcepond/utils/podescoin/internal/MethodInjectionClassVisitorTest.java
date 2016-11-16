@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
@@ -46,6 +47,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		}
 	}
 
+	@Recipient
 	public static class ReadObjectSpecified_WithType implements Serializable {
 		private boolean injectCalledBeforeInject;
 		private TestComponent component1;
@@ -74,6 +76,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertTrue((Boolean) getFieldValue("injectCalledBeforeInject", obj));
 	}
 
+	@Recipient
 	public static class NoReadObjectSpecified_WithType implements Serializable {
 		private TestComponent component1;
 
@@ -96,6 +99,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component1, getFieldValue("component1", obj));
 	}
 
+	@Recipient
 	public static class NoReadObjectSpecified_WithType_And_ObjectInputStream implements Serializable {
 		private TestComponent component1;
 
@@ -123,6 +127,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component1, getFieldValue("component1", obj));
 	}
 
+	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId implements Serializable {
 		private TestComponent component1;
 		private TestComponent component2;
@@ -153,6 +158,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component2, getFieldValue("component2", obj));
 	}
 
+	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId_And_ObjectInputStream implements Serializable {
 		private TestComponent component1;
 		private TestComponent component2;
@@ -191,6 +197,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component2, getFieldValue("component2", obj));
 	}
 
+	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId_ThrowException implements Serializable {
 		private final Exception exception = new Exception();
 

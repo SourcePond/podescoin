@@ -10,15 +10,14 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin;
 
-public class IllegalFieldDeclarationException extends RuntimeException {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public IllegalFieldDeclarationException(final String message) {
-		super(message);
-	}
+/**
+ * @author rolandhauser
+ *
+ */
+@Target(ElementType.TYPE)
+public @interface Recipient {
 
 }

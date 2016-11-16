@@ -47,7 +47,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 				wovenClass.setBytes(transform(wovenClass.getBytes()));
 				wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
 			} catch (final Throwable e) {
-				throw new WeavingException(e.getMessage(), e);
+				throw new WeavingException(String.format("Enhancement of %s failed!", wovenClass.getClassName()), e);
 			}
 		}
 	}
@@ -61,21 +61,27 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
 		final InspectClassVisitor inspector = new InspectClassVisitor();
 		reader.accept(inspector, 0);
+		byte[] classData = pOriginalClassBytes;
+		
+		if (inspector.isInjectionAware()) {
+			// Second step: create or enhance readObject which calls the
+			// injector
+			// method
+			ClassWriter writer = new ClassWriter(reader, 0);
+			ClassVisitor visitor = new MethodInjectionClassVisitor(writer, inspector);
+			reader.accept(visitor, 0);
 
-		// Second step: create or enhance readObject which calls the injector
-		// method
-		ClassWriter writer = new ClassWriter(reader, 0);
-		ClassVisitor visitor = new MethodInjectionClassVisitor(writer, inspector);
-		reader.accept(visitor, 0);
-
-		// Third step: create or enhance readObject which injects fields. This
-		// is done at the end because fields should have been injected before an
-		// injector method is called (LIFO order)
-		reader = new ClassReader(writer.toByteArray());
-		writer = new ClassWriter(reader, 0);
-		visitor = new FieldInjectionClassVisitor(inspector, writer);
-		reader.accept(visitor, 0);
-
-		return writer.toByteArray();
+			// Third step: create or enhance readObject which injects fields.
+			// This
+			// is done at the end because fields should have been injected
+			// before an
+			// injector method is called (LIFO order)
+			reader = new ClassReader(writer.toByteArray());
+			writer = new ClassWriter(reader, 0);
+			visitor = new FieldInjectionClassVisitor(inspector, writer);
+			reader.accept(visitor, 0);
+			classData = writer.toByteArray();
+		}
+		return classData;
 	}
 }

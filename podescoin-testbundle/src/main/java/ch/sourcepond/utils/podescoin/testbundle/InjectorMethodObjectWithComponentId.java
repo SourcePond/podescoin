@@ -13,10 +13,12 @@ package ch.sourcepond.utils.podescoin.testbundle;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousDateService;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
+@Recipient
 public class InjectorMethodObjectWithComponentId implements Injected {
 
 	/**

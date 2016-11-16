@@ -15,14 +15,18 @@ import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION
 import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
+import static org.objectweb.asm.Type.getType;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.internal.method.InjectorMethodVisitor;
 
 public final class InspectClassVisitor extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
+	private boolean injectionAware;
 	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
@@ -32,19 +36,33 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 	public InspectClassVisitor() {
 		super(null);
 	}
+	
+	public boolean isInjectionAware() {
+		return injectionAware;
+	}
 
 	public int getReadObjectStartLine() {
 		return readObjectStartLine;
 	}
 
 	@Override
+	public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+		if (!injectionAware) {
+			injectionAware = Recipient.class.getName().equals(getType(desc).getClassName());
+		}
+		return super.visitAnnotation(desc, visible);
+	}
+
+	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
 		MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
-		if (SerializableClassVisitor.isReadObjectMethod(access, name, desc, exceptions)) {
-			visitor = new LineNumberDetection(this, visitor);
-		} else if (!CONSTRUCTOR_NAME.equals(name)) {
-			visitor = new InjectorMethodVisitor(this, visitor, name, desc);
+		if (injectionAware) {
+			if (SerializableClassVisitor.isReadObjectMethod(access, name, desc, exceptions)) {
+				visitor = new LineNumberDetection(this, visitor);
+			} else if (!CONSTRUCTOR_NAME.equals(name)) {
+				visitor = new InjectorMethodVisitor(this, visitor, name, desc);
+			}
 		}
 		return visitor;
 	}
@@ -92,7 +110,7 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 			namedComponents = EMPTY;
 		}
 	}
-	
+
 	public boolean isInEnhanceMode() {
 		return readObjectStartLine != 0;
 	}

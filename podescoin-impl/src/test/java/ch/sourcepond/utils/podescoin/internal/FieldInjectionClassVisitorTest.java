@@ -29,6 +29,7 @@ import org.mockito.Mockito;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
@@ -37,6 +38,7 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
+	@Recipient
 	public static class VerifyPushByteConstant implements Serializable {
 		@Inject
 		private transient TestComponent component1;
@@ -85,6 +87,7 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
+	@Recipient
 	public static class VerifyPushByteConstantWithId implements Serializable {
 		@Named("componentId1")
 		@Inject
@@ -143,6 +146,7 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
+	@Recipient
 	public static class VerifyPushByteConstantReadObjectAlreadyDefined implements Serializable {
 		@Named("componentId1")
 		@Inject
@@ -172,6 +176,7 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
+	@Recipient
 	public static class DoNotVisitFinalField implements Serializable {
 		@Named("componentId1")
 		@Inject
@@ -198,6 +203,7 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
+	@Recipient
 	public static class DoNotVisitPersistentField implements Serializable {
 		@Named("componentId1")
 		@Inject

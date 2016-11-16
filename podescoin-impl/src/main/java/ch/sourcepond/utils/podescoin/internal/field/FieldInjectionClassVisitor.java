@@ -82,8 +82,8 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	@Override
 	protected ReadObjectVisitor createReadObjectVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode) {
 		if (illegalFields != null) {
-			final StringBuilder errorMessage = new StringBuilder(
-					"Injectable fields must be transient and non-final! Illegal declarations:\n");
+			final StringBuilder errorMessage = new StringBuilder("Failed to enhance ").append(inspector.getClassName())
+					.append("\n").append("Injectable fields must be transient and non-final! Illegal declarations:\n");
 			for (final String illegalField : illegalFields) {
 				errorMessage.append("\t").append(illegalField).append("\n");
 			}

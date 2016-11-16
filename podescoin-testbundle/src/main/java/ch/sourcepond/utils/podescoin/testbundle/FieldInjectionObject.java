@@ -12,10 +12,12 @@ package ch.sourcepond.utils.podescoin.testbundle;
 
 import javax.inject.Inject;
 
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.testservice.DateService;
 import ch.sourcepond.utils.podescoin.testservice.NameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
+@Recipient
 public class FieldInjectionObject implements Injected {
 
 	/**

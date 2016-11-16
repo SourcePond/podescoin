@@ -1,6 +1,5 @@
 package ch.sourcepond.utils.podescoin.internal;
 
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -15,11 +14,13 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.TestComponent;
 import ch.sourcepond.utils.podescoin.internal.FieldInjectionClassVisitorTest.VerifyPushByteConstantReadObjectAlreadyDefined;
 
 public class MixedClassVisitorTest extends ClassVisitorTest {
 
+	@Recipient
 	public static class ClassWithFieldsAndInjectionMethod implements Serializable {
 
 		@Inject
