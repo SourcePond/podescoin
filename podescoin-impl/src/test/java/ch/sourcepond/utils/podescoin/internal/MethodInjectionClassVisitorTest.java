@@ -31,24 +31,11 @@ import javax.inject.Named;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.objectweb.asm.ClassVisitor;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
-
-	@Mock
-	private TestComponent component1;
-
-	@Mock
-	private TestComponent component2;
-
-	@Override
-	protected ClassVisitor newVisitor() {
-		return new MethodInjectionClassVisitor(writer, new InspectForInjectorMethodClassVisitor(visitor));
-	}
 
 	private static Object getFieldValue(final String pFieldName, final Object pObj) throws Exception {
 		final Field f = pObj.getClass().getDeclaredField(pFieldName);

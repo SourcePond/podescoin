@@ -16,7 +16,6 @@ import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
 
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
@@ -27,8 +26,8 @@ final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 	private String injectorMethodDesc;
 	private boolean hasObjectInputStream;
 
-	InspectForInjectorMethodClassVisitor(final ClassVisitor pWriter) {
-		super(pWriter);
+	InspectForInjectorMethodClassVisitor() {
+		super(null);
 	}
 
 	@Override
@@ -70,7 +69,7 @@ final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 
 		Type[] argumentTypes = getArgumentTypes(pInjectorMethodDesc);
 		if (hasObjectInputStream) {
-			Type[] reducedArgumentTypes = new Type[argumentTypes.length - 1];
+			final Type[] reducedArgumentTypes = new Type[argumentTypes.length - 1];
 			arraycopy(argumentTypes, 1, reducedArgumentTypes, 0, reducedArgumentTypes.length);
 			argumentTypes = reducedArgumentTypes;
 		}

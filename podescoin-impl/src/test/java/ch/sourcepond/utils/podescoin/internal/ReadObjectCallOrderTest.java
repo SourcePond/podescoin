@@ -27,8 +27,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.Test;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
@@ -73,12 +71,6 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
 			readObjectCalls.add(CHILD);
 		}
-	}
-
-	@Override
-	protected ClassVisitor newVisitor() {
-		return new MethodInjectionClassVisitor(new ClassWriter(ClassWriter.COMPUTE_MAXS),
-				new InspectForInjectorMethodClassVisitor(null));
 	}
 
 	@Test

@@ -13,6 +13,10 @@ package ch.sourcepond.utils.podescoin;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -20,13 +24,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 import ch.sourcepond.utils.podescoin.internal.BundleInjector;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinClassLoader;
+import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
 
 public abstract class ClassVisitorTest {
 	protected static PodesCoinClassLoader loader = new PodesCoinClassLoader();
@@ -46,7 +50,11 @@ public abstract class ClassVisitorTest {
 	@Mock
 	protected BundleContext context;
 
-	protected ClassVisitor visitor;
+	@Mock
+	protected TestComponent component1;
+
+	@Mock
+	protected TestComponent component2;
 
 	@Before
 	public void setup() {
@@ -56,10 +64,7 @@ public abstract class ClassVisitorTest {
 		when(detector.getBundle(Mockito.any())).thenReturn(bundle);
 		Injector.factory = factory;
 		Injector.detector = detector;
-		visitor = newVisitor();
 	}
-
-	protected abstract ClassVisitor newVisitor();
 
 	@After
 	public void tearDown() {
@@ -72,5 +77,18 @@ public abstract class ClassVisitorTest {
 		final Method method = pObj.getClass().getDeclaredMethod(pName, pArgumentTypes);
 		method.setAccessible(true);
 		return method;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> T cloneObject(final T pObj) throws Exception {
+		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		try (final ObjectOutputStream out = new ObjectOutputStream(bout)) {
+			out.writeObject(pObj);
+		}
+
+		try (final ObjectInputStream in = new PodesCoinObjectInputStream(loader,
+				new ByteArrayInputStream(bout.toByteArray()))) {
+			return (T) in.readObject();
+		}
 	}
 }

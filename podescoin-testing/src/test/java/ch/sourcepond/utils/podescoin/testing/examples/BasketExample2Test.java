@@ -30,12 +30,14 @@ import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Item;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Product;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.ProductService;
+import ch.sourcepond.utils.podescoin.testing.examples.basket.StockService;
 
 public class BasketExample2Test {
 	private static final String ADDRESS_ID = "1234";
 	private static final String PRODUCT_ID = "5678";
 	private static final String ORDER_NUMBER = "9123";
 	private static final int QUANTITY = 2;
+	private static final int STOCK = 10;
 
 	@Component
 	@Mock
@@ -44,6 +46,10 @@ public class BasketExample2Test {
 	@Component("product.service")
 	@Mock
 	private ProductService productService;
+
+	@Component("stock.service")
+	@Mock
+	private StockService stockService;
 
 	@Mock
 	private Address address;
@@ -65,6 +71,7 @@ public class BasketExample2Test {
 		when(productService.load(PRODUCT_ID)).thenReturn(product);
 		when(address.getAddressId()).thenReturn(ADDRESS_ID);
 		when(product.getProductId()).thenReturn(PRODUCT_ID);
+		when(stockService.getStock(PRODUCT_ID)).thenReturn(STOCK);
 
 		final Basket basket = new Basket(address);
 		basket.setOrderNumber(ORDER_NUMBER);
@@ -83,5 +90,6 @@ public class BasketExample2Test {
 		final Item clonedItem = items.get(0);
 		assertEquals(QUANTITY, clonedItem.getQuantity());
 		assertSame(product, clonedItem.getProduct());
+		assertEquals(STOCK, clonedItem.getStock());
 	}
 }

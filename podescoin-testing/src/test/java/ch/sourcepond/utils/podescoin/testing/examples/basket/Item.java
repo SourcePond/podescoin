@@ -24,8 +24,14 @@ public class Item implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	@Inject
+	@Named("stock.service")
+	private transient StockService stockService;
+
 	private transient Product product;
 	private int quantity;
+	private int stock;
 
 	public Item(final Product pProduct) {
 		product = pProduct;
@@ -35,11 +41,16 @@ public class Item implements Serializable {
 		return product;
 	}
 
+	public int getStock() {
+		return stock;
+	}
+
 	@Inject
 	void initProduct(final ObjectInputStream in, @Named("product.service") final ProductService pProductService)
 			throws ClassNotFoundException, IOException {
 		in.defaultReadObject();
 		product = pProductService.load(in.readUTF());
+		stock = stockService.getStock(product.getProductId());
 	}
 
 	private void writeObject(final ObjectOutputStream out) throws IOException {

@@ -27,18 +27,11 @@ import javax.inject.Named;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
-
-	@Override
-	protected ClassVisitor newVisitor() {
-		return new FieldInjectionClassVisitor(new ClassWriter(0));
-	}
 
 	/**
 	 * Test-class for verifying pushByteConstant

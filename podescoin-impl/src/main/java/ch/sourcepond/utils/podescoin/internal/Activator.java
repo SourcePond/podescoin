@@ -39,7 +39,8 @@ public final class Activator implements BundleActivator, WeavingHook {
 
 	@Override
 	public void weave(final WovenClass wovenClass) {
-		if (!context.getBundle().equals(wovenClass.getBundleWiring().getBundle()) && TRANSFORMING == wovenClass.getState()) {
+		if (!context.getBundle().equals(wovenClass.getBundleWiring().getBundle())
+				&& TRANSFORMING == wovenClass.getState()) {
 			try {
 				wovenClass.setBytes(transform(wovenClass.getBytes()));
 				wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
@@ -48,22 +49,33 @@ public final class Activator implements BundleActivator, WeavingHook {
 			}
 		}
 	}
-	
+
 	public static byte[] transform(final byte[] pOriginalClassBytes) {
 		ClassReader reader = new ClassReader(pOriginalClassBytes);
-		ClassWriter writer = new ClassWriter(reader, 0);
 
-		final InspectForInjectorMethodClassVisitor inspector = new InspectForInjectorMethodClassVisitor(writer);
-		ClassVisitor visitor = new FieldInjectionClassVisitor(inspector);
+		// First step: determine injector methods; this needs a full visit of
+		// the class in order to find all possibilities. If more than one
+		// injector method has been detected, an
+		// AmbiguousInjectorMethodsException will be caused to be thrown.
+		final InspectForInjectorMethodClassVisitor inspector = new InspectForInjectorMethodClassVisitor();
 		try {
-			reader.accept(visitor, 0);
+			reader.accept(inspector, 0);
 		} catch (final AmbiguousInjectorMethodsException e) {
 			throw new WeavingException(e.getMessage(), e);
 		}
 
+		// Second step: create or enhance readObject which calls the injector
+		// method
+		ClassWriter writer = new ClassWriter(reader, 0);
+		ClassVisitor visitor = new MethodInjectionClassVisitor(writer, inspector);
+		reader.accept(visitor, 0);
+
+		// Third step: create or enhance readObject which injects fields. This
+		// is done at the end because fields should have been injected before an
+		// injector method is called (LIFO order)
 		reader = new ClassReader(writer.toByteArray());
 		writer = new ClassWriter(reader, 0);
-		visitor = new MethodInjectionClassVisitor(writer, inspector);
+		visitor = new FieldInjectionClassVisitor(writer);
 		reader.accept(visitor, 0);
 
 		return writer.toByteArray();
