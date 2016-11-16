@@ -8,7 +8,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.utils.podescoin.internal;
+package ch.sourcepond.utils.podescoin.internal.method;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
@@ -19,14 +19,16 @@ import static org.objectweb.asm.Type.getArgumentTypes;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
+import ch.sourcepond.utils.podescoin.internal.NamedClassVisitor;
+
+public final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
 	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasObjectInputStream;
 
-	InspectForInjectorMethodClassVisitor() {
+	public InspectForInjectorMethodClassVisitor() {
 		super(null);
 	}
 

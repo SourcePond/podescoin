@@ -21,9 +21,10 @@ import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
-import ch.sourcepond.utils.podescoin.AmbiguousComponentException;
-import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.Injector;
+import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.method.InspectForInjectorMethodClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.method.MethodInjectionClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
 	private BundleContext context;

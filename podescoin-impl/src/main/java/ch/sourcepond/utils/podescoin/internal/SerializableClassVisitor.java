@@ -36,7 +36,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
-abstract class SerializableClassVisitor extends NamedClassVisitor {
+public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	private static final Logger LOG = getLogger(SerializableClassVisitor.class);
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;

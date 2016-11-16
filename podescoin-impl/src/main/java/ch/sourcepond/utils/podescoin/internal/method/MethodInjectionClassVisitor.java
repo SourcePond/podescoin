@@ -8,7 +8,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.utils.podescoin.internal;
+package ch.sourcepond.utils.podescoin.internal.method;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECTOR_INTERNAL_NAME;
@@ -40,8 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.sourcepond.utils.podescoin.Container;
+import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 
-class MethodInjectionClassVisitor extends SerializableClassVisitor {
+public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(MethodInjectionClassVisitor.class);
 	private static final String CONTAINER_INTERNAL_NAME = getInternalName(Container.class);
 	private static final String GET_CONTAINER_METHOD_NAME = "getContainer";

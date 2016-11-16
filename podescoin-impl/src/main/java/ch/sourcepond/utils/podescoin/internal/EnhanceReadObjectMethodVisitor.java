@@ -20,6 +20,8 @@ import java.io.ObjectInputStream;
 
 import org.objectweb.asm.MethodVisitor;
 
+import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
+
 final class EnhanceReadObjectMethodVisitor extends MethodVisitor {
 	static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(ObjectInputStream.class));

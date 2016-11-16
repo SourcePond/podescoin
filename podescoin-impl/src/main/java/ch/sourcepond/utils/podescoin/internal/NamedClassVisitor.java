@@ -14,7 +14,7 @@ import static org.objectweb.asm.Opcodes.ASM5;
 
 import org.objectweb.asm.ClassVisitor;
 
-abstract class NamedClassVisitor extends ClassVisitor {
+public abstract class NamedClassVisitor extends ClassVisitor {
 	private String className;
 	private String classInternalName;
 	
@@ -22,11 +22,11 @@ abstract class NamedClassVisitor extends ClassVisitor {
 		super(ASM5, cv);
 	}
 	
-	final String getClassName() {
+	public final String getClassName() {
 		return className;
 	}
 	
-	final String getInternalClassName() {
+	public final String getInternalClassName() {
 		return classInternalName;
 	}
 	

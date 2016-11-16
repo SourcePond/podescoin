@@ -24,11 +24,13 @@ import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
+import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
@@ -203,19 +205,12 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void doNotVisitFinalField() throws Exception {
-		final Class<?> enhancedClass = loader.loadClass(DoNotVisitFinalField.class.getName());
-
 		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
+			loader.loadClass(DoNotVisitFinalField.class.getName());
+			fail("Exception expected here");
+		} catch (final IllegalFieldDeclarationException expected) {
 			// noop
 		}
-
-		// This should not throw an exception
-		final Serializable obj = (Serializable) enhancedClass.newInstance();
-		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
 
 		verifyZeroInteractions(injector);
 	}
@@ -236,19 +231,12 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Test
 	public void doNotVisitPersistentField() throws Exception {
-		final Class<?> enhancedClass = loader.loadClass(DoNotVisitPersistentField.class.getName());
-
 		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
+			loader.loadClass(DoNotVisitPersistentField.class.getName());
 			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
+		} catch (final IllegalFieldDeclarationException ex) {
 			// noop
 		}
-
-		// This should not throw an exception
-		final Serializable obj = (Serializable) enhancedClass.newInstance();
-		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
 
 		verifyZeroInteractions(injector);
 	}

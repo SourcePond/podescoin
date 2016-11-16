@@ -8,7 +8,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.utils.podescoin.internal;
+package ch.sourcepond.utils.podescoin.internal.field;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECTOR_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.AASTORE;
@@ -35,8 +35,10 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
+import ch.sourcepond.utils.podescoin.internal.Access;
+import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 
-final class FieldInjectionClassVisitor extends SerializableClassVisitor {
+public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	private static final String INJECTOR_METHOD_NAME = "injectComponents";
 	private static final String INJECTOR_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(Serializable.class), getType(String[][].class));
