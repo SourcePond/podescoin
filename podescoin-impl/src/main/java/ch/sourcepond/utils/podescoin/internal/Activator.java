@@ -21,6 +21,8 @@ import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
+import ch.sourcepond.utils.podescoin.AmbiguousComponentException;
+import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.Injector;
 
 public final class Activator implements BundleActivator, WeavingHook {
@@ -58,11 +60,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// injector method has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
 		final InspectForInjectorMethodClassVisitor inspector = new InspectForInjectorMethodClassVisitor();
-		try {
-			reader.accept(inspector, 0);
-		} catch (final AmbiguousInjectorMethodsException e) {
-			throw new WeavingException(e.getMessage(), e);
-		}
+		reader.accept(inspector, 0);
 
 		// Second step: create or enhance readObject which calls the injector
 		// method

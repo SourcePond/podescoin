@@ -11,7 +11,10 @@ limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
 import static ch.sourcepond.utils.podescoin.InjectorTest.readBytes;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -21,6 +24,7 @@ import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,6 +32,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.wiring.BundleWiring;
@@ -88,6 +93,19 @@ public class ActivatorTest {
 	public void stop() throws Exception {
 		activator.stop(context);
 		verifyZeroInteractions(context);
+	}
+	
+	@Test
+	public void verifyWeavingException_ThrowableOccurred() throws Exception {
+		activator.start(context);
+		final RuntimeException expected = new RuntimeException("any");
+		doThrow(expected).when(wovenClass).getBytes();
+		try {
+			activator.weave(wovenClass);
+			fail("Exception expected here");
+		} catch (WeavingException e) {
+			assertSame(expected, e.getCause());
+		}
 	}
 
 	@Test
