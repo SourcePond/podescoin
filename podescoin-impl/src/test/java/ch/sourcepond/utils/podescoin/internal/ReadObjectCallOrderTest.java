@@ -91,11 +91,11 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		}
 
 		assertEquals(2, readObjectCalls.size());
-		assertEquals(CHILD, readObjectCalls.get(0));
-		assertEquals(PARENT, readObjectCalls.get(1));
+		assertEquals(PARENT, readObjectCalls.get(0));
+		assertEquals(CHILD, readObjectCalls.get(1));
 
 		assertEquals(2, injectCalls.size());
-		assertEquals(CHILD, injectCalls.get(0));
-		assertEquals(PARENT, injectCalls.get(1));
+		assertEquals(PARENT, injectCalls.get(0));
+		assertEquals(CHILD, injectCalls.get(1));
 	}
 }

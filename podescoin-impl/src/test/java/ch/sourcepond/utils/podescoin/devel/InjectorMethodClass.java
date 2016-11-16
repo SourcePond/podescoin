@@ -20,7 +20,7 @@ import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class InjectorMethodClass implements Serializable {
 
-	public void initObject(final TestComponent pComponent, final TestComponent pComponent1,
+	 void initObject(final TestComponent pComponent, final TestComponent pComponent1,
 			final TestComponent pComponent2, final TestComponent pComponent3, final TestComponent pComponent4,
 			final TestComponent pComponent5, final TestComponent pComponent6, final TestComponent pComponent7,
 			final TestComponent pComponent8, final TestComponent pComponent9) throws Exception {

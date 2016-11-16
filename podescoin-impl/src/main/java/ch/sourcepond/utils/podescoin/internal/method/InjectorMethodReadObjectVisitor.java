@@ -109,7 +109,7 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 			visitTypeInsn(CHECKCAST, components[i][1].replace('.', '/'));
 		}
 
-		visitMethodInsn(INVOKEVIRTUAL, inspector.getInternalClassName(), inspector.getInjectorMethodName(),
+		visitMethodInsn(Opcodes.INVOKESPECIAL, inspector.getInternalClassName(), inspector.getInjectorMethodName(),
 				inspector.getInjectorMethodDesc(), false);
 
 		visitLabel(l1);
