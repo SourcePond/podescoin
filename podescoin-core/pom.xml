@@ -18,7 +18,7 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>podescoin-impl</artifactId>
+	<artifactId>podescoin-core</artifactId>
 	<inceptionYear>2015</inceptionYear>
 	<packaging>bundle</packaging>
 	<description>

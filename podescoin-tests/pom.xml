@@ -35,7 +35,7 @@
 		<dependency>
 			<scope>test</scope>
 			<groupId>ch.sourcepond.utils</groupId>
-			<artifactId>podescoin-impl</artifactId>
+			<artifactId>podescoin-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

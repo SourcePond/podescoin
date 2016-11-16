@@ -33,7 +33,7 @@
 	</properties>
 
 	<modules>
-		<module>podescoin-impl</module>
+		<module>podescoin-core</module>
 		<module>podescoin-feature</module>
 		<module>podescoin-testing</module>
 		<module>podescoin-tests</module>
