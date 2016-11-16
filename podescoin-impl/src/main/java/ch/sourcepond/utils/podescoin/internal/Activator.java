@@ -23,7 +23,6 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
-import ch.sourcepond.utils.podescoin.internal.method.InspectForInjectorMethodClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.method.MethodInjectionClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
@@ -60,7 +59,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// the class in order to find all possibilities. If more than one
 		// injector method has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
-		final InspectForInjectorMethodClassVisitor inspector = new InspectForInjectorMethodClassVisitor();
+		final InspectClassVisitor inspector = new InspectClassVisitor();
 		reader.accept(inspector, 0);
 
 		// Second step: create or enhance readObject which calls the injector
@@ -74,7 +73,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// injector method is called (LIFO order)
 		reader = new ClassReader(writer.toByteArray());
 		writer = new ClassWriter(reader, 0);
-		visitor = new FieldInjectionClassVisitor(writer);
+		visitor = new FieldInjectionClassVisitor(inspector, writer);
 		reader.accept(visitor, 0);
 
 		return writer.toByteArray();

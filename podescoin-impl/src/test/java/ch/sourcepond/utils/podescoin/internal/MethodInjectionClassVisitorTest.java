@@ -10,7 +10,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
-import static ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -64,15 +63,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	@Test
 	public void readObjectSpecified_WithType() throws Exception {
 		final Class<?> enhancedClass = loader.loadClass(ReadObjectSpecified_WithType.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component1);
 
 		// This should not throw an exception
@@ -96,15 +86,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	@Test
 	public void noReadObjectSpecified_WithType() throws Exception {
 		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithType.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component1);
 
 		// This should not throw an exception
@@ -130,15 +111,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	public void noReadObjectSpecified_WithType_And_ObjectInputStream() throws Exception {
 		final Class<?> enhancedClass = loader
 				.loadClass(NoReadObjectSpecified_WithType_And_ObjectInputStream.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		when(injector.getComponentByTypeName(TestComponent.class.getName(), 0)).thenReturn(component1);
 
 		// This should not throw an exception
@@ -166,15 +138,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	@Test
 	public void noReadObjectSpecified_WithComponentId() throws Exception {
 		final Class<?> enhancedClass = loader.loadClass(NoReadObjectSpecified_WithComponentId.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		when(injector.getComponentById("componentId1", TestComponent.class.getName(), 0)).thenReturn(component1);
 		when(injector.getComponentById("componentId2", TestComponent.class.getName(), 1)).thenReturn(component2);
 
@@ -211,15 +174,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	public void noReadObjectSpecified_WithComponentId_And_ObjectInputStream() throws Exception {
 		final Class<?> enhancedClass = loader
 				.loadClass(NoReadObjectSpecified_WithComponentId_And_ObjectInputStream.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		when(injector.getComponentById("componentId1", TestComponent.class.getName(), 0)).thenReturn(component1);
 		when(injector.getComponentById("componentId2", TestComponent.class.getName(), 1)).thenReturn(component2);
 
@@ -251,15 +205,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	public void noReadObjectSpecified_WithComponentId_ThrowException() throws Exception {
 		final Class<?> enhancedClass = loader
 				.loadClass(NoReadObjectSpecified_WithComponentId_ThrowException.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		when(injector.getComponentById("componentId1", TestComponent.class.getName(), 0)).thenReturn(component1);
 		when(injector.getComponentById("componentId2", TestComponent.class.getName(), 1)).thenReturn(component2);
 

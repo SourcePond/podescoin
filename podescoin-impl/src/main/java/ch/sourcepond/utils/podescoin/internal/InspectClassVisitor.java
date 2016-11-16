@@ -8,7 +8,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.utils.podescoin.internal.method;
+package ch.sourcepond.utils.podescoin.internal;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
@@ -19,46 +19,53 @@ import static org.objectweb.asm.Type.getArgumentTypes;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import ch.sourcepond.utils.podescoin.internal.NamedClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.method.InjectorMethodVisitor;
 
-public final class InspectForInjectorMethodClassVisitor extends NamedClassVisitor {
+public final class InspectClassVisitor extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
 	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasObjectInputStream;
+	private int readObjectStartLine;
 
-	public InspectForInjectorMethodClassVisitor() {
+	public InspectClassVisitor() {
 		super(null);
+	}
+
+	public int getReadObjectStartLine() {
+		return readObjectStartLine;
 	}
 
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
-		if (!CONSTRUCTOR_NAME.equals(name)) {
-			return new InjectorMethodVisitor(this, super.visitMethod(access, name, desc, signature, exceptions), name,
-					desc);
+		MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
+		if (SerializableClassVisitor.isReadObjectMethod(access, name, desc, exceptions)) {
+			visitor = new LineNumberDetection(this, visitor);
+		} else if (!CONSTRUCTOR_NAME.equals(name)) {
+			visitor = new InjectorMethodVisitor(this, visitor, name, desc);
 		}
-		return super.visitMethod(access, name, desc, signature, exceptions);
+		return visitor;
 	}
 
-	void addNamedComponent(final String pComponentId, final int pParameterIndex) {
+	public void addNamedComponent(final String pComponentId, final int pParameterIndex) {
 		namedComponents[hasObjectInputStream ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
 	}
 
-	boolean isArgumentTypesInitialized() {
+	public boolean isArgumentTypesInitialized() {
 		return namedComponents != null;
 	}
 
-	String[][] getComponents() {
+	public String[][] getComponents() {
 		return namedComponents;
 	}
 
-	boolean hasObjectInputStream() {
+	public boolean hasObjectInputStream() {
 		return hasObjectInputStream;
 	}
 
-	void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
+	public void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
 			final String pInjectorMethodDesc) {
 		if (isArgumentTypesInitialized()) {
 			throw new AmbiguousInjectorMethodsException(
@@ -85,6 +92,10 @@ public final class InspectForInjectorMethodClassVisitor extends NamedClassVisito
 			namedComponents = EMPTY;
 		}
 	}
+	
+	public boolean isInEnhanceMode() {
+		return readObjectStartLine != 0;
+	}
 
 	public String getInjectorMethodName() {
 		return injectorMethodName;
@@ -92,5 +103,9 @@ public final class InspectForInjectorMethodClassVisitor extends NamedClassVisito
 
 	public String getInjectorMethodDesc() {
 		return injectorMethodDesc;
+	}
+
+	public void setReadObjectStartLine(final int line) {
+		readObjectStartLine = line;
 	}
 }

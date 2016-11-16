@@ -24,24 +24,27 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
-final class InjectorMethodVisitor extends MethodVisitor {
+import ch.sourcepond.utils.podescoin.internal.InspectClassVisitor;
+
+public final class InjectorMethodVisitor extends MethodVisitor {
 	private static final Logger LOG = getLogger(InjectorMethodVisitor.class);
-	private final InspectForInjectorMethodClassVisitor classVisitor;
+	private final InspectClassVisitor classVisitor;
 	private final String injectorMethodName;
 	private final String injectorMethodDesc;
 
-	public InjectorMethodVisitor(final InspectForInjectorMethodClassVisitor pClassVisitor, final MethodVisitor mv,
+	public InjectorMethodVisitor(final InspectClassVisitor pClassVisitor, final MethodVisitor mv,
 			final String pInjectorMethodName, final String pInjectorMethodDesc) {
 		super(ASM5, mv);
 		classVisitor = pClassVisitor;
 		injectorMethodName = pInjectorMethodName;
 		injectorMethodDesc = pInjectorMethodDesc;
 	}
-	
+
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
 		if (visible && INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
-			LOG.debug("{} : {} : added with descriptor {}", classVisitor.getClassName(), injectorMethodName, injectorMethodDesc);
+			LOG.debug("{} : {} : added with descriptor {}", classVisitor.getClassName(), injectorMethodName,
+					injectorMethodDesc);
 			classVisitor.initArgumentTypes(includeObjectInputStream(), injectorMethodName, injectorMethodDesc);
 		}
 		return super.visitAnnotation(desc, visible);
@@ -66,7 +69,7 @@ final class InjectorMethodVisitor extends MethodVisitor {
 		}
 		return includeObjectInputStream;
 	}
-	
+
 	void setComponentId(final String pComponentId, final int pParameterIndex) {
 		LOG.debug("{} : {} : use component-id {} for parameter index {}", classVisitor.getClassName(),
 				injectorMethodName, pComponentId, pParameterIndex);

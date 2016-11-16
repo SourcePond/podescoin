@@ -10,7 +10,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
-import static ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor.INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -24,7 +23,6 @@ import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -65,14 +63,6 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	@Test
 	public void verifyPushByteConstant() throws Exception {
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstant.class.getName());
-
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
 
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
@@ -132,14 +122,6 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	public void verifyPushByteConstantWithId() throws Exception {
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantWithId.class.getName());
 
-		try {
-			// This method should NOT exist
-			enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME);
-			fail("Exception expected");
-		} catch (final NoSuchMethodException expected) {
-			// noop
-		}
-
 		// This should not throw an exception
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
 		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
@@ -174,9 +156,6 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	@Test
 	public void verifyPushByteConstantReadObjectAlreadyDefined() throws Exception {
 		final Class<?> enhancedClass = loader.loadClass(VerifyPushByteConstantReadObjectAlreadyDefined.class.getName());
-
-		// This method should exist
-		enhancedClass.getDeclaredMethod(INJECT_BLUEPRINT_COMPONENTS_METHOD_NAME, ObjectInputStream.class);
 
 		final Serializable obj = (Serializable) enhancedClass.newInstance();
 		final ObjectInputStream objInStream = mock(ObjectInputStream.class);
