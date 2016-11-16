@@ -16,6 +16,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import javax.inject.Named;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 
 import ch.sourcepond.utils.podescoin.CloneContext;
 import ch.sourcepond.utils.podescoin.CloneContextFactory;
-import ch.sourcepond.utils.podescoin.Component;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -39,15 +40,15 @@ public class BasketExample2Test {
 	private static final int QUANTITY = 2;
 	private static final int STOCK = 10;
 
-	@Component
+	@Named
 	@Mock
 	private AddressService addressService;
 
-	@Component("product.service")
+	@Named("product.service")
 	@Mock
 	private ProductService productService;
 
-	@Component("stock.service")
+	@Named("stock.service")
 	@Mock
 	private StockService stockService;
 

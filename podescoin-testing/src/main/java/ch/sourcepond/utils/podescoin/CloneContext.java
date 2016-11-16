@@ -15,6 +15,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +45,8 @@ public class CloneContext {
 	private final BundleDetector detector = mock(BundleDetector.class);
 	private final Bundle bundle = mock(Bundle.class);
 	private final BundleContext bundleContext = mock(BundleContext.class);
-	private final BlueprintContainer blueprintContainer = mock(BlueprintContainer.class);
+	private final BlueprintContainer blueprintContainer = mock(BlueprintContainer.class,
+			withSettings().name("BlueprintContainer"));
 	@SuppressWarnings("unchecked")
 	private final ServiceReference<BlueprintContainer> blueprintContainerRef = mock(ServiceReference.class);
 	private final Collection<ServiceReference<BlueprintContainer>> blueprintContainerRefs = asList(
@@ -66,7 +69,10 @@ public class CloneContext {
 			// Will never happen
 			e.printStackTrace();
 		}
-		when(bundleContext.getService(blueprintContainerRef)).thenReturn(blueprintContainer);
+		when(bundleContext.getService(blueprintContainerRef))
+				.thenReturn((BlueprintContainer) Proxy.newProxyInstance(getClass().getClassLoader(),
+						new Class<?>[] { BlueprintContainer.class },
+						new BlueprintContainerHandler(blueprintContainer)));
 		when(blueprintContainer.getComponentIds()).thenReturn(componentIds);
 	}
 
@@ -78,7 +84,7 @@ public class CloneContext {
 		try {
 			when(bundle.loadClass(pType.getName())).thenReturn((Class) pType);
 		} catch (final ClassNotFoundException e) {
-			// Should never happen
+			// Will never happen
 			e.printStackTrace();
 		}
 		when(blueprintContainer.getComponentMetadata(componentId)).thenReturn(meta);
@@ -87,12 +93,13 @@ public class CloneContext {
 	}
 
 	public <T> CloneContext addComponent(final T pComponent, final Class<T> pType) {
-		final String componentId = UUID.randomUUID().toString();
-		return addComponentMetadata(pComponent, componentId, pType);
+		return addComponentMetadata(pComponent, null, pType);
 	}
 
 	public <T> CloneContext addComponent(final T pComponent, final String pComponentId, final Class<T> pType) {
-		return addComponentMetadata(pComponent, pComponentId, pType);
+		final String componentId = pComponentId == null || pComponentId.isEmpty() ? UUID.randomUUID().toString()
+				: pComponentId;
+		return addComponentMetadata(pComponent, componentId, pType);
 	}
 
 	@SuppressWarnings("unchecked")
