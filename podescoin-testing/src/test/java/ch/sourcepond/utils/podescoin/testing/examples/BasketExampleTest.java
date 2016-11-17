@@ -17,10 +17,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import ch.sourcepond.utils.podescoin.CloneContext;
-import ch.sourcepond.utils.podescoin.CloneContextFactory;
+import ch.sourcepond.utils.podescoin.testing.CloneContext;
+import ch.sourcepond.utils.podescoin.testing.CloneContextFactory;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -40,6 +42,19 @@ public class BasketExampleTest {
 	private final StockService stockService = mock(StockService.class);
 	private final Address address = mock(Address.class);
 	private final Product product = mock(Product.class);
+	private CloneContext ctx;
+
+	@Before
+	public void setup() {
+		ctx = CloneContextFactory.newContext().addComponent(addressService, AddressService.class)
+				.addComponent(productService, "product.service", ProductService.class)
+				.addComponent(stockService, "stock.service", StockService.class);
+	}
+
+	@After
+	public void tearDown() {
+		ctx.tearDown();
+	}
 
 	@Test
 	public void verifyBasket() throws Exception {
@@ -48,10 +63,6 @@ public class BasketExampleTest {
 		when(address.getAddressId()).thenReturn(ADDRESS_ID);
 		when(product.getProductId()).thenReturn(PRODUCT_ID);
 		when(stockService.getStock(PRODUCT_ID)).thenReturn(STOCK);
-
-		final CloneContext ctx = CloneContextFactory.newContext().addComponent(addressService, AddressService.class)
-				.addComponent(productService, "product.service", ProductService.class)
-				.addComponent(stockService, "stock.service", StockService.class);
 
 		final Basket basket = new Basket(address);
 		basket.setOrderNumber(ORDER_NUMBER);

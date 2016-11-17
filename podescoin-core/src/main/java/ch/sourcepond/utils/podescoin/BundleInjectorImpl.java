@@ -41,7 +41,7 @@ import ch.sourcepond.utils.podescoin.internal.BundleInjector;
  *
  */
 final class BundleInjectorImpl implements ServiceListener, Container, BundleInjector {
-	static final String OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME = "(osgi.blueprint.container.symbolicname=%s)";
+	private static final String OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME_FILTER = "(osgi.blueprint.container.symbolicname=%s)";
 	private final Bundle bundle;
 	private final ServiceReference<BlueprintContainer> containerRef;
 	private final BlueprintContainer container;
@@ -57,7 +57,7 @@ final class BundleInjectorImpl implements ServiceListener, Container, BundleInje
 			final BundleContext context = bundle.getBundleContext();
 			final Collection<ServiceReference<BlueprintContainer>> refs = context.getServiceReferences(
 					BlueprintContainer.class,
-					format(OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME, bundle.getSymbolicName()));
+					format(OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME_FILTER, bundle.getSymbolicName()));
 			final Iterator<ServiceReference<BlueprintContainer>> it = refs.iterator();
 			if (!it.hasNext()) {
 				throw new IllegalStateException(
@@ -126,8 +126,8 @@ final class BundleInjectorImpl implements ServiceListener, Container, BundleInje
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * ch.sourcepond.utils.podescoin.IBundleInjector#initDeserializedObject(java.io.
-	 * Serializable, java.lang.String[][])
+	 * ch.sourcepond.utils.podescoin.IBundleInjector#initDeserializedObject(java
+	 * .io. Serializable, java.lang.String[][])
 	 */
 	@Override
 	public void initDeserializedObject(final Serializable pObj, final String[][] pComponentToFields)
