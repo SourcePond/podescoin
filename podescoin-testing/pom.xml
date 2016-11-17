@@ -57,6 +57,11 @@
 		</plugins>
 	</build>
 
+	<ciManagement>
+		<url>${jenkins.baseurl}/job/${parent.artifactId}</url>
+		<system>Jenkins</system>
+	</ciManagement>
+
 	<distributionManagement>
 		<site>
 			<id>www.sourcepond.ch</id>

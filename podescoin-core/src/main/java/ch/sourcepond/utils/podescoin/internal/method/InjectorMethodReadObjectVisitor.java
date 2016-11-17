@@ -52,6 +52,7 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private static final String GET_COMPONENT_BY_TYPE_DESC = getMethodDescriptor(getType(Object.class),
 			getType(String.class), getType(int.class));
 	private static final String OBJECT_INPUT_STREAM_INTERNAL_NAME = getInternalName(ObjectInputStream.class);
+	private static final String CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME = getInternalName(ClassNotFoundException.class);
 	private static final String EXCEPTION_INTERNAL_NAME = getInternalName(Exception.class);
 	private static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
 	private static final String GET_MESSAGE_NAME = "getMessage";
@@ -70,10 +71,16 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	@Override
 	public void visitEnhance() {
 		visitCode();
+
 		final Label l0 = new Label();
 		final Label l1 = new Label();
 		final Label l2 = new Label();
-		visitTryCatchBlock(l0, l1, l2, EXCEPTION_INTERNAL_NAME);
+		visitTryCatchBlock(l0, l1, l2, CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME);
+		final Label l3 = new Label();
+		visitTryCatchBlock(l0, l1, l3, IO_EXCEPTION_INTERNAL_NAME);
+		final Label l4 = new Label();
+		visitTryCatchBlock(l0, l1, l4, EXCEPTION_INTERNAL_NAME);
+
 		visitVarInsn(ALOAD, 0);
 		visitMethodInsn(INVOKESTATIC, INJECTOR_INTERNAL_NAME, GET_CONTAINER_METHOD_NAME, GET_CONTAINER_METHOD_DESC,
 				false);
@@ -115,12 +122,23 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 				inspector.getInjectorMethodDesc(), false);
 
 		visitLabel(l1);
-		final Label l3 = new Label();
-		visitJumpInsn(GOTO, l3);
+		final Label l5 = new Label();
+		visitJumpInsn(GOTO, l5);
 		visitLabel(l2);
 		visitFrame(Opcodes.F_FULL, 3, new Object[] { inspector.getInternalClassName(),
 				OBJECT_INPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
 				new Object[] { EXCEPTION_INTERNAL_NAME });
+
+		visitVarInsn(ASTORE, 3);
+		visitVarInsn(ALOAD, 3);
+		visitInsn(ATHROW);
+		visitLabel(l3);
+		visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { IO_EXCEPTION_INTERNAL_NAME });
+		visitVarInsn(ASTORE, 3);
+		visitVarInsn(ALOAD, 3);
+		visitInsn(ATHROW);
+		visitLabel(l4);
+		visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { EXCEPTION_INTERNAL_NAME });
 		visitVarInsn(ASTORE, 3);
 		visitTypeInsn(NEW, IO_EXCEPTION_INTERNAL_NAME);
 		visitInsn(DUP);
@@ -129,7 +147,7 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 		visitVarInsn(ALOAD, 3);
 		visitMethodInsn(INVOKESPECIAL, IO_EXCEPTION_INTERNAL_NAME, CONSTRUCTOR_NAME, CONSTRUCTOR_DESC, false);
 		visitInsn(ATHROW);
-		visitLabel(l3);
+		visitLabel(l5);
 		visitFrame(Opcodes.F_SAME, 0, null, 0, null);
 		visitInsn(RETURN);
 		visitMaxs(increaseByOne ? stackSize + 1 : stackSize, 4);

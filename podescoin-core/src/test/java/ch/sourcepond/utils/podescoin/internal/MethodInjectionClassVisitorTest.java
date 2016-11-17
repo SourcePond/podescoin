@@ -11,6 +11,7 @@ limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -280,7 +281,7 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	}
 
 	@Recipient
-	public class DoNotCallSuperMethod_C extends DoNotCallSuperMethod_B {
+	public static class DoNotCallSuperMethod_C extends DoNotCallSuperMethod_B {
 
 		/**
 		 * 
@@ -305,4 +306,85 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		}
 	}
 
+	public static ClassNotFoundException EXPECTED_CNF_EX = new ClassNotFoundException("");
+
+	@Recipient
+	public static class ClassNotFoundExceptionReThrown implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		public void inject(final TestComponent c) throws ClassNotFoundException, IOException {
+			throw EXPECTED_CNF_EX;
+		}
+	}
+
+	@Test
+	public void classNotFoundExceptionReThrown() throws Exception {
+		final Object obj = loader.loadClass(ClassNotFoundExceptionReThrown.class.getName()).newInstance();
+		try {
+			getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
+			fail("Exception expected");
+		} catch (final InvocationTargetException expected) {
+			assertSame(EXPECTED_CNF_EX, expected.getTargetException());
+		}
+	}
+
+	public static ClassNotFoundException EXPECTED_IO_EX = new ClassNotFoundException("");
+
+	@Recipient
+	public static class IOExceptionReThrown implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		public void inject(final TestComponent c) throws ClassNotFoundException, IOException {
+			throw EXPECTED_IO_EX;
+		}
+	}
+
+	@Test
+	public void ioExceptionReThrown() throws Exception {
+		final Object obj = loader.loadClass(IOExceptionReThrown.class.getName()).newInstance();
+		try {
+			getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
+			fail("Exception expected");
+		} catch (final InvocationTargetException expected) {
+			assertSame(EXPECTED_IO_EX, expected.getTargetException());
+		}
+	}
+
+	public static RuntimeException UNEXPECTED_EX = new RuntimeException();
+
+	@Recipient
+	public static class WrapUnexpectedExceptionIntoIOException implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		public void inject(final TestComponent c) throws ClassNotFoundException, IOException {
+			throw UNEXPECTED_EX;
+		}
+	}
+
+	@Test
+	public void wrapUnexpectedExceptionIntoIOException() throws Exception {
+		final Object obj = loader.loadClass(WrapUnexpectedExceptionIntoIOException.class.getName()).newInstance();
+		try {
+			getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, mock(ObjectInputStream.class));
+			fail("Exception expected");
+		} catch (final InvocationTargetException expected) {
+			assertNotSame(UNEXPECTED_EX, expected.getTargetException());
+			assertTrue(expected.getTargetException() instanceof IOException);
+		}
+	}
 }

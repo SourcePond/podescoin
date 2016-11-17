@@ -28,7 +28,7 @@ public class InjectorMethodClass implements Serializable {
 	void initObject(final TestComponent pComponent, final TestComponent pComponent1, final TestComponent pComponent2,
 			final TestComponent pComponent3, final TestComponent pComponent4, final TestComponent pComponent5,
 			final TestComponent pComponent6, final TestComponent pComponent7, final TestComponent pComponent8,
-			final TestComponent pComponent9) throws Exception {
+			final TestComponent pComponent9) throws IOException, ClassNotFoundException {
 
 	}
 
@@ -45,8 +45,12 @@ public class InjectorMethodClass implements Serializable {
 					injector.getComponentById("componentId5", "ch.sourcepond.utils.bci.TestComponent", 7),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 8),
 					injector.getComponentById("componentId6", "ch.sourcepond.utils.bci.TestComponent", 9));
+		} catch (final ClassNotFoundException e) {
+			throw e;
+		} catch (final IOException e) {
+			throw e;
 		} catch (final Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new IOException(e.getMessage(), e);
 		}
 
 		in.defaultReadObject();
