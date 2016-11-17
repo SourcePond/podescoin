@@ -10,7 +10,6 @@ import static org.objectweb.asm.Opcodes.ICONST_4;
 import static org.objectweb.asm.Opcodes.ICONST_5;
 import static org.objectweb.asm.Opcodes.RETURN;
 
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 public abstract class ReadObjectVisitor extends MethodVisitor {
@@ -61,15 +60,6 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 		}
 		}
 	}
-	
-	@Override
-	public void visitLineNumber(int line, Label start) {
-		if (inspector.isInEnhanceMode()) {
-			return;
-		}
-		super.visitLineNumber(line, start);
-	}
-
 
 	@Override
 	public final void visitCode() {
@@ -106,7 +96,7 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 	public final void visitEnd() {
 		// noop
 	}
-	
+
 	public abstract void visitEnhance();
 
 	public void visitEndEnhance() {
