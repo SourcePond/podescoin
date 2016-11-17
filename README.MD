@@ -51,7 +51,7 @@ public class Foo implements Serializable {
 	
 }
 ```
-Note: *@Recipient* is not inherited, so if want a whole class hierarchy to be enhanced with PodesCoin, you need to add this annotation on *every* class.
+Note: *@Recipient* is not inherited, so if you want a whole class hierarchy to be enhanced with PodesCoin, you need to add this annotation on *every* class.
 
 You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. You can use both mechanisms at the same time in the same class.
 
