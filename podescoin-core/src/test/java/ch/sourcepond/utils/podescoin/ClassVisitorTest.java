@@ -56,18 +56,25 @@ public abstract class ClassVisitorTest {
 	@Mock
 	protected TestComponent component2;
 
+	private BundleDetector originalDetector;
+	private BundleInjectorFactory originalFactory;
+
 	@Before
 	public void setup() {
 		initMocks(this);
 		when(factory.newInjector(bundle)).thenReturn(injector);
 		when(bundle.getBundleContext()).thenReturn(context);
 		when(detector.getBundle(Mockito.any())).thenReturn(bundle);
+		originalDetector = Injector.detector;
+		originalFactory = Injector.factory;
 		Injector.factory = factory;
 		Injector.detector = detector;
 	}
 
 	@After
 	public void tearDown() {
+		Injector.detector = originalDetector;
+		Injector.factory = originalFactory;
 		Injector.injectors.clear();
 	}
 
