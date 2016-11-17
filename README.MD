@@ -3,7 +3,7 @@ PodesCoin (**PO**st **DES**erialization **CO**mponent **IN**jection) is an OSGi 
 
 It allows you to work with injectable components in conjunction with your serializable classes without having a tight coupling between them. To achieve this, PodesCoin installs an [OSGi Weaving Hook](https://osgi.org/javadoc/r4v43/core/org/osgi/framework/hooks/weaving/WeavingHook.html) which creates (or enhances an existing) readObject method for injecting components from a Blueprint container into the object, see [JavaDoc of Serializable](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html) for further information about readObject.
 
-## Installation
+## Dependencies
 Bundle PodesCoin is available from Maven Central:
 
 ```
@@ -24,22 +24,46 @@ There is also a Karaf feature available:
 </dependency>
 ```
 
-## Initialization order
-As mentioned in the introduction section, PodesCoin enhances an existing readObject method (or generates it if not existing). Injectable fields will be initialized **before** the body of readObject is executed. This insures, that your services are available when your de-serialization logic is running. The same applies, if you declared an injector method; it will be executed **before** the body of readObject. If you declared both, field injection **and** an injector method, then firstly the field injection will be applied before the injector method is executed.
+Usually you want to test your serialized classes. To do so, add following dependency to your test scope:
 
-The generated code does **not** call ObjectInputStream:defaultReadObject() on the input stream passed to readObject in any case. Calling this method is out of scope and lies in the responsibility of the client code.
+```
+<dependency>
+    <groupId>ch.sourcepond.utils</groupId>
+    <artifactId>podescoin-testing</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ## Usage
-As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. You can use both mechanisms at the same time in the same class.
+As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. 
+
+To weave a serializable class with the PodesCoin injector, you need to add annotation *ch.sourcepond.utils.podescoin.Recipient* on your class as shown in the example below.
+
+```
+import ch.sourcepond.utils.podescoin.Recipient;
+import java.io.Serializable;
+
+@Recipient
+public class Foo implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+}
+```
+Note: *@Recipient* is not inherited, so if want a whole class hierarchy to be enhanced with PodesCoin, you need to add this annotation on *every* class.
+
+You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. You can use both mechanisms at the same time in the same class.
 
 ### Field injection
 Fields will always be injected **before** a custom readObject and/or the injector method is being executed. 
 
 ```
 import ch.sourcepond.foo.BarService;
+import ch.sourcepond.utils.podescoin.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 
+@Recipient
 public class Foo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -55,10 +79,12 @@ The example above assumes that exactly one service of type "ch.sourcepond.foo.Ba
 
 ```
 import ch.sourcepond.foo.BarService;
+import ch.sourcepond.utils.podescoin.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+@Recipient
 public class Foo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -81,9 +107,11 @@ Another important fact is, that an injector method is *not* considered to be *vi
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
+import ch.sourcepond.utils.podescoin.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 
+@Recipient
 public class Foo implements Serializable {
 
 	/**
@@ -103,10 +131,12 @@ The example above assumes that exactly one instance of each service with type "c
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
+import ch.sourcepond.utils.podescoin.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+@Recipient
 public class Foo implements Serializable {
 
 	/**
@@ -126,10 +156,12 @@ In the example above, we bind component "bar" to the first parameter and compone
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
+import ch.sourcepond.utils.podescoin.Recipient;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.inject.Inject;
 
+@Recipient
 public class Foo implements Serializable {
 
 	/**
@@ -149,11 +181,13 @@ The code above is almost the same as in the first example, but, with a crucial d
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
+import ch.sourcepond.utils.podescoin.Recipient;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+@Recipient
 public class Foo implements Serializable {
 
 	/**
@@ -167,3 +201,8 @@ public class Foo implements Serializable {
 	}
 }
 ```
+
+## Initialization order
+As mentioned in the introduction section, PodesCoin enhances an existing readObject method (or generates it if not existing). Injectable fields will be initialized *before* the body of readObject is executed. This insures, that your services are available when your de-serialization logic is running. The same applies, if you declared an injector method; it will be executed *before** the body of readObject. If you declared both, field injection *and* an injector method, then firstly the field injection will be applied before the injector method is executed.
+
+The generated code does **not** call ObjectInputStream:defaultReadObject() on the input stream passed to readObject in any case. Calling this method is out of scope and lies in the responsibility of the client code.
