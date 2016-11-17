@@ -9,8 +9,8 @@ Bundle PodesCoin is available from Maven Central:
 ```
 <dependency>
     <groupId>ch.sourcepond.utils</groupId>
-    <artifactId>podescoin-impl</artifactId>
-    <version>0.1.2</version>
+    <artifactId>podescoin-core</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ There is also a Karaf feature available:
 <dependency>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-feature</artifactId>
-    <version>0.1.2</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
