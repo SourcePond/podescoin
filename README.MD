@@ -28,6 +28,7 @@ Usually you want to test your serializable classes. Add following dependency to 
 
 ```
 <dependency>
+	<scope>test</scope>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-testing</artifactId>
     <version>1.0.0</version>
