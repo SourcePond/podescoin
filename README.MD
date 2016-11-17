@@ -24,7 +24,7 @@ There is also a Karaf feature available:
 </dependency>
 ```
 
-Usually you want to test your serialized classes. To do so, add following dependency to your test scope:
+Usually you want to test your serializable classes. Add following dependency to your test scope to get testing support for PodesCoin:
 
 ```
 <dependency>
