@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testing;
 
-import static ch.sourcepond.utils.podescoin.testing.CloneContextFactory.OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME_FILTER;
+import static ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContextFactory.OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME_FILTER;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.mock;
@@ -44,10 +44,10 @@ import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
  * @author rolandhauser
  *
  */
-public class CloneContext {
+public class PodesCoinTestingContext {
 	private static final TestingClassLoader loader = new TestingClassLoader();
 	private static final String TEST_BUNDLE_SYMBOLIC_NAME = "PodesCoinTestBundleInjector";
-	private final Object detector = mock(CloneContextFactory.BUNDLE_DETECTOR_INTERFACE);
+	private final Object detector = mock(PodesCoinTestingContextFactory.BUNDLE_DETECTOR_INTERFACE);
 	private final Bundle bundle = mock(Bundle.class);
 	private final BundleContext bundleContext = mock(BundleContext.class);
 	private final BlueprintContainer blueprintContainer = mock(BlueprintContainer.class,
@@ -65,9 +65,9 @@ public class CloneContext {
 	 * @throws IllegalAccessException
 	 * 
 	 */
-	protected CloneContext() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		CloneContextFactory.setDetector(detector);
-		when(CloneContextFactory.GET_BUNDLE_METHOD.invoke(detector, (Class<?>) Mockito.any())).thenReturn(bundle);
+	protected PodesCoinTestingContext() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		PodesCoinTestingContextFactory.setDetector(detector);
+		when(PodesCoinTestingContextFactory.GET_BUNDLE_METHOD.invoke(detector, (Class<?>) Mockito.any())).thenReturn(bundle);
 
 		// when(detector.getBundle(pClass))
 		when(bundle.getSymbolicName()).thenReturn(TEST_BUNDLE_SYMBOLIC_NAME);
@@ -88,7 +88,7 @@ public class CloneContext {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private CloneContext addComponentMetadata(final Object pComponent, final String componentId, final Class<?> pType) {
+	private PodesCoinTestingContext addComponentMetadata(final Object pComponent, final String componentId, final Class<?> pType) {
 		componentIds.add(componentId);
 		final BeanMetadata meta = mock(BeanMetadata.class);
 		when(meta.getClassName()).thenReturn(pType.getName());
@@ -108,7 +108,7 @@ public class CloneContext {
 	 * @param pType
 	 * @return
 	 */
-	public <T> CloneContext addComponent(final T pComponent, final Class<T> pType) {
+	public <T> PodesCoinTestingContext addComponent(final T pComponent, final Class<T> pType) {
 		return addComponentMetadata(pComponent, null, pType);
 	}
 
@@ -118,7 +118,7 @@ public class CloneContext {
 	 * @param pType
 	 * @return
 	 */
-	public <T> CloneContext addComponent(final T pComponent, final String pComponentId, final Class<T> pType) {
+	public <T> PodesCoinTestingContext addComponent(final T pComponent, final String pComponentId, final Class<T> pType) {
 		final String componentId = pComponentId == null || pComponentId.isEmpty() ? UUID.randomUUID().toString()
 				: pComponentId;
 		return addComponentMetadata(pComponent, componentId, pType);
@@ -148,6 +148,6 @@ public class CloneContext {
 	 * 
 	 */
 	public void tearDown() {
-		CloneContextFactory.resetDetector();
+		PodesCoinTestingContextFactory.resetDetector();
 	}
 }

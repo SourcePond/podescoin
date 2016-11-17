@@ -21,8 +21,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.sourcepond.utils.podescoin.testing.CloneContext;
-import ch.sourcepond.utils.podescoin.testing.CloneContextFactory;
+import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContext;
+import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContextFactory;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -42,11 +42,11 @@ public class BasketExampleTest {
 	private final StockService stockService = mock(StockService.class);
 	private final Address address = mock(Address.class);
 	private final Product product = mock(Product.class);
-	private CloneContext ctx;
+	private PodesCoinTestingContext ctx;
 
 	@Before
 	public void setup() {
-		ctx = CloneContextFactory.newContext().addComponent(addressService, AddressService.class)
+		ctx = PodesCoinTestingContextFactory.newContext().addComponent(addressService, AddressService.class)
 				.addComponent(productService, "product.service", ProductService.class)
 				.addComponent(stockService, "stock.service", StockService.class);
 	}

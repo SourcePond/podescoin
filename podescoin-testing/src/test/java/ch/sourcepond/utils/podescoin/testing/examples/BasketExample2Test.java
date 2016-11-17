@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import ch.sourcepond.utils.podescoin.testing.CloneContext;
-import ch.sourcepond.utils.podescoin.testing.CloneContextFactory;
+import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContext;
+import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContextFactory;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -59,12 +59,12 @@ public class BasketExample2Test {
 	@Mock
 	private Product product;
 
-	private CloneContext ctx;
+	private PodesCoinTestingContext ctx;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		ctx = CloneContextFactory.newContext(this);
+		ctx = PodesCoinTestingContextFactory.newContext(this);
 	}
 
 	@After

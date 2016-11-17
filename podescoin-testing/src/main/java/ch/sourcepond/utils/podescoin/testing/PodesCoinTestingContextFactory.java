@@ -20,7 +20,7 @@ import javax.inject.Named;
 
 import ch.sourcepond.utils.podescoin.Injector;
 
-public class CloneContextFactory {
+public class PodesCoinTestingContextFactory {
 
 	private static final Object ORIGINAL_DETECTOR;
 	static final Class<?> BUNDLE_DETECTOR_INTERFACE;
@@ -30,7 +30,7 @@ public class CloneContextFactory {
 
 	static {
 		try {
-			final ClassLoader ldr = CloneContextFactory.class.getClassLoader();
+			final ClassLoader ldr = PodesCoinTestingContextFactory.class.getClassLoader();
 			BUNDLE_DETECTOR_INTERFACE = ldr.loadClass("ch.sourcepond.utils.podescoin.BundleDetector");
 			GET_BUNDLE_METHOD = BUNDLE_DETECTOR_INTERFACE.getMethod("getBundle", Class.class);
 			GET_BUNDLE_METHOD.setAccessible(true);
@@ -47,16 +47,16 @@ public class CloneContextFactory {
 		} catch (final ClassNotFoundException | NoSuchFieldException | SecurityException | IllegalArgumentException
 				| IllegalAccessException | NoSuchMethodException e) {
 			throw new AssertionError(
-					String.format("Class %s could not be initialized", CloneContextFactory.class.getName()), e);
+					String.format("Class %s could not be initialized", PodesCoinTestingContextFactory.class.getName()), e);
 		}
 	}
 
-	public static CloneContext newContext() {
+	public static PodesCoinTestingContext newContext() {
 		try {
-			return new CloneContext();
+			return new PodesCoinTestingContext();
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new AssertionError(
-					String.format("Instance of %s could not be created!", CloneContext.class.getName()), e);
+					String.format("Instance of %s could not be created!", PodesCoinTestingContext.class.getName()), e);
 		}
 	}
 
@@ -73,8 +73,8 @@ public class CloneContextFactory {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static CloneContext newContext(final Object pTest) {
-		final CloneContext context = newContext();
+	public static PodesCoinTestingContext newContext(final Object pTest) {
+		final PodesCoinTestingContext context = newContext();
 		for (final Field f : collectFields(pTest.getClass(), new LinkedList<>())) {
 			final Named component = f.getAnnotation(Named.class);
 			try {
