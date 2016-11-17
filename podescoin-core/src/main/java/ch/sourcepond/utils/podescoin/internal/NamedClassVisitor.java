@@ -16,24 +16,31 @@ import org.objectweb.asm.ClassVisitor;
 
 public abstract class NamedClassVisitor extends ClassVisitor {
 	private String className;
-	private String classInternalName;
-	
-	public NamedClassVisitor(ClassVisitor cv) {
+	protected String classInternalName;
+	protected String superClassInternalNameOrNull;
+
+	public NamedClassVisitor(final ClassVisitor cv) {
 		super(ASM5, cv);
 	}
-	
+
 	public final String getClassName() {
 		return className;
 	}
-	
+
 	public final String getInternalClassName() {
 		return classInternalName;
 	}
-	
+
 	@Override
-	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+	public void visit(final int version, final int access, final String name, final String signature,
+			final String superName, final String[] interfaces) {
 		classInternalName = name;
-		className = name.replace('/', '.');
+		className = toClassName(name);
+		superClassInternalNameOrNull = superName;
 		super.visit(version, access, name, signature, superName, interfaces);
+	}
+
+	public static String toClassName(final String pInternalClassName) {
+		return pInternalClassName.replace('/', '.');
 	}
 }

@@ -91,7 +91,7 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 			throw new IllegalFieldDeclarationException(errorMessage.toString());
 		}
 
-		final FieldInjectionReadObjectVisitor visitor = new FieldInjectionReadObjectVisitor(inspector, pWriter);
+		final FieldInjectionReadObjectVisitor visitor = new FieldInjectionReadObjectVisitor(pEnhanceMode, pWriter);
 		visitor.setNamedComponents(namedComponents);
 		return visitor;
 	}

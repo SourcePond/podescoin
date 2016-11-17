@@ -20,6 +20,11 @@ import ch.sourcepond.utils.podescoin.TestComponent;
 
 public class InjectorMethodClassWithObjectInputStream implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public void initObject(final ObjectInputStream in, final TestComponent pComponent, final TestComponent pComponent1,
 			final TestComponent pComponent2, final TestComponent pComponent3, final TestComponent pComponent4,
 			final TestComponent pComponent5, final TestComponent pComponent6, final TestComponent pComponent7,

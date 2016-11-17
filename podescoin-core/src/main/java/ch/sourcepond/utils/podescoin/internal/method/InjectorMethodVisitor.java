@@ -12,6 +12,7 @@ package ch.sourcepond.utils.podescoin.internal.method;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.NAMED_ANNOTATION_NAME;
+import static ch.sourcepond.utils.podescoin.internal.NamedClassVisitor.toClassName;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getArgumentTypes;
 import static org.objectweb.asm.Type.getType;
@@ -21,6 +22,7 @@ import java.io.ObjectInputStream;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
@@ -29,13 +31,18 @@ import ch.sourcepond.utils.podescoin.internal.InspectClassVisitor;
 public final class InjectorMethodVisitor extends MethodVisitor {
 	private static final Logger LOG = getLogger(InjectorMethodVisitor.class);
 	private final InspectClassVisitor classVisitor;
+	private final String classInternalName;
+	private final String superClassInternalNameOrNull;
 	private final String injectorMethodName;
 	private final String injectorMethodDesc;
 
 	public InjectorMethodVisitor(final InspectClassVisitor pClassVisitor, final MethodVisitor mv,
-			final String pInjectorMethodName, final String pInjectorMethodDesc) {
+			final String pClassName, final String pSuperClassNameOrNull, final String pInjectorMethodName,
+			final String pInjectorMethodDesc) {
 		super(ASM5, mv);
 		classVisitor = pClassVisitor;
+		classInternalName = pClassName;
+		superClassInternalNameOrNull = pSuperClassNameOrNull;
 		injectorMethodName = pInjectorMethodName;
 		injectorMethodDesc = pInjectorMethodDesc;
 	}
@@ -60,6 +67,24 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 		}
 		return super.visitParameterAnnotation(parameter, desc, visible);
 	}
+
+	@Override
+	public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc,
+			final boolean itf) {
+		if (Opcodes.INVOKESPECIAL == opcode && owner.equals(superClassInternalNameOrNull)
+				&& name.equals(injectorMethodName) && desc.equals(injectorMethodDesc)) {
+			final StringBuilder errorMessage = new StringBuilder("Failed to enhance ")
+					.append(toClassName(classInternalName)).append("\n")
+					.append(String.format("Injector method '%s' is not allowed to call 'super.%s'", name, name))
+					.append("\nMethod descriptor: ").append(desc).append("\n");
+			throw new SuperMethodInvokationException(errorMessage.toString());
+		}
+		super.visitMethodInsn(opcode, owner, name, desc, false);
+	}
+
+	// mv.visitMethodInsn(INVOKESPECIAL,
+	// "ch/sourcepond/utils/podescoin/devel/ClassA", "inject",
+	// "(Ljava/io/ObjectInputStream;)V", false);
 
 	private boolean includeObjectInputStream() {
 		boolean includeObjectInputStream = false;

@@ -31,6 +31,6 @@ public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 
 	@Override
 	protected ReadObjectVisitor createReadObjectVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode) {
-		return new InjectorMethodReadObjectVisitor(inspector, pWriter);
+		return new InjectorMethodReadObjectVisitor(inspector, pWriter, pEnhanceMode);
 	}
 }

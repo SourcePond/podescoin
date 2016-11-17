@@ -34,6 +34,7 @@ import org.mockito.InOrder;
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.internal.method.SuperMethodInvokationException;
 
 public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
@@ -49,7 +50,11 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Recipient
 	public static class ReadObjectSpecified_WithType implements Serializable {
-		private boolean injectCalledBeforeInject;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		boolean injectCalledBeforeInject;
 		private TestComponent component1;
 
 		@Inject
@@ -78,7 +83,11 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Recipient
 	public static class NoReadObjectSpecified_WithType implements Serializable {
-		private TestComponent component1;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		TestComponent component1;
 
 		@Inject
 		public void injectServices(final TestComponent pComponent1) {
@@ -101,7 +110,11 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Recipient
 	public static class NoReadObjectSpecified_WithType_And_ObjectInputStream implements Serializable {
-		private TestComponent component1;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		TestComponent component1;
 
 		@Inject
 		public void injectServices(final ObjectInputStream in, final TestComponent pComponent1)
@@ -129,8 +142,12 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId implements Serializable {
-		private TestComponent component1;
-		private TestComponent component2;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		TestComponent component1;
+		TestComponent component2;
 
 		@Inject
 		public void injectServices(@Named("componentId1") final TestComponent pComponent1,
@@ -160,6 +177,10 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId_And_ObjectInputStream implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private TestComponent component1;
 		private TestComponent component2;
 
@@ -199,6 +220,10 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId_ThrowException implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final Exception exception = new Exception();
 
 		@Inject
@@ -229,4 +254,55 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		order.verify(injector).getComponentById("componentId1", TestComponent.class.getName(), 0);
 		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName(), 1);
 	}
+
+	@Recipient
+	public static class DoNotCallSuperMethod_A implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		public void inject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
+			in.defaultReadObject();
+		}
+	}
+
+	@Recipient
+	public static class DoNotCallSuperMethod_B extends DoNotCallSuperMethod_A {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+	}
+
+	@Recipient
+	public class DoNotCallSuperMethod_C extends DoNotCallSuperMethod_B {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		@Override
+		public void inject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
+			super.inject(in);
+			System.out.println("Do something");
+		}
+	}
+
+	@Test
+	public void doNotCallSuperMethod() throws Exception {
+		try {
+			loader.loadClass(DoNotCallSuperMethod_C.class.getName());
+			fail("Exception expected");
+		} catch (final SuperMethodInvokationException expected) {
+			// expected
+		}
+	}
+
 }

@@ -24,7 +24,6 @@ import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -66,7 +65,7 @@ public class ActivatorTest {
 	private final WovenClass wovenClass = mock(WovenClass.class);
 	private final Activator activator = new Activator();
 	private byte[] transformedCode;
-	
+
 	@Before
 	public void setup() {
 		when(context.getBundle()).thenReturn(bundle);
@@ -94,7 +93,7 @@ public class ActivatorTest {
 		activator.stop(context);
 		verifyZeroInteractions(context);
 	}
-	
+
 	@Test
 	public void verifyWeavingException_ThrowableOccurred() throws Exception {
 		activator.start(context);
@@ -103,7 +102,7 @@ public class ActivatorTest {
 		try {
 			activator.weave(wovenClass);
 			fail("Exception expected here");
-		} catch (WeavingException e) {
+		} catch (final WeavingException e) {
 			assertSame(expected, e.getCause());
 		}
 	}

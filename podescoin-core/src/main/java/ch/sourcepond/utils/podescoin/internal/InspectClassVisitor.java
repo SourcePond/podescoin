@@ -31,22 +31,17 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasObjectInputStream;
-	private int readObjectStartLine;
 
 	public InspectClassVisitor() {
 		super(null);
 	}
-	
+
 	public boolean isInjectionAware() {
 		return injectionAware;
 	}
 
-	public int getReadObjectStartLine() {
-		return readObjectStartLine;
-	}
-
 	@Override
-	public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
 		if (!injectionAware) {
 			injectionAware = Recipient.class.getName().equals(getType(desc).getClassName());
 		}
@@ -58,10 +53,9 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 			final String[] exceptions) {
 		MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
 		if (injectionAware) {
-			if (SerializableClassVisitor.isReadObjectMethod(access, name, desc, exceptions)) {
-				visitor = new LineNumberDetection(this, visitor);
-			} else if (!CONSTRUCTOR_NAME.equals(name)) {
-				visitor = new InjectorMethodVisitor(this, visitor, name, desc);
+			if (!CONSTRUCTOR_NAME.equals(name)) {
+				visitor = new InjectorMethodVisitor(this, visitor, classInternalName, superClassInternalNameOrNull,
+						name, desc);
 			}
 		}
 		return visitor;
@@ -111,19 +105,11 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 		}
 	}
 
-	public boolean isInEnhanceMode() {
-		return readObjectStartLine != 0;
-	}
-
 	public String getInjectorMethodName() {
 		return injectorMethodName;
 	}
 
 	public String getInjectorMethodDesc() {
 		return injectorMethodDesc;
-	}
-
-	public void setReadObjectStartLine(final int line) {
-		readObjectStartLine = line;
 	}
 }

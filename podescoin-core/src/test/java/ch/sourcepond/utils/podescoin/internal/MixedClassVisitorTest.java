@@ -23,13 +23,19 @@ public class MixedClassVisitorTest extends ClassVisitorTest {
 	@Recipient
 	public static class ClassWithFieldsAndInjectionMethod implements Serializable {
 
-		@Inject
-		private transient TestComponent component1;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
-		private TestComponent component2;
+		@Inject
+		transient TestComponent component1;
+
+		TestComponent component2;
 
 		@Inject
-		void inject(final ObjectInputStream in, final TestComponent pComponent2) throws ClassNotFoundException, IOException {
+		void inject(final ObjectInputStream in, final TestComponent pComponent2)
+				throws ClassNotFoundException, IOException {
 			in.defaultReadObject();
 			component2 = pComponent2;
 		}

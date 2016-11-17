@@ -59,10 +59,12 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private static final String CONSTRUCTOR_DESC = getMethodDescriptor(getType(void.class), getType(String.class),
 			getType(Throwable.class));
 	private static final int MIN_STACK_SIZE = 4;
+	private final InspectClassVisitor inspector;
 
-	InjectorMethodReadObjectVisitor(final InspectClassVisitor pInspector,
-			final MethodVisitor pDelegate) {
-		super(pInspector, pDelegate);
+	InjectorMethodReadObjectVisitor(final InspectClassVisitor pInspector, final MethodVisitor pDelegate,
+			final boolean pEnhanceMode) {
+		super(pEnhanceMode, pDelegate);
+		inspector = pInspector;
 	}
 
 	@Override

@@ -40,26 +40,30 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 */
 	@Recipient
 	public static class VerifyPushByteConstant implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Inject
-		private transient TestComponent component1;
+		transient TestComponent component1;
 		@Inject
-		private transient TestComponent component2;
+		transient TestComponent component2;
 		@Inject
-		private transient TestComponent component3;
+		transient TestComponent component3;
 		@Inject
-		private transient TestComponent component4;
+		transient TestComponent component4;
 		@Inject
-		private transient TestComponent component5;
+		transient TestComponent component5;
 		@Inject
-		private transient TestComponent component6;
+		transient TestComponent component6;
 		@Inject
-		private transient TestComponent component7;
+		transient TestComponent component7;
 		@Inject
-		private transient TestComponent component8;
+		transient TestComponent component8;
 		@Inject
-		private transient TestComponent component9;
+		transient TestComponent component9;
 		@Inject
-		private transient TestComponent component10;
+		transient TestComponent component10;
 	}
 
 	@Test
@@ -89,6 +93,10 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 */
 	@Recipient
 	public static class VerifyPushByteConstantWithId implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		@Named("componentId1")
 		@Inject
 		private transient TestComponent component1;
@@ -148,6 +156,11 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 */
 	@Recipient
 	public static class VerifyPushByteConstantReadObjectAlreadyDefined implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Named("componentId1")
 		@Inject
 		private transient TestComponent component1;
@@ -178,6 +191,11 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 */
 	@Recipient
 	public static class DoNotVisitFinalField implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Named("componentId1")
 		@Inject
 		private transient final TestComponent component1 = new TestComponent();
@@ -205,6 +223,11 @@ public class FieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 */
 	@Recipient
 	public static class DoNotVisitPersistentField implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@Named("componentId1")
 		@Inject
 		private final TestComponent component1 = new TestComponent();

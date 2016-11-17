@@ -19,14 +19,14 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 	private static final int _ICONST_3 = 3;
 	private static final int _ICONST_4 = 4;
 	private static final int _ICONST_5 = 5;
-	protected final InspectClassVisitor inspector;
+	private final boolean enhanceMode;
 	private boolean codeVisited = false;
 	private int maxStack;
 	private int maxLocals;
 
-	public ReadObjectVisitor(final InspectClassVisitor pInspector, final MethodVisitor mv) {
+	public ReadObjectVisitor(final boolean pEnhanceMode, final MethodVisitor mv) {
 		super(ASM5, mv);
-		inspector = pInspector;
+		enhanceMode = pEnhanceMode;
 	}
 
 	protected final void pushByteConstant(final MethodVisitor mv, final int idx) {
@@ -63,7 +63,7 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 
 	@Override
 	public final void visitCode() {
-		if (inspector.isInEnhanceMode()) {
+		if (enhanceMode) {
 			if (!codeVisited) {
 				super.visitCode();
 				codeVisited = true;
