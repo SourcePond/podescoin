@@ -33,6 +33,7 @@ The generated code does **not** call ObjectInputStream:defaultReadObject() on th
 As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. You can use both mechanisms at the same time in the same class.
 
 ### Field injection
+Fields will always be injected **before** a custom readObject and/or the injector method is being executed. 
 
 ```
 import ch.sourcepond.foo.BarService;
@@ -72,7 +73,9 @@ In the example above, we bind component "myComponent" to the field. If no compon
 
 ### Injector method
 
-An injector method can have an arbitrary name, an arbitrary visibility, and, an arbitrary number of arguments. If you need the ObjectInputStream passed to readObject, then you must declare an ObjectInputStream parameter as first argument of your injector method.
+An injector method can have an arbitrary name, an arbitrary visibility, and, an arbitrary number of arguments. If you need the ObjectInputStream passed to readObject, then you must declare an ObjectInputStream parameter as first argument of your injector method. If you also use field injection at the same time, field injection will be performed **before** your injector method is actually being executed.
+
+Another important fact is, that an injector method
 
 ```
 import ch.sourcepond.foo.BarService;

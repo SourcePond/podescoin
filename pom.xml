@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>ch.sourcepond</groupId>
 		<artifactId>bundle</artifactId>
-		<version>0.6.10</version>
+		<version>0.6.11</version>
 		<relativePath />
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -50,6 +50,11 @@
 		<connection>scm:git:${project.scm.url}.git</connection>
 		<developerConnection>scm:git:ssh://git@${repo.domain}/${repo.path}.git</developerConnection>
 	</scm>
+
+	<ciManagement>
+		<url>${jenkins.baseurl}/job/${project.artifactId}</url>
+		<system>Jenkins</system>
+	</ciManagement>
 
 	<distributionManagement>
 		<site>
