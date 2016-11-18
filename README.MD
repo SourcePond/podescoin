@@ -10,7 +10,7 @@ Bundle PodesCoin is available from Maven Central:
 <dependency>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ There is also a Karaf feature available:
 <dependency>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-feature</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ Usually you want to test your serializable classes. Add following dependency to 
 	<scope>test</scope>
     <groupId>ch.sourcepond.utils</groupId>
     <artifactId>podescoin-testing</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
