@@ -68,6 +68,7 @@ public class PodesCoinTestingContextFactory {
 					pFields.add(f);
 				}
 			}
+			return collectFields(pClassOrNull.getSuperclass(), pFields);
 		}
 		return pFields;
 	}
