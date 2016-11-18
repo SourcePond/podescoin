@@ -16,11 +16,6 @@
 
 	<dependencies>
 		<dependency>
-			<scope>provided</scope>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-core</artifactId>
 			<version>${project.version}</version>
