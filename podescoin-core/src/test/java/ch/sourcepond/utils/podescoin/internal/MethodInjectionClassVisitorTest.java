@@ -257,6 +257,44 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 	}
 
 	@Recipient
+	public static class AllowNonInjectorMethodSuperMethodCall_A implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void anyMethod() {
+
+		}
+	}
+
+	@Recipient
+	public static class AllowNonInjectorMethodSuperMethodCall_B extends AllowNonInjectorMethodSuperMethodCall_A {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public void anyMethod() {
+			super.anyMethod();
+		}
+		
+		@Inject
+		public void inject() {
+			
+		}
+
+	}
+
+	@Test
+	public void allowNonInjectorMethodSuperMethodCall() throws Exception {
+		// This should not cause an exception
+		loader.loadClass(AllowNonInjectorMethodSuperMethodCall_B.class.getName());
+	}
+
+	@Recipient
 	public static class DoNotCallSuperMethod_A implements Serializable {
 
 		/**

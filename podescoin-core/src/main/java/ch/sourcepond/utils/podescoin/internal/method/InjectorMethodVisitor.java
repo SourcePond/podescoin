@@ -35,6 +35,7 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 	private final String superClassInternalNameOrNull;
 	private final String injectorMethodName;
 	private final String injectorMethodDesc;
+	private boolean isInjectorMethod;
 
 	public InjectorMethodVisitor(final InspectClassVisitor pClassVisitor, final MethodVisitor mv,
 			final String pClassName, final String pSuperClassNameOrNull, final String pInjectorMethodName,
@@ -49,7 +50,11 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-		if (visible && INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
+		if (!isInjectorMethod) {
+			isInjectorMethod = INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName());
+		}
+
+		if (visible && isInjectorMethod) {
 			LOG.debug("{} : {} : added with descriptor {}", classVisitor.getClassName(), injectorMethodName,
 					injectorMethodDesc);
 			classVisitor.initArgumentTypes(includeObjectInputStream(), injectorMethodName, injectorMethodDesc);
@@ -71,7 +76,7 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 	@Override
 	public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc,
 			final boolean itf) {
-		if (Opcodes.INVOKESPECIAL == opcode && owner.equals(superClassInternalNameOrNull)
+		if (Opcodes.INVOKESPECIAL == opcode && isInjectorMethod && owner.equals(superClassInternalNameOrNull)
 				&& name.equals(injectorMethodName) && desc.equals(injectorMethodDesc)) {
 			final StringBuilder errorMessage = new StringBuilder("Failed to enhance ")
 					.append(toClassName(classInternalName)).append("\n")
@@ -81,10 +86,6 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 		}
 		super.visitMethodInsn(opcode, owner, name, desc, false);
 	}
-
-	// mv.visitMethodInsn(INVOKESPECIAL,
-	// "ch/sourcepond/utils/podescoin/devel/ClassA", "inject",
-	// "(Ljava/io/ObjectInputStream;)V", false);
 
 	private boolean includeObjectInputStream() {
 		boolean includeObjectInputStream = false;
