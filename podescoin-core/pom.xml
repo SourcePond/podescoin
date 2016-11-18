@@ -28,6 +28,7 @@
 
 	<dependencies>
 		<dependency>
+			<scope>provided</scope>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 		</dependency>
@@ -36,6 +37,7 @@
 			<artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
 		</dependency>
 		<dependency>
+			<scope>provided</scope>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
@@ -45,6 +47,7 @@
 			<artifactId>asm</artifactId>
 		</dependency>
 		<dependency>
+			<scope>provided</scope>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.enterprise</artifactId>
 		</dependency>
