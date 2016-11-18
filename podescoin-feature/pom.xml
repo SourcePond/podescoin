@@ -15,11 +15,11 @@
 	</properties>
 
 	<dependencies>
-	      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>[1.7,2.0)</version>
-      </dependency>
+		<dependency>
+			<scope>provided</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-core</artifactId>
@@ -51,7 +51,7 @@
 	</build>
 
 	<ciManagement>
-		<url>${jenkins.baseurl}/job/${parent.artifactId}</url>
+		<url>${jenkins.baseurl}/job/${project.parent.artifactId}</url>
 		<system>Jenkins</system>
 	</ciManagement>
 

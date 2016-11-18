@@ -58,7 +58,7 @@
 	</build>
 
 	<ciManagement>
-		<url>${jenkins.baseurl}/job/${parent.artifactId}</url>
+		<url>${jenkins.baseurl}/job/${project.parent.artifactId}</url>
 		<system>Jenkins</system>
 	</ciManagement>
 
