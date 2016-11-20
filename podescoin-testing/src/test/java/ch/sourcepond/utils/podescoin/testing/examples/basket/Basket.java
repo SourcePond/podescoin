@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 
 @Recipient
 public class Basket implements Serializable {

@@ -22,10 +22,12 @@ import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
 import ch.sourcepond.utils.podescoin.Injector;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.method.MethodInjectionClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
+	private static final String RECIPIENT_CLASS_NAME = Recipient.class.getName();
 	private BundleContext context;
 
 	@Override
@@ -39,10 +41,14 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// noop; service un-registration is done automatically
 	}
 
+	private boolean isAllowed(final WovenClass wovenClass) {
+		return !RECIPIENT_CLASS_NAME.equals(wovenClass.getClassName())
+				&& !context.getBundle().equals(wovenClass.getBundleWiring().getBundle());
+	}
+
 	@Override
 	public void weave(final WovenClass wovenClass) {
-		if (!context.getBundle().equals(wovenClass.getBundleWiring().getBundle())
-				&& TRANSFORMING == wovenClass.getState()) {
+		if (TRANSFORMING == wovenClass.getState() && isAllowed(wovenClass)) {
 			try {
 				wovenClass.setBytes(transform(wovenClass.getBytes()));
 				wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
@@ -62,7 +68,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 		final InspectClassVisitor inspector = new InspectClassVisitor();
 		reader.accept(inspector, 0);
 		byte[] classData = pOriginalClassBytes;
-		
+
 		if (inspector.isInjectionAware()) {
 			// Second step: create or enhance readObject which calls the
 			// injector

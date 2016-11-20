@@ -16,7 +16,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
-			<artifactId>podescoin-core</artifactId>
+			<artifactId>podescoin-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

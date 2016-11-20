@@ -35,6 +35,12 @@
 		<dependency>
 			<scope>test</scope>
 			<groupId>ch.sourcepond.utils</groupId>
+			<artifactId>podescoin-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<scope>test</scope>
+			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>

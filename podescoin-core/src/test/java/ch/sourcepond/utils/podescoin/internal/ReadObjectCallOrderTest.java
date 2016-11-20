@@ -29,8 +29,8 @@ import javax.inject.Inject;
 import org.junit.Test;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
-import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
 
 public class ReadObjectCallOrderTest extends ClassVisitorTest {

@@ -14,8 +14,8 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
-import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.FieldInjectionClassVisitorTest.VerifyPushByteConstantReadObjectAlreadyDefined;
 
 public class MixedClassVisitorTest extends ClassVisitorTest {

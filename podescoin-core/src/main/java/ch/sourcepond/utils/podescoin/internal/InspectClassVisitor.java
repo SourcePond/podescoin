@@ -21,7 +21,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.method.InjectorMethodVisitor;
 
 public final class InspectClassVisitor extends NamedClassVisitor {

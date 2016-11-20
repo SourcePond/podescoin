@@ -18,7 +18,7 @@ import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 
 @Recipient
 public class Item implements Serializable {
