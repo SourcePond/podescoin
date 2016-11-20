@@ -50,10 +50,10 @@ Usually you want to test your serializable classes. Add following dependency to 
 ## Usage
 As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. 
 
-To weave a serializable class with the PodesCoin injector, you need to add annotation *ch.sourcepond.utils.podescoin.Recipient* on your class as shown in the example below.
+To weave a serializable class with the PodesCoin injector, you need to add annotation *ch.sourcepond.utils.podescoin.api.Recipient* on your class as shown in the example below.
 
 ```
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.Serializable;
 
 @Recipient
@@ -72,7 +72,7 @@ Fields will always be injected **before** a custom readObject and/or the injecto
 
 ```
 import ch.sourcepond.foo.BarService;
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 
@@ -92,7 +92,7 @@ The example above assumes that exactly one service of type "ch.sourcepond.foo.Ba
 
 ```
 import ch.sourcepond.foo.BarService;
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -120,7 +120,7 @@ Another important fact is, that an injector method is *not* considered to be *vi
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 
@@ -144,7 +144,7 @@ The example above assumes that exactly one instance of each service with type "c
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -169,7 +169,7 @@ In the example above, we bind component "bar" to the first parameter and compone
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.inject.Inject;
@@ -194,7 +194,7 @@ The code above is almost the same as in the first example, but, with a crucial d
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
-import ch.sourcepond.utils.podescoin.Recipient;
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.inject.Inject;
