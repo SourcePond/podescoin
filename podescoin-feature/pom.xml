@@ -4,21 +4,23 @@
 	<parent>
 		<groupId>ch.sourcepond.utils</groupId>
 		<artifactId>podescoin</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>podescoin-feature</artifactId>
 	<packaging>feature</packaging>
-
-	<properties>
-		<!-- For proper feature generation we need a version range for SLF4J -->
-		<slf4j-api.version>[1.7,2.0)</slf4j-api.version>
-	</properties>
+	<description>Karaf Feature which references all necessary bundles for getting an operational PodesCoin enhancer.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>ch.sourcepond.utils</groupId>
 			<artifactId>podescoin-core</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

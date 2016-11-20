@@ -4,10 +4,11 @@
 	<parent>
 		<groupId>ch.sourcepond.utils</groupId>
 		<artifactId>podescoin</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>podescoin-testing</artifactId>
 	<packaging>bundle</packaging>
+	<description>Testing infrastructure which makes it simple for client bundles to test their PodesCoin enabled classes.</description>
 
 	<dependencies>
 		<dependency>
