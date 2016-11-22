@@ -10,10 +10,13 @@ import static ch.sourcepond.utils.podescoin.api.StreamUtil.DEFAULT_NULL_SHORT;
 import static ch.sourcepond.utils.podescoin.api.StreamUtil.DEFAULT_NULL_STRING;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
@@ -47,6 +50,31 @@ public class StreamUtilTest {
 		final Constructor<StreamUtil> c = StreamUtil.class.getDeclaredConstructor();
 		c.setAccessible(true);
 		c.newInstance();
+	}
+
+	@Test
+	public void verifyReadWrapExceptionIntoIOException() throws Exception {
+		final Exception expected = new Exception();
+		doThrow(expected).when(store).load(BYTE_KEY);
+		try {
+			StreamUtil.readByte(in, key -> store.load(BYTE_KEY));
+			fail("Exception expected");
+		} catch (final IOException e) {
+			assertSame(expected, e.getCause());
+		}
+	}
+
+	@Test
+	public void verifyWriteWrapExceptionIntoIOException() throws Exception {
+		final Exception expected = new Exception();
+		final TestObject<Byte> obj = mock(TestObject.class);
+		doThrow(expected).when(obj).getKey();
+		try {
+			StreamUtil.writeByte(out, obj, o -> o.getKey());
+			fail("Exception expected");
+		} catch (final IOException e) {
+			assertSame(expected, e.getCause());
+		}
 	}
 
 	@Test

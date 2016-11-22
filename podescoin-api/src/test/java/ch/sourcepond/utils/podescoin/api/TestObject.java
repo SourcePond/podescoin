@@ -4,5 +4,5 @@ import java.io.Serializable;
 
 public interface TestObject<T extends Serializable> {
 
-	T getKey();
+	T getKey() throws Exception;
 }
