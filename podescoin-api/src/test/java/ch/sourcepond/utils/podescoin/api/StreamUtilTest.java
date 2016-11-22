@@ -8,7 +8,7 @@ import static ch.sourcepond.utils.podescoin.api.StreamUtil.DEFAULT_NULL_INT;
 import static ch.sourcepond.utils.podescoin.api.StreamUtil.DEFAULT_NULL_LONG;
 import static ch.sourcepond.utils.podescoin.api.StreamUtil.DEFAULT_NULL_SHORT;
 import static ch.sourcepond.utils.podescoin.api.StreamUtil.DEFAULT_NULL_STRING;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
@@ -82,7 +82,7 @@ public class StreamUtilTest {
 		when(in.readByte()).thenReturn(BYTE_KEY);
 		final TestObject<Byte> obj = mock(TestObject.class);
 		when(store.load(BYTE_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readByte(in, key -> store.load(BYTE_KEY)));
+		assertSame(obj, StreamUtil.readByte(in, key -> store.load(BYTE_KEY)).get());
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class StreamUtilTest {
 		when(in.readByte()).thenReturn(CUSTOM_BYTE_NULL_TOKEN);
 		final TestObject<Byte> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_BYTE_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readByte(in, CUSTOM_BYTE_NULL_TOKEN, key -> store.load(BYTE_KEY)));
+		assertFalse(StreamUtil.readByte(in, CUSTOM_BYTE_NULL_TOKEN, key -> store.load(BYTE_KEY)).isPresent());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class StreamUtilTest {
 		when(in.readByte()).thenReturn(DEFAULT_NULL_BYTE);
 		final TestObject<Byte> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_BYTE)).thenReturn(obj);
-		assertNull(StreamUtil.readByte(in, key -> store.load(DEFAULT_NULL_BYTE)));
+		assertFalse(StreamUtil.readByte(in, key -> store.load(DEFAULT_NULL_BYTE)).isPresent());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class StreamUtilTest {
 		when(in.readShort()).thenReturn(SHORT_KEY);
 		final TestObject<Short> obj = mock(TestObject.class);
 		when(store.load(SHORT_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readShort(in, key -> store.load(SHORT_KEY)));
+		assertSame(obj, StreamUtil.readShort(in, key -> store.load(SHORT_KEY)).get());
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class StreamUtilTest {
 		when(in.readShort()).thenReturn(CUSTOM_SHORT_NULL_TOKEN);
 		final TestObject<Short> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_SHORT_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readShort(in, CUSTOM_SHORT_NULL_TOKEN, key -> store.load(SHORT_KEY)));
+		assertFalse(StreamUtil.readShort(in, CUSTOM_SHORT_NULL_TOKEN, key -> store.load(SHORT_KEY)).isPresent());
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class StreamUtilTest {
 		when(in.readShort()).thenReturn(DEFAULT_NULL_SHORT);
 		final TestObject<Short> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_SHORT)).thenReturn(obj);
-		assertNull(StreamUtil.readShort(in, key -> store.load(DEFAULT_NULL_SHORT)));
+		assertFalse(StreamUtil.readShort(in, key -> store.load(DEFAULT_NULL_SHORT)).isPresent());
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class StreamUtilTest {
 		when(in.readInt()).thenReturn(INT_KEY);
 		final TestObject<Integer> obj = mock(TestObject.class);
 		when(store.load(INT_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readShort(in, key -> store.load(INT_KEY)));
+		assertSame(obj, StreamUtil.readShort(in, key -> store.load(INT_KEY)).get());
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class StreamUtilTest {
 		when(in.readInt()).thenReturn(CUSTOM_INT_NULL_TOKEN);
 		final TestObject<Integer> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_INT_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readInt(in, CUSTOM_INT_NULL_TOKEN, key -> store.load(INT_KEY)));
+		assertFalse(StreamUtil.readInt(in, CUSTOM_INT_NULL_TOKEN, key -> store.load(INT_KEY)).isPresent());
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class StreamUtilTest {
 		when(in.readInt()).thenReturn(DEFAULT_NULL_INT);
 		final TestObject<Integer> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_INT)).thenReturn(obj);
-		assertNull(StreamUtil.readInt(in, key -> store.load(DEFAULT_NULL_INT)));
+		assertFalse(StreamUtil.readInt(in, key -> store.load(DEFAULT_NULL_INT)).isPresent());
 	}
 
 	@Test
@@ -154,7 +154,7 @@ public class StreamUtilTest {
 		when(in.readChar()).thenReturn(CHAR_KEY);
 		final TestObject<Character> obj = mock(TestObject.class);
 		when(store.load(CHAR_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readShort(in, key -> store.load(CHAR_KEY)));
+		assertSame(obj, StreamUtil.readShort(in, key -> store.load(CHAR_KEY)).get());
 	}
 
 	@Test
@@ -162,7 +162,7 @@ public class StreamUtilTest {
 		when(in.readChar()).thenReturn(CUSTOM_CHAR_NULL_TOKEN);
 		final TestObject<Character> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_CHAR_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readChar(in, CUSTOM_CHAR_NULL_TOKEN, key -> store.load(CHAR_KEY)));
+		assertFalse(StreamUtil.readChar(in, CUSTOM_CHAR_NULL_TOKEN, key -> store.load(CHAR_KEY)).isPresent());
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class StreamUtilTest {
 		when(in.readChar()).thenReturn(DEFAULT_NULL_CHARACTER);
 		final TestObject<Character> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_CHARACTER)).thenReturn(obj);
-		assertNull(StreamUtil.readChar(in, key -> store.load(DEFAULT_NULL_CHARACTER)));
+		assertFalse(StreamUtil.readChar(in, key -> store.load(DEFAULT_NULL_CHARACTER)).isPresent());
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class StreamUtilTest {
 		when(in.readLong()).thenReturn(LONG_KEY);
 		final TestObject<Long> obj = mock(TestObject.class);
 		when(store.load(LONG_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readLong(in, key -> store.load(LONG_KEY)));
+		assertSame(obj, StreamUtil.readLong(in, key -> store.load(LONG_KEY)).get());
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class StreamUtilTest {
 		when(in.readLong()).thenReturn(CUSTOM_LONG_NULL_TOKEN);
 		final TestObject<Long> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_LONG_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readLong(in, CUSTOM_LONG_NULL_TOKEN, key -> store.load(LONG_KEY)));
+		assertFalse(StreamUtil.readLong(in, CUSTOM_LONG_NULL_TOKEN, key -> store.load(LONG_KEY)).isPresent());
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class StreamUtilTest {
 		when(in.readLong()).thenReturn(DEFAULT_NULL_LONG);
 		final TestObject<Long> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_LONG)).thenReturn(obj);
-		assertNull(StreamUtil.readLong(in, key -> store.load(DEFAULT_NULL_LONG)));
+		assertFalse(StreamUtil.readLong(in, key -> store.load(DEFAULT_NULL_LONG)).isPresent());
 	}
 
 	@Test
@@ -202,7 +202,7 @@ public class StreamUtilTest {
 		when(in.readFloat()).thenReturn(FLOAT_KEY);
 		final TestObject<Float> obj = mock(TestObject.class);
 		when(store.load(FLOAT_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readFloat(in, key -> store.load(FLOAT_KEY)));
+		assertSame(obj, StreamUtil.readFloat(in, key -> store.load(FLOAT_KEY)).get());
 	}
 
 	@Test
@@ -210,7 +210,7 @@ public class StreamUtilTest {
 		when(in.readFloat()).thenReturn(CUSTOM_FLOAT_NULL_TOKEN);
 		final TestObject<Float> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_FLOAT_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readFloat(in, CUSTOM_FLOAT_NULL_TOKEN, key -> store.load(FLOAT_KEY)));
+		assertFalse(StreamUtil.readFloat(in, CUSTOM_FLOAT_NULL_TOKEN, key -> store.load(FLOAT_KEY)).isPresent());
 	}
 
 	@Test
@@ -218,7 +218,7 @@ public class StreamUtilTest {
 		when(in.readFloat()).thenReturn(DEFAULT_NULL_FLOAT);
 		final TestObject<Float> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_FLOAT)).thenReturn(obj);
-		assertNull(StreamUtil.readFloat(in, key -> store.load(DEFAULT_NULL_FLOAT)));
+		assertFalse(StreamUtil.readFloat(in, key -> store.load(DEFAULT_NULL_FLOAT)).isPresent());
 	}
 
 	@Test
@@ -226,7 +226,7 @@ public class StreamUtilTest {
 		when(in.readDouble()).thenReturn(DOUBLE_KEY);
 		final TestObject<Double> obj = mock(TestObject.class);
 		when(store.load(DOUBLE_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readDouble(in, key -> store.load(DOUBLE_KEY)));
+		assertSame(obj, StreamUtil.readDouble(in, key -> store.load(DOUBLE_KEY)).get());
 	}
 
 	@Test
@@ -234,7 +234,7 @@ public class StreamUtilTest {
 		when(in.readDouble()).thenReturn(CUSTOM_DOUBLE_NULL_TOKEN);
 		final TestObject<Double> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_DOUBLE_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readDouble(in, CUSTOM_DOUBLE_NULL_TOKEN, key -> store.load(DOUBLE_KEY)));
+		assertFalse(StreamUtil.readDouble(in, CUSTOM_DOUBLE_NULL_TOKEN, key -> store.load(DOUBLE_KEY)).isPresent());
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class StreamUtilTest {
 		when(in.readDouble()).thenReturn(DEFAULT_NULL_DOUBLE);
 		final TestObject<Double> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_DOUBLE)).thenReturn(obj);
-		assertNull(StreamUtil.readDouble(in, key -> store.load(DEFAULT_NULL_DOUBLE)));
+		assertFalse(StreamUtil.readDouble(in, key -> store.load(DEFAULT_NULL_DOUBLE)).isPresent());
 	}
 
 	@Test
@@ -250,7 +250,7 @@ public class StreamUtilTest {
 		when(in.readUTF()).thenReturn(STRING_KEY);
 		final TestObject<String> obj = mock(TestObject.class);
 		when(store.load(STRING_KEY)).thenReturn(obj);
-		assertSame(obj, StreamUtil.readUTF(in, key -> store.load(STRING_KEY)));
+		assertSame(obj, StreamUtil.readUTF(in, key -> store.load(STRING_KEY)).get());
 	}
 
 	@Test
@@ -258,7 +258,7 @@ public class StreamUtilTest {
 		when(in.readUTF()).thenReturn(CUSTOM_STRING_NULL_TOKEN);
 		final TestObject<String> obj = mock(TestObject.class);
 		when(store.load(CUSTOM_STRING_NULL_TOKEN)).thenReturn(obj);
-		assertNull(StreamUtil.readUTF(in, CUSTOM_STRING_NULL_TOKEN, key -> store.load(STRING_KEY)));
+		assertFalse(StreamUtil.readUTF(in, CUSTOM_STRING_NULL_TOKEN, key -> store.load(STRING_KEY)).isPresent());
 	}
 
 	@Test
@@ -266,7 +266,7 @@ public class StreamUtilTest {
 		when(in.readUTF()).thenReturn(DEFAULT_NULL_STRING);
 		final TestObject<String> obj = mock(TestObject.class);
 		when(store.load(DEFAULT_NULL_STRING)).thenReturn(obj);
-		assertNull(StreamUtil.readUTF(in, key -> store.load(DEFAULT_NULL_STRING)));
+		assertFalse(StreamUtil.readUTF(in, key -> store.load(DEFAULT_NULL_STRING)).isPresent());
 	}
 
 	@Test

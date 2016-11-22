@@ -3,6 +3,7 @@ package ch.sourcepond.utils.podescoin.api;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Optional;
 
 public final class StreamUtil {
 	public static final Character DEFAULT_NULL_CHARACTER = Character.valueOf(Character.MIN_VALUE);
@@ -30,17 +31,17 @@ public final class StreamUtil {
 		void write(ObjectOutputStream out, T key) throws IOException;
 	}
 
-	private static <R, T> R read(final ObjectInputStream in, final Reader<T> pReader, final T pNullToken,
+	private static <R, T> Optional<R> read(final ObjectInputStream in, final Reader<T> pReader, final T pNullToken,
 			final Function<T, R> pKeyFunction) throws IOException {
 		final T key = pReader.read(in);
 		if (!pNullToken.equals(key)) {
 			try {
-				return pKeyFunction.apply(key);
+				return Optional.ofNullable(pKeyFunction.apply(key));
 			} catch (final Exception e) {
 				throw new IOException("Reader key-function could not be applied!", e);
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	private static <T, R> void write(final ObjectOutputStream pOut, final T pObj, final Function<T, R> pKeyFunction,
@@ -61,75 +62,83 @@ public final class StreamUtil {
 		pWriter.write(pOut, key);
 	}
 
-	public static <T> T readByte(final ObjectInputStream pIn, final Function<Byte, T> pLoader) throws IOException {
+	public static <T> Optional<T> readByte(final ObjectInputStream pIn, final Function<Byte, T> pLoader)
+			throws IOException {
 		return readByte(pIn, DEFAULT_NULL_BYTE, pLoader);
 	}
 
-	public static <T> T readByte(final ObjectInputStream pIn, final Byte pNullToken, final Function<Byte, T> pLoader)
-			throws IOException {
+	public static <T> Optional<T> readByte(final ObjectInputStream pIn, final Byte pNullToken,
+			final Function<Byte, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readByte(), pNullToken, pLoader);
 	}
 
-	public static <T> T readShort(final ObjectInputStream pIn, final Function<Short, T> pLoader) throws IOException {
+	public static <T> Optional<T> readShort(final ObjectInputStream pIn, final Function<Short, T> pLoader)
+			throws IOException {
 		return readShort(pIn, DEFAULT_NULL_SHORT, pLoader);
 	}
 
-	public static <T> T readShort(final ObjectInputStream pIn, final Short pNullToken, final Function<Short, T> pLoader)
-			throws IOException {
+	public static <T> Optional<T> readShort(final ObjectInputStream pIn, final Short pNullToken,
+			final Function<Short, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readShort(), pNullToken, pLoader);
 	}
 
-	public static <T> T readChar(final ObjectInputStream pIn, final Function<Character, T> pLoader) throws IOException {
+	public static <T> Optional<T> readChar(final ObjectInputStream pIn, final Function<Character, T> pLoader)
+			throws IOException {
 		return readChar(pIn, DEFAULT_NULL_CHARACTER, pLoader);
 	}
 
-	public static <T> T readChar(final ObjectInputStream pIn, final Character pNullToken,
+	public static <T> Optional<T> readChar(final ObjectInputStream pIn, final Character pNullToken,
 			final Function<Character, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readChar(), pNullToken, pLoader);
 	}
 
-	public static <T> T readInt(final ObjectInputStream pIn, final Function<Integer, T> pLoader) throws IOException {
+	public static <T> Optional<T> readInt(final ObjectInputStream pIn, final Function<Integer, T> pLoader)
+			throws IOException {
 		return readInt(pIn, DEFAULT_NULL_INT, pLoader);
 	}
 
-	public static <T> T readInt(final ObjectInputStream pIn, final Integer pNullToken,
+	public static <T> Optional<T> readInt(final ObjectInputStream pIn, final Integer pNullToken,
 			final Function<Integer, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readInt(), pNullToken, pLoader);
 	}
 
-	public static <T> T readLong(final ObjectInputStream pIn, final Function<Long, T> pLoader) throws IOException {
+	public static <T> Optional<T> readLong(final ObjectInputStream pIn, final Function<Long, T> pLoader)
+			throws IOException {
 		return readLong(pIn, DEFAULT_NULL_LONG, pLoader);
 	}
 
-	public static <T> T readLong(final ObjectInputStream pIn, final Long pNullToken, final Function<Long, T> pLoader)
-			throws IOException {
+	public static <T> Optional<T> readLong(final ObjectInputStream pIn, final Long pNullToken,
+			final Function<Long, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readLong(), pNullToken, pLoader);
 	}
 
-	public static <T> T readFloat(final ObjectInputStream pIn, final Function<Float, T> pLoader) throws IOException {
+	public static <T> Optional<T> readFloat(final ObjectInputStream pIn, final Function<Float, T> pLoader)
+			throws IOException {
 		return readFloat(pIn, DEFAULT_NULL_FLOAT, pLoader);
 	}
 
-	public static <T> T readFloat(final ObjectInputStream pIn, final Float pNullToken, final Function<Float, T> pLoader)
-			throws IOException {
+	public static <T> Optional<T> readFloat(final ObjectInputStream pIn, final Float pNullToken,
+			final Function<Float, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readFloat(), pNullToken, pLoader);
 	}
 
-	public static <T> T readDouble(final ObjectInputStream pIn, final Function<Double, T> pLoader) throws IOException {
+	public static <T> Optional<T> readDouble(final ObjectInputStream pIn, final Function<Double, T> pLoader)
+			throws IOException {
 		return readDouble(pIn, DEFAULT_NULL_DOUBLE, pLoader);
 	}
 
-	public static <T> T readDouble(final ObjectInputStream pIn, final Double pNullToken,
+	public static <T> Optional<T> readDouble(final ObjectInputStream pIn, final Double pNullToken,
 			final Function<Double, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readDouble(), pNullToken, pLoader);
 	}
 
-	public static <T> T readUTF(final ObjectInputStream pIn, final Function<String, T> pLoader) throws IOException {
+	public static <T> Optional<T> readUTF(final ObjectInputStream pIn, final Function<String, T> pLoader)
+			throws IOException {
 		return readUTF(pIn, DEFAULT_NULL_STRING, pLoader);
 	}
 
-	public static <T> T readUTF(final ObjectInputStream pIn, final String pNullToken, final Function<String, T> pLoader)
-			throws IOException {
+	public static <T> Optional<T> readUTF(final ObjectInputStream pIn, final String pNullToken,
+			final Function<String, T> pLoader) throws IOException {
 		return read(pIn, in -> in.readUTF(), pNullToken, pLoader);
 	}
 
