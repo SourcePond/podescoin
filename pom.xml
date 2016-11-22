@@ -32,6 +32,7 @@
 		<repo.project>${project.artifactId}</repo.project>
 	</properties>
 
+
 	<modules>
 		<module>podescoin-api</module>
 		<module>podescoin-core</module>
