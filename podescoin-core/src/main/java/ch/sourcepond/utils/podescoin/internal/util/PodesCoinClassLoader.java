@@ -10,6 +10,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.util;
 
+import static java.lang.reflect.Modifier.isPublic;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 		super(pParent);
 	}
 
-	private boolean isNonJDKClass(final Class<?> pType) {
+	private static boolean isNonJDKClass(final Class<?> pType) {
 		boolean allowed = pType != null;
 		if (allowed) {
 			for (int i = 0; i < IGNORED_PACKAGE_PREFIXES.length; i++) {
@@ -61,18 +63,23 @@ public class PodesCoinClassLoader extends ClassLoader {
 
 	@Override
 	public Class<?> loadClass(final String name) throws ClassNotFoundException {
-		final ClassLoader parentLoader = getParentLoader();
-		final Class<?> originalClass = parentLoader.loadClass(name);
-
-		Class<?> result = getEnhancedClassOrNull(originalClass);
-		if (result == null) {
-			result = originalClass;
+		synchronized (enhancedClasses) {
+			Class<?> enhancedClass = enhancedClasses.get(name);
+			if (enhancedClass == null) {
+				final Class<?> originalClass = getParentLoader().loadClass(name);
+				if (Serializable.class.isAssignableFrom(originalClass) && isInjectionCapable(originalClass)) {
+					enhanceClassHierarchy(originalClass);
+					enhancedClass = enhancedClasses.get(name);
+				} else {
+					enhancedClass = originalClass;
+					enhancedClasses.put(name, originalClass);
+				}
+			}
+			return enhancedClass;
 		}
-
-		return result;
 	}
 
-	private <T extends AccessibleObject> boolean hasAnnotation(final Class<?> pClass,
+	private static <T extends AccessibleObject> boolean hasAnnotation(final Class<?> pClass,
 			final Function<Class<?>, T[]> pFunc, final Predicate<AnnotatedElement> pTester) {
 		if (pClass != null) {
 			for (final T member : pFunc.apply(pClass)) {
@@ -85,6 +92,12 @@ public class PodesCoinClassLoader extends ClassLoader {
 		return false;
 	}
 
+	private static boolean hasAnnotation(final Class<?> pClass) {
+		final Predicate<AnnotatedElement> tester = e -> e.isAnnotationPresent(Inject.class);
+		return hasAnnotation(pClass, cl -> cl.getDeclaredFields(), tester)
+				|| hasAnnotation(pClass, cl -> cl.getDeclaredMethods(), tester);
+	}
+
 	private boolean isInjectionCapable(final Class<?> pOriginalClass) {
 		final Predicate<AnnotatedElement> predicate = f -> f.isAnnotationPresent(Inject.class);
 		return hasAnnotation(pOriginalClass, cl -> cl.getDeclaredFields(), predicate)
@@ -92,14 +105,21 @@ public class PodesCoinClassLoader extends ClassLoader {
 	}
 
 	private void enhanceClassHierarchy(final Class<?> pOriginalClass) throws ClassNotFoundException {
-		if (isNonJDKClass(pOriginalClass) && !enhancedClasses.containsKey(pOriginalClass.getName())) {
+		if (pOriginalClass != null && isNonJDKClass(pOriginalClass)
+				&& !enhancedClasses.containsKey(pOriginalClass.getName())) {
 			if (pOriginalClass.isArray()) {
 				enhanceClassHierarchy(pOriginalClass.getComponentType());
 			} else {
-				final Predicate<AnnotatedElement> tester = e -> e.isAnnotationPresent(Inject.class);
-				if (hasAnnotation(pOriginalClass, cl -> cl.getDeclaredFields(), tester)
-						|| hasAnnotation(pOriginalClass, cl -> cl.getDeclaredMethods(), tester)) {
+				for (final Class<?> ifs : pOriginalClass.getInterfaces()) {
+					enhanceClassHierarchy(ifs);
+				}
+
+				if (!pOriginalClass.isInterface() && hasAnnotation(pOriginalClass)) {
 					enhancedClasses.put(pOriginalClass.getName(), enhanceClass(pOriginalClass));
+				} else if (!isPublic(pOriginalClass.getModifiers())) {
+					final byte[] classData = toByteArray(pOriginalClass);
+					enhancedClasses.put(pOriginalClass.getName(), defineClass(pOriginalClass.getName(), classData, 0,
+							classData.length, pOriginalClass.getProtectionDomain()));
 				}
 			}
 
@@ -107,10 +127,10 @@ public class PodesCoinClassLoader extends ClassLoader {
 		}
 	}
 
-	private Class<?> enhanceClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
+	private static byte[] toByteArray(final Class<?> pOriginalClass) throws ClassNotFoundException {
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try (final InputStream in = new BufferedInputStream(
-				getClass().getResourceAsStream("/" + pOriginalClass.getName().replace('.', '/') + ".class"))) {
+				pOriginalClass.getResourceAsStream("/" + pOriginalClass.getName().replace('.', '/') + ".class"))) {
 			final byte[] buffer = new byte[1024];
 			int read = in.read(buffer);
 			while (read != -1) {
@@ -120,24 +140,12 @@ public class PodesCoinClassLoader extends ClassLoader {
 		} catch (final IOException e) {
 			throw new ClassNotFoundException(e.getMessage(), e);
 		}
-		final byte[] enhancedClassData = Activator.transform(out.toByteArray());
-		return defineClass(pOriginalClass.getName(), enhancedClassData, 0, enhancedClassData.length,
-				getClass().getProtectionDomain());
+		return out.toByteArray();
 	}
 
-	private Class<?> getEnhancedClassOrNull(final Class<?> pOriginalClass) throws ClassNotFoundException {
-		synchronized (enhancedClasses) {
-			Class<?> enhancedClass = enhancedClasses.get(pOriginalClass.getName());
-			if (enhancedClass == null && Serializable.class.isAssignableFrom(pOriginalClass)
-					&& isInjectionCapable(pOriginalClass)) {
-				enhancedClass = enhancedClasses.get(pOriginalClass.getName());
-				if (enhancedClass == null) {
-					enhanceClassHierarchy(pOriginalClass);
-					enhancedClass = enhancedClasses.get(pOriginalClass.getName());
-				}
-			}
-
-			return enhancedClass;
-		}
+	private Class<?> enhanceClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
+		final byte[] enhancedClassData = Activator.transform(toByteArray(pOriginalClass));
+		return defineClass(pOriginalClass.getName(), enhancedClassData, 0, enhancedClassData.length,
+				pOriginalClass.getProtectionDomain());
 	}
 }
