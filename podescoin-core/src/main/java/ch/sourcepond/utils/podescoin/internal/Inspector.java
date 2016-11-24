@@ -12,6 +12,7 @@ package ch.sourcepond.utils.podescoin.internal;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
+import static ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor.isReadObjectMethod;
 import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
@@ -24,15 +25,16 @@ import org.objectweb.asm.Type;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.method.InjectorMethodVisitor;
 
-public final class InspectClassVisitor extends NamedClassVisitor {
+public final class Inspector extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
 	private boolean injectionAware;
 	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasObjectInputStream;
+	private boolean hasReadObjectMethod;
 
-	public InspectClassVisitor() {
+	public Inspector() {
 		super(null);
 	}
 
@@ -56,6 +58,9 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 			if (!CONSTRUCTOR_NAME.equals(name)) {
 				visitor = new InjectorMethodVisitor(this, visitor, classInternalName, superClassInternalNameOrNull,
 						name, desc);
+			}
+			if (!hasReadObjectMethod) {
+				hasObjectInputStream = isReadObjectMethod(access, name, desc, exceptions);
 			}
 		}
 		return visitor;
@@ -103,6 +108,10 @@ public final class InspectClassVisitor extends NamedClassVisitor {
 		} else {
 			namedComponents = EMPTY;
 		}
+	}
+
+	public boolean hasReadObjectMethod() {
+		return hasReadObjectMethod;
 	}
 
 	public String getInjectorMethodName() {

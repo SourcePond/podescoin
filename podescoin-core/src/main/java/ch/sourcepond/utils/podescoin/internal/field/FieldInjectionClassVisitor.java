@@ -21,7 +21,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.internal.Access;
-import ch.sourcepond.utils.podescoin.internal.InspectClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.Inspector;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
 import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 
@@ -29,7 +29,7 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	private List<String> illegalFields;
 	private List<String[]> namedComponents;
 
-	public FieldInjectionClassVisitor(final InspectClassVisitor pInspector, final ClassVisitor pWriter) {
+	public FieldInjectionClassVisitor(final Inspector pInspector, final ClassVisitor pWriter) {
 		super(pInspector, pWriter);
 	}
 

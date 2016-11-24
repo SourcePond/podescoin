@@ -37,7 +37,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import ch.sourcepond.utils.podescoin.Container;
-import ch.sourcepond.utils.podescoin.internal.InspectClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.Inspector;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
 
 final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
@@ -60,9 +60,9 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private static final String CONSTRUCTOR_DESC = getMethodDescriptor(getType(void.class), getType(String.class),
 			getType(Throwable.class));
 	private static final int MIN_STACK_SIZE = 4;
-	private final InspectClassVisitor inspector;
+	private final Inspector inspector;
 
-	InjectorMethodReadObjectVisitor(final InspectClassVisitor pInspector, final MethodVisitor pDelegate,
+	InjectorMethodReadObjectVisitor(final Inspector pInspector, final MethodVisitor pDelegate,
 			final boolean pEnhanceMode) {
 		super(pEnhanceMode, pDelegate);
 		inspector = pInspector;

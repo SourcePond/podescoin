@@ -13,13 +13,13 @@ package ch.sourcepond.utils.podescoin.internal.method;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import ch.sourcepond.utils.podescoin.internal.InspectClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.Inspector;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
 import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 
 public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 
-	public MethodInjectionClassVisitor(final ClassVisitor pVisitor, final InspectClassVisitor pInspector) {
+	public MethodInjectionClassVisitor(final ClassVisitor pVisitor, final Inspector pInspector) {
 		super(pInspector, pVisitor);
 	}
 

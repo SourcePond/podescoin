@@ -26,18 +26,18 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
-import ch.sourcepond.utils.podescoin.internal.InspectClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.Inspector;
 
 public final class InjectorMethodVisitor extends MethodVisitor {
 	private static final Logger LOG = getLogger(InjectorMethodVisitor.class);
-	private final InspectClassVisitor classVisitor;
+	private final Inspector classVisitor;
 	private final String classInternalName;
 	private final String superClassInternalNameOrNull;
 	private final String injectorMethodName;
 	private final String injectorMethodDesc;
 	private boolean isInjectorMethod;
 
-	public InjectorMethodVisitor(final InspectClassVisitor pClassVisitor, final MethodVisitor mv,
+	public InjectorMethodVisitor(final Inspector pClassVisitor, final MethodVisitor mv,
 			final String pClassName, final String pSuperClassNameOrNull, final String pInjectorMethodName,
 			final String pInjectorMethodDesc) {
 		super(ASM5, mv);

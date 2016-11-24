@@ -53,10 +53,10 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 			CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME };
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
-	protected InspectClassVisitor inspector;
+	protected Inspector inspector;
 	private ReadObjectVisitor readObjectEnhancer;
 
-	protected SerializableClassVisitor(final InspectClassVisitor pInspector, final ClassVisitor pWriter) {
+	protected SerializableClassVisitor(final Inspector pInspector, final ClassVisitor pWriter) {
 		super(pWriter);
 		inspector = pInspector;
 	}

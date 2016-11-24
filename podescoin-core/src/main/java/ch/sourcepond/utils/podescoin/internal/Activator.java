@@ -65,7 +65,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// the class in order to find all possibilities. If more than one
 		// injector method has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
-		final InspectClassVisitor inspector = new InspectClassVisitor();
+		final Inspector inspector = new Inspector();
 		reader.accept(inspector, 0);
 		byte[] classData = pOriginalClassBytes;
 
