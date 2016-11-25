@@ -100,10 +100,9 @@ public class PodesCoinTestingContext implements TestRule {
 	private final Cloner cloner = new Cloner(loader);
 
 	/**
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
-	 * 
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
 	 */
 	protected PodesCoinTestingContext()
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -128,6 +127,9 @@ public class PodesCoinTestingContext implements TestRule {
 		when(blueprintContainer.getComponentIds()).thenReturn(componentIds);
 	}
 
+	/**
+	 * @param detector
+	 */
 	private static void setDetector(final Object detector) {
 		try {
 			DETECTOR_FIELD.set(Injector.class, detector);
@@ -137,6 +139,10 @@ public class PodesCoinTestingContext implements TestRule {
 		}
 	}
 
+	/**
+	 * @param pNamed
+	 * @return
+	 */
 	private static String toComponentId(final Named pNamed) {
 		String componentId = null;
 		if (pNamed != null) {
@@ -148,6 +154,11 @@ public class PodesCoinTestingContext implements TestRule {
 		return componentId;
 	}
 
+	/**
+	 * @param pComponentId
+	 * @param pComponentType
+	 * @return
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private String setupMetadata(final String pComponentId, final Class<?> pComponentType) {
 		componentIds.add(pComponentId);
@@ -163,6 +174,12 @@ public class PodesCoinTestingContext implements TestRule {
 		return pComponentId;
 	}
 
+	/**
+	 * @param pNamed
+	 * @param pComponent
+	 * @param pComponentType
+	 * @return
+	 */
 	private PodesCoinTestingContext addComponentMetadata(final Named pNamed, final Object pComponent,
 			final Class<?> pComponentType) {
 		when(blueprintContainer.getComponentInstance(setupMetadata(toComponentId(pNamed), pComponentType)))
@@ -172,7 +189,7 @@ public class PodesCoinTestingContext implements TestRule {
 
 	/**
 	 * @param pComponent
-	 * @param pType
+	 * @param pComponentType
 	 * @return
 	 */
 	public <T> PodesCoinTestingContext addComponent(final T pComponent, final Class<T> pComponentType) {
@@ -180,9 +197,9 @@ public class PodesCoinTestingContext implements TestRule {
 	}
 
 	/**
-	 * @param pComponent
 	 * @param pComponentId
-	 * @param pType
+	 * @param pComponent
+	 * @param pComponentType
 	 * @return
 	 */
 	public <T> PodesCoinTestingContext addComponent(final String pComponentId, final T pComponent,
@@ -192,7 +209,12 @@ public class PodesCoinTestingContext implements TestRule {
 		return this;
 	}
 
-	void addComponent(final Object pTest, final Named pNamed, final Field pField) {
+	/**
+	 * @param pTest
+	 * @param pNamed
+	 * @param pField
+	 */
+	private void addComponent(final Object pTest, final Named pNamed, final Field pField) {
 		when(blueprintContainer.getComponentInstance(setupMetadata(toComponentId(pNamed), pField.getType())))
 				.thenAnswer(new Answer<Object>() {
 
@@ -230,6 +252,12 @@ public class PodesCoinTestingContext implements TestRule {
 		setDetector(ORIGINAL_DETECTOR);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.junit.rules.TestRule#apply(org.junit.runners.model.Statement,
+	 * org.junit.runner.Description)
+	 */
 	@Override
 	public Statement apply(final Statement base, final Description description) {
 		return new Statement() {
@@ -245,6 +273,11 @@ public class PodesCoinTestingContext implements TestRule {
 		};
 	}
 
+	/**
+	 * @param pClassOrNull
+	 * @param pFields
+	 * @return
+	 */
 	private static List<Field> collectFields(final Class<?> pClassOrNull, final List<Field> pFields) {
 		if (pClassOrNull != null) {
 			for (final Field f : pClassOrNull.getDeclaredFields()) {
@@ -258,6 +291,10 @@ public class PodesCoinTestingContext implements TestRule {
 		return pFields;
 	}
 
+	/**
+	 * @param pTest
+	 * @return
+	 */
 	public static PodesCoinTestingContext newContext(final Object pTest) {
 		try {
 			final PodesCoinTestingContext context = new PodesCoinTestingContext();
