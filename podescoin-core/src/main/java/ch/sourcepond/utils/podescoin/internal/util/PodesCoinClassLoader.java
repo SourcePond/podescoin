@@ -145,7 +145,12 @@ public class PodesCoinClassLoader extends ClassLoader {
 
 	private Class<?> enhanceClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
 		final byte[] enhancedClassData = Activator.transform(toByteArray(pOriginalClass));
-		return defineClass(pOriginalClass.getName(), enhancedClassData, 0, enhancedClassData.length,
-				pOriginalClass.getProtectionDomain());
+		try {
+			return defineClass(pOriginalClass.getName(), enhancedClassData, 0, enhancedClassData.length,
+					pOriginalClass.getProtectionDomain());
+		} catch (final IllegalAccessError e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

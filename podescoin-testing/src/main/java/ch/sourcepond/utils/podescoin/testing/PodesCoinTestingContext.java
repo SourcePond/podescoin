@@ -56,7 +56,6 @@ import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
  *
  */
 public class PodesCoinTestingContext implements TestRule {
-	private static final TestingClassLoader loader = new TestingClassLoader();
 	private static final String TEST_BUNDLE_SYMBOLIC_NAME = "PodesCoinTestBundleInjector";
 	private static final Object ORIGINAL_DETECTOR;
 	private static final Class<?> BUNDLE_DETECTOR_INTERFACE;
@@ -97,6 +96,7 @@ public class PodesCoinTestingContext implements TestRule {
 	private final Collection<ServiceReference<BlueprintContainer>> blueprintContainerRefs = asList(
 			blueprintContainerRef);
 	private final Set<String> componentIds = new HashSet<>();
+	private final TestingClassLoader loader = new TestingClassLoader();
 	private final Cloner cloner = new Cloner(loader);
 
 	/**
