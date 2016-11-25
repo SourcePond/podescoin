@@ -18,14 +18,13 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContext;
-import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContextFactory;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -59,17 +58,12 @@ public class BasketExample2Test {
 	@Mock
 	private Product product;
 
-	private PodesCoinTestingContext ctx;
+	@Rule
+	public PodesCoinTestingContext ctx = PodesCoinTestingContext.newContext(this);
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		ctx = PodesCoinTestingContextFactory.newContext(this);
-	}
-
-	@After
-	public void tearDown() {
-		ctx.tearDown();
 	}
 
 	@Test

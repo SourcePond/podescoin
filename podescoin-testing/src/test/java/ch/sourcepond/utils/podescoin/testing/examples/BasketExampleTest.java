@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContext;
-import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContextFactory;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Basket;
@@ -46,9 +45,9 @@ public class BasketExampleTest {
 
 	@Before
 	public void setup() {
-		ctx = PodesCoinTestingContextFactory.newContext().addComponent(addressService, AddressService.class)
-				.addComponent(productService, "product.service", ProductService.class)
-				.addComponent(stockService, "stock.service", StockService.class);
+		ctx = PodesCoinTestingContext.newContext(this).addComponent(addressService, AddressService.class)
+				.addComponent("product.service", productService, ProductService.class)
+				.addComponent("stock.service", stockService, StockService.class);
 	}
 
 	@After
