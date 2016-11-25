@@ -1,9 +1,14 @@
-# Quick Overview
+#set($h1 = '#')
+#set($h2 = '##')
+#set($h3 = '###')
+#set($h4 = '####')
+
+$h1 Quick Overview
 PodesCoin (**PO**st **DES**erialization **CO**mponent **IN**jection) is an OSGi component which aims to inject [Blueprint](https://www.ibm.com/developerworks/library/os-osgiblueprint/) components into objects being de-serialized. Usually, you would need some static method or field if you needed access to external services during de-serialiation of an object. This is not necessary anymore; to specify injection-points in your serializable class, you can just use JSR-330 standard annotations [javax.inject.Inject](http://docs.oracle.com/javaee/7/api/javax/inject/Inject.html) and [javax.inject.Named](http://docs.oracle.com/javaee/7/api/javax/inject/Named.html).
 
 It allows you to work with injectable components in conjunction with your serializable classes without having a tight coupling between them. To achieve this, PodesCoin installs an [OSGi Weaving Hook](https://osgi.org/javadoc/r4v43/core/org/osgi/framework/hooks/weaving/WeavingHook.html) which creates (or enhances an existing) readObject method for injecting components from a Blueprint container into the object, see [JavaDoc of Serializable](http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html) for further information about readObject.
 
-## Dependencies
+$h2 Dependencies
 PodesCoin bundles are available from Maven Central. If you want to use PodesCoin in your own project, you need to add following dependency to the POM:
 
 ```
@@ -47,7 +52,7 @@ Usually you want to test your serializable classes. Add following dependency to 
 </dependency>
 ```
 
-## Usage
+$h2 Usage
 As mentioned, the usage of PodesCoin requires an OSGi Blueprint extender available. If the bundle which contains your serializable class is not Blueprint enabled, the injection mechanism will *not* work for this bundle. Components are always looked up in the Blueprint container which manages the bundle of your serializable class. 
 
 To weave a serializable class with the PodesCoin injector, you need to add annotation *ch.sourcepond.utils.podescoin.api.Recipient* on your class as shown in the example below.
@@ -67,7 +72,7 @@ Note: *@Recipient* is not inherited, so if you want a whole class hierarchy to b
 
 You have two possibilities to inject Blueprint components into your serializable class: field injection and/or an injector method. You can use both mechanisms at the same time in the same class.
 
-### Field injection
+$h3 Field injection
 Fields will always be injected **before** a custom readObject and/or the injector method is being executed. 
 
 ```
@@ -110,7 +115,7 @@ public class Foo implements Serializable {
 
 In the example above, we bind component "myComponent" to the field. If no component with the name specified is registered with the Blueprint container, the deserialization process will be cancelled with an exception of type "ch.sourcepond.utils.podescoin.NoSuchComponentException".
 
-### Injector method
+$h3 Injector method
 
 An injector method can have an arbitrary name, an arbitrary visibility, and, an arbitrary number of arguments. If you need the ObjectInputStream passed to readObject, then you must declare an ObjectInputStream parameter as first argument of your injector method. If you also use field injection at the same time, field injection will be performed *before* your injector method is actually being executed.
 
@@ -215,7 +220,7 @@ public class Foo implements Serializable {
 }
 ```
 
-## Initialization order
+$h2 Initialization order
 As mentioned in the introduction section, PodesCoin enhances an existing readObject method (or generates it if not existing). Injectable fields will be initialized *before* the body of readObject is executed. This insures, that your services are available when your de-serialization logic is running. The same applies, if you declared an injector method; it will be executed *before** the body of readObject. If you declared both, field injection *and* an injector method, then firstly the field injection will be applied before the injector method is executed.
 
 The generated code calls ObjectInputStream:defaultReadObject() on the input stream passed if, and only if, the readObject method was newly generated. It won't be called if an existing readObject method has been enhanced; in this case, the developer of readObject is responsible to call ObjectInputStream:defaultReadObject() at the appropriate place if necessary. 
