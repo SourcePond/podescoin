@@ -12,6 +12,7 @@ package ch.sourcepond.utils.podescoin.internal.method;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECTOR_INTERNAL_NAME;
+import static ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator.OBJECT_INPUT_STREAM_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.ATHROW;
@@ -29,7 +30,6 @@ import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getType;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import org.objectweb.asm.Label;
@@ -37,6 +37,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import ch.sourcepond.utils.podescoin.Container;
+import ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator;
 import ch.sourcepond.utils.podescoin.internal.Inspector;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
 
@@ -51,7 +52,6 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private static final String GET_COMPONENT_BY_TYPE_NAME_NAME = "getComponentByTypeName";
 	private static final String GET_COMPONENT_BY_TYPE_DESC = getMethodDescriptor(getType(Object.class),
 			getType(String.class), getType(int.class));
-	private static final String OBJECT_INPUT_STREAM_INTERNAL_NAME = getInternalName(ObjectInputStream.class);
 	private static final String CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME = getInternalName(ClassNotFoundException.class);
 	private static final String EXCEPTION_INTERNAL_NAME = getInternalName(Exception.class);
 	private static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
@@ -63,8 +63,8 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private final Inspector inspector;
 
 	InjectorMethodReadObjectVisitor(final Inspector pInspector, final MethodVisitor pDelegate,
-			final boolean pEnhanceMode) {
-		super(pEnhanceMode, pDelegate);
+			final boolean pEnhanceMode, final DefaultReadObjectGenerator pDefaultReadGenerator) {
+		super(pEnhanceMode, pDefaultReadGenerator, pDelegate);
 		inspector = pInspector;
 	}
 
@@ -80,6 +80,10 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 		visitTryCatchBlock(l0, l1, l3, IO_EXCEPTION_INTERNAL_NAME);
 		final Label l4 = new Label();
 		visitTryCatchBlock(l0, l1, l4, EXCEPTION_INTERNAL_NAME);
+
+		// Inserts a call to defaultReadObject if a new readObject method is
+		// being generated.
+		visitDefaultRead();
 
 		visitVarInsn(ALOAD, 0);
 		visitMethodInsn(INVOKESTATIC, INJECTOR_INTERNAL_NAME, GET_CONTAINER_METHOD_NAME, GET_CONTAINER_METHOD_DESC,

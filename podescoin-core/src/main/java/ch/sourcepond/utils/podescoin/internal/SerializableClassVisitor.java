@@ -93,7 +93,8 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 		}
 	}
 
-	protected abstract ReadObjectVisitor createReadObjectVisitor(MethodVisitor pWriter, boolean pEnhanceMode);
+	protected abstract ReadObjectVisitor createReadObjectVisitor(MethodVisitor pWriter, boolean pEnhanceMode,
+			DefaultReadObjectGenerator pDefaultReadGenerator);
 
 	protected abstract boolean isEnhancementNecessary();
 
@@ -105,7 +106,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 
 			// Create visitor which should enhance readObject
 			readObjectEnhancer = createReadObjectVisitor(super.visitMethod(access, name, desc, signature, exceptions),
-					true);
+					true, inspector.getDefaultReadGenerator());
 
 			// Enhance existing readObject method now
 			readObjectEnhancer.visitEnhance();
@@ -124,7 +125,8 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 
 				// Create visitor which should create readObject
 				readObjectEnhancer = createReadObjectVisitor(cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME,
-						READ_OBJECT_METHOD_DESC, null, READ_OBJECT_METHOD_EXCEPTIONS), false);
+						READ_OBJECT_METHOD_DESC, null, READ_OBJECT_METHOD_EXCEPTIONS), false,
+						inspector.getDefaultReadGenerator());
 
 				// Create new readObject method now
 				readObjectEnhancer.visitEnhance();
@@ -163,7 +165,9 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 		if (ACC_PRIVATE == access && READ_OBJECT_METHOD_NAME.equals(name) && exceptions != null
 				&& exceptions.length == 2) {
 			if (IO_EXCEPTION_INTERNAL_NAME.equals(exceptions[0])
-					&& CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])) {
+					&& CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])
+					|| IO_EXCEPTION_INTERNAL_NAME.equals(exceptions[1])
+							&& CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME.equals(exceptions[0])) {
 				final Type returnType = getReturnType(desc);
 
 				if (VOID_NAME.equals(returnType.getClassName())) {

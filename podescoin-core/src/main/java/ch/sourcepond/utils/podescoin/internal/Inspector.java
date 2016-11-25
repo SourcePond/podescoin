@@ -32,7 +32,7 @@ public final class Inspector extends NamedClassVisitor {
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasObjectInputStream;
-	private boolean hasReadObjectMethod;
+	private DefaultReadObjectGenerator defaultReadGenerator;
 
 	public Inspector() {
 		super(null);
@@ -59,8 +59,8 @@ public final class Inspector extends NamedClassVisitor {
 				visitor = new InjectorMethodVisitor(this, visitor, classInternalName, superClassInternalNameOrNull,
 						name, desc);
 			}
-			if (!hasReadObjectMethod) {
-				hasObjectInputStream = isReadObjectMethod(access, name, desc, exceptions);
+			if (defaultReadGenerator == null && isReadObjectMethod(access, name, desc, exceptions)) {
+				defaultReadGenerator = new NoopDefaultReadObjectGenerator();
 			}
 		}
 		return visitor;
@@ -110,8 +110,11 @@ public final class Inspector extends NamedClassVisitor {
 		}
 	}
 
-	public boolean hasReadObjectMethod() {
-		return hasReadObjectMethod;
+	public DefaultReadObjectGenerator getDefaultReadGenerator() {
+		if (defaultReadGenerator == null) {
+			defaultReadGenerator = new DefaultReadObjectVisitor();
+		}
+		return defaultReadGenerator;
 	}
 
 	public String getInjectorMethodName() {

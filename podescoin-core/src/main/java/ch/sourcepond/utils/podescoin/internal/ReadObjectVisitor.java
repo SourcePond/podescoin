@@ -20,13 +20,20 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 	private static final int _ICONST_4 = 4;
 	private static final int _ICONST_5 = 5;
 	private final boolean enhanceMode;
+	private final DefaultReadObjectGenerator defaultReadGenerator;
 	private boolean codeVisited = false;
 	private int maxStack;
 	private int maxLocals;
 
-	public ReadObjectVisitor(final boolean pEnhanceMode, final MethodVisitor mv) {
+	public ReadObjectVisitor(final boolean pEnhanceMode, final DefaultReadObjectGenerator pDefaultReqdGenerator,
+			final MethodVisitor mv) {
 		super(ASM5, mv);
 		enhanceMode = pEnhanceMode;
+		defaultReadGenerator = pDefaultReqdGenerator;
+	}
+
+	protected final void visitDefaultRead() {
+		defaultReadGenerator.visitDefaultRead(this);
 	}
 
 	protected final void pushByteConstant(final MethodVisitor mv, final int idx) {

@@ -51,7 +51,6 @@ public class Item implements Serializable {
 	@Inject
 	void initProduct(final ObjectInputStream in, @Named("product.service") final ProductService pProductService)
 			throws ClassNotFoundException, IOException {
-		in.defaultReadObject();
 		product = pProductService.load(in.readUTF());
 		stock = stockService.getStock(product.getProductId());
 	}

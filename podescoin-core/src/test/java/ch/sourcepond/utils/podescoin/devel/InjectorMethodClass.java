@@ -33,6 +33,7 @@ public class InjectorMethodClass implements Serializable {
 	}
 
 	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
 		final Container injector = Injector.getContainer(this);
 		try {
 			initObject(injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent", 0),

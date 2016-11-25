@@ -13,6 +13,7 @@ package ch.sourcepond.utils.podescoin.internal.method;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
+import ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator;
 import ch.sourcepond.utils.podescoin.internal.Inspector;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
 import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
@@ -30,7 +31,8 @@ public class MethodInjectionClassVisitor extends SerializableClassVisitor {
 	}
 
 	@Override
-	protected ReadObjectVisitor createReadObjectVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode) {
-		return new InjectorMethodReadObjectVisitor(inspector, pWriter, pEnhanceMode);
+	protected ReadObjectVisitor createReadObjectVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode,
+			final DefaultReadObjectGenerator pDefaultReadGenerator) {
+		return new InjectorMethodReadObjectVisitor(inspector, pWriter, pEnhanceMode, pDefaultReadGenerator);
 	}
 }

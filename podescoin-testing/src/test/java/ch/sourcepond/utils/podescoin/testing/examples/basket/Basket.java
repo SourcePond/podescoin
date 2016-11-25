@@ -59,7 +59,6 @@ public class Basket implements Serializable {
 	@Inject
 	void readObject(final ObjectInputStream in, final AddressService addressService)
 			throws ClassNotFoundException, IOException {
-		in.defaultReadObject();
 		final String oid = in.readUTF();
 		address = addressService.load(oid);
 	}

@@ -10,9 +10,11 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,8 +25,10 @@ import javax.inject.Inject;
 import org.junit.Test;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
+import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.TestComponent;
 import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.internal.FieldInjectionClassVisitorTest.DoNotVisitFinalField;
 
 /**
  *
@@ -131,4 +135,65 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		// defaultReadObject should have been called.
 		verify(objInStream).defaultReadObject();
 	}
+		
+	@Recipient
+	public static class ClassWithFieldsAndInjectionMethod implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		transient TestComponent component1;
+
+		TestComponent component2;
+
+		@Inject
+		void inject(final ObjectInputStream in, final TestComponent pComponent2)
+				throws ClassNotFoundException, IOException {
+			component2 = pComponent2;
+		}
+	}
+	
+	@Test
+	public void classWithFieldsAndInjectionMethod() throws Exception {
+		callReadObject(ClassWithFieldsAndInjectionMethod.class);
+
+		// defaultReadObject should have been called.
+		verify(objInStream).defaultReadObject();
+	}
+	
+	@Recipient
+	public static class ClassWithFieldsAndInjectionMethodWithCustomReadObject implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Inject
+		transient TestComponent component1;
+
+		TestComponent component2;
+
+		@Inject
+		void inject(final ObjectInputStream in, final TestComponent pComponent2)
+				throws ClassNotFoundException, IOException {
+			component2 = pComponent2;
+		}
+		
+		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+			
+		}
+	}
+	
+	@Test
+	public void classWithFieldsAndInjectionMethodWithCustomReadObject() throws Exception {
+		callReadObject(ClassWithFieldsAndInjectionMethodWithCustomReadObject.class);
+
+		// defaultReadObject should not have been called.
+		verify(objInStream, never()).defaultReadObject();
+	}
+
 }

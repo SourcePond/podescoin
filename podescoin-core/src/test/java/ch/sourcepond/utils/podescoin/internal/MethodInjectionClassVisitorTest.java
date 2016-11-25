@@ -120,7 +120,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		@Inject
 		public void injectServices(final ObjectInputStream in, final TestComponent pComponent1)
 				throws ClassNotFoundException, IOException {
-			in.defaultReadObject();
 			component1 = pComponent1;
 		}
 	}
@@ -188,7 +187,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		@Inject
 		public void injectServices(final ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
 				@Named("componentId2") final TestComponent pComponent2) throws IOException, ClassNotFoundException {
-			in.defaultReadObject();
 			component1 = pComponent1;
 			component2 = pComponent2;
 

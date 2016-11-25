@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.objectweb.asm.MethodVisitor;
 
+import ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
 
 final class FieldInjectionReadObjectVisitor extends ReadObjectVisitor {
@@ -44,8 +45,9 @@ final class FieldInjectionReadObjectVisitor extends ReadObjectVisitor {
 	private static final String SECOND_DIMENSION_INTERNAL_NAME = getInternalName(String.class);
 	private List<String[]> namedComponents;
 
-	FieldInjectionReadObjectVisitor(final boolean pEnhanceMode, final MethodVisitor pDelegate) {
-		super(pEnhanceMode, pDelegate);
+	FieldInjectionReadObjectVisitor(final boolean pEnhanceMode, final DefaultReadObjectGenerator pDefaultReadGenerator,
+			final MethodVisitor pDelegate) {
+		super(pEnhanceMode, pDefaultReadGenerator, pDelegate);
 	}
 
 	void setNamedComponents(final List<String[]> pNamedComponents) {
@@ -58,6 +60,8 @@ final class FieldInjectionReadObjectVisitor extends ReadObjectVisitor {
 		namedComponents.toArray(namedComponentArr);
 
 		visitCode();
+
+		visitDefaultRead();
 
 		// Load 'this' reference on operand stack (first operand for calling
 		// static method ch.sourcepond.utils.podescoin.Injector#injectComponent)
