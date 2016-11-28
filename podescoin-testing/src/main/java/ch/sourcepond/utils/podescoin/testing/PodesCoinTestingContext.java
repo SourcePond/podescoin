@@ -103,13 +103,18 @@ public class PodesCoinTestingContext implements TestRule {
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
+	 * @throws ClassNotFoundException
 	 */
-	protected PodesCoinTestingContext()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private PodesCoinTestingContext() throws Exception {
 		setDetector(detector);
 		when(GET_BUNDLE_METHOD.invoke(detector, (Class<?>) Mockito.any())).thenReturn(bundle);
+		when(bundle.loadClass(Mockito.anyString())).then(new Answer<Class<?>>() {
 
-		// when(detector.getBundle(pClass))
+			@Override
+			public Class<?> answer(final InvocationOnMock invocation) throws Throwable {
+				return getClass().getClassLoader().loadClass(invocation.getArgument(0));
+			}
+		});
 		when(bundle.getSymbolicName()).thenReturn(TEST_BUNDLE_SYMBOLIC_NAME);
 		when(bundle.getBundleContext()).thenReturn(bundleContext);
 		try {
@@ -159,17 +164,10 @@ public class PodesCoinTestingContext implements TestRule {
 	 * @param pComponentType
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private String setupMetadata(final String pComponentId, final Class<?> pComponentType) {
 		componentIds.add(pComponentId);
 		final BeanMetadata meta = mock(BeanMetadata.class);
 		when(meta.getClassName()).thenReturn(pComponentType.getName());
-		try {
-			when(bundle.loadClass(pComponentType.getName())).thenReturn((Class) pComponentType);
-		} catch (final ClassNotFoundException e) {
-			// Will never happen
-			e.printStackTrace();
-		}
 		when(blueprintContainer.getComponentMetadata(pComponentId)).thenReturn(meta);
 		return pComponentId;
 	}
@@ -307,7 +305,7 @@ public class PodesCoinTestingContext implements TestRule {
 				}
 			}
 			return context;
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (final Exception e) {
 			throw new AssertionError(
 					String.format("Instance of %s could not be created!", PodesCoinTestingContext.class.getName()), e);
 		}
