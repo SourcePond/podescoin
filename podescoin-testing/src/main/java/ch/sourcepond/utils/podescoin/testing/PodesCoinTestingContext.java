@@ -97,7 +97,7 @@ public class PodesCoinTestingContext implements TestRule {
 			blueprintContainerRef);
 	private final Set<String> componentIds = new HashSet<>();
 	private final TestingClassLoader loader = new TestingClassLoader();
-	private final Cloner cloner = new Cloner(loader);
+	private final Cloner cloner;
 
 	/**
 	 * @throws IllegalAccessException
@@ -105,7 +105,8 @@ public class PodesCoinTestingContext implements TestRule {
 	 * @throws InvocationTargetException
 	 * @throws ClassNotFoundException
 	 */
-	private PodesCoinTestingContext() throws Exception {
+	private PodesCoinTestingContext(final Object pTest) throws Exception {
+		cloner = new Cloner(pTest, loader);
 		setDetector(detector);
 		when(GET_BUNDLE_METHOD.invoke(detector, (Class<?>) Mockito.any())).thenReturn(bundle);
 		when(bundle.loadClass(Mockito.anyString())).then(new Answer<Class<?>>() {
@@ -299,7 +300,7 @@ public class PodesCoinTestingContext implements TestRule {
 	 */
 	public static PodesCoinTestingContext newContext(final Object pTest) {
 		try {
-			final PodesCoinTestingContext context = new PodesCoinTestingContext();
+			final PodesCoinTestingContext context = new PodesCoinTestingContext(pTest);
 			for (final Field f : collectFields(pTest.getClass(), new LinkedList<>())) {
 				final Named component = f.getAnnotation(Named.class);
 				try {

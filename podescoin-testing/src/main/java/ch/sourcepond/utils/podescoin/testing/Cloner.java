@@ -36,8 +36,10 @@ final class Cloner {
 
 	private final Set<Object> visited = new HashSet<>();
 	private final TestingClassLoader loader;
+	private final Object test;
 
-	public Cloner(final TestingClassLoader pLoader) {
+	public Cloner(final Object pTest, final TestingClassLoader pLoader) {
+		test = pTest;
 		loader = pLoader;
 	}
 
@@ -105,7 +107,9 @@ final class Cloner {
 					} else if (!visited.contains(sourceValue)) {
 						visited.add(sourceValue);
 						targetType = loader.getOriginalClass(sourceType);
-						if (sourceType.equals(targetType)) {
+						if (Class.class == sourceType || test == sourceValue) {
+							targetValue = sourceValue;
+						} else if (sourceType.equals(targetType)) {
 							targetValue = copyState(sourceType, sourceType, sourceValue, sourceValue);
 						} else {
 							targetValue = copyState(sourceType, targetType, sourceValue,

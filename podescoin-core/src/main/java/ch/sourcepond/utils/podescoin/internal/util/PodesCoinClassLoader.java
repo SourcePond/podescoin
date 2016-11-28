@@ -10,8 +10,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.util;
 
-import static java.lang.reflect.Modifier.isPublic;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +17,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -115,11 +114,10 @@ public class PodesCoinClassLoader extends ClassLoader {
 				}
 
 				if (!pOriginalClass.isInterface() && hasAnnotation(pOriginalClass)) {
-					enhancedClasses.put(pOriginalClass.getName(), enhanceClass(pOriginalClass));
-				} else if (!isPublic(pOriginalClass.getModifiers())) {
+					enhanceClass(pOriginalClass);
+				} else {
 					final byte[] classData = toByteArray(pOriginalClass);
-					enhancedClasses.put(pOriginalClass.getName(), defineClass(pOriginalClass.getName(), classData, 0,
-							classData.length, pOriginalClass.getProtectionDomain()));
+					defineClass(pOriginalClass, classData);
 				}
 			}
 
@@ -143,14 +141,24 @@ public class PodesCoinClassLoader extends ClassLoader {
 		return out.toByteArray();
 	}
 
-	private Class<?> enhanceClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
+	private void enhanceClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
 		final byte[] enhancedClassData = Activator.transform(toByteArray(pOriginalClass));
 		try {
-			return defineClass(pOriginalClass.getName(), enhancedClassData, 0, enhancedClassData.length,
-					pOriginalClass.getProtectionDomain());
+			defineClass(pOriginalClass, enhancedClassData);
 		} catch (final IllegalAccessError e) {
 			e.printStackTrace();
 			throw e;
+		}
+	}
+
+	private void defineClass(final Class<?> pOriginalClass, final byte[] classData) {
+		Class<?> enhancedClass = enhancedClasses.get(pOriginalClass.getName());
+		if (enhancedClass == null) {
+			final ProtectionDomain originalProtectionDomain = pOriginalClass.getProtectionDomain();
+			enhancedClass = defineClass(pOriginalClass.getName(), classData, 0, classData.length,
+					new ProtectionDomain(originalProtectionDomain.getCodeSource(),
+							originalProtectionDomain.getPermissions(), this, originalProtectionDomain.getPrincipals()));
+			enhancedClasses.put(pOriginalClass.getName(), enhancedClass);
 		}
 	}
 }
