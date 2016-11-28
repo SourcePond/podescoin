@@ -243,6 +243,10 @@ public class PodesCoinTestingContext implements TestRule {
 		}
 	}
 
+	public Class<?> getEnhancedClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
+		return loader.loadClass(pOriginalClass.getName());
+	}
+
 	/**
 	 * 
 	 */
