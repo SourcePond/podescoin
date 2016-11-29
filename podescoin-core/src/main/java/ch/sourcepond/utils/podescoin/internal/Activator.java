@@ -24,6 +24,7 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 import ch.sourcepond.utils.podescoin.internal.method.MethodInjectionClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {

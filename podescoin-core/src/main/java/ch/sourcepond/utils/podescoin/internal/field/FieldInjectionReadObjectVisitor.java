@@ -32,8 +32,8 @@ import java.util.List;
 
 import org.objectweb.asm.MethodVisitor;
 
-import ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
 
 final class FieldInjectionReadObjectVisitor extends ReadObjectVisitor {
 	static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC = getMethodDescriptor(getType(void.class),

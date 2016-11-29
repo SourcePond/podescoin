@@ -12,6 +12,8 @@ import static org.objectweb.asm.Opcodes.RETURN;
 
 import org.objectweb.asm.MethodVisitor;
 
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
+
 public abstract class ReadObjectVisitor extends MethodVisitor {
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;

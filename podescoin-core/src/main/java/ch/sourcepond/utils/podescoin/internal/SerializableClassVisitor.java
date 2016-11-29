@@ -35,6 +35,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
+import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
+
 public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	private static final Logger LOG = getLogger(SerializableClassVisitor.class);
 	private static final int _ICONST_0 = 0;
@@ -160,7 +163,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	 * @return {@code true} if the method specified is the readObject method as
 	 *         described by {@link Serializable}, {@code false} otherwise
 	 */
-	static boolean isReadObjectMethod(final int access, final String name, final String desc,
+	public static boolean isReadObjectMethod(final int access, final String name, final String desc,
 			final String[] exceptions) {
 		if (ACC_PRIVATE == access && READ_OBJECT_METHOD_NAME.equals(name) && exceptions != null
 				&& exceptions.length == 2) {

@@ -12,7 +12,7 @@ package ch.sourcepond.utils.podescoin.internal.method;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECTOR_INTERNAL_NAME;
-import static ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator.OBJECT_INPUT_STREAM_INTERNAL_NAME;
+import static ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator.OBJECT_INPUT_STREAM_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.ATHROW;
@@ -37,9 +37,9 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import ch.sourcepond.utils.podescoin.Container;
-import ch.sourcepond.utils.podescoin.internal.DefaultReadObjectGenerator;
-import ch.sourcepond.utils.podescoin.internal.Inspector;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
+import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
 final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private static final String CONTAINER_INTERNAL_NAME = getInternalName(Container.class);

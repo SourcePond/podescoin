@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.podescoin.internal;
+package ch.sourcepond.utils.podescoin.internal.inspector;
 
 import org.objectweb.asm.MethodVisitor;
 

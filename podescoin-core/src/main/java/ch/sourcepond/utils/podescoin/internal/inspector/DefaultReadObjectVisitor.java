@@ -1,4 +1,4 @@
-package ch.sourcepond.utils.podescoin.internal;
+package ch.sourcepond.utils.podescoin.internal.inspector;
 
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
