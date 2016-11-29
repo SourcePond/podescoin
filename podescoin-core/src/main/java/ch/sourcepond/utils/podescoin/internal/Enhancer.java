@@ -14,7 +14,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 
-public abstract class ReadObjectVisitor extends MethodVisitor {
+public abstract class Enhancer extends MethodVisitor {
 	private static final int _ICONST_0 = 0;
 	private static final int _ICONST_1 = 1;
 	private static final int _ICONST_2 = 2;
@@ -27,7 +27,7 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 	private int maxStack;
 	private int maxLocals;
 
-	public ReadObjectVisitor(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReqdGenerator,
+	public Enhancer(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReqdGenerator,
 			final MethodVisitor mv) {
 		super(ASM5, mv);
 		enhanceMode = pEnhanceMode;

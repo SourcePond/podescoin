@@ -13,26 +13,25 @@ package ch.sourcepond.utils.podescoin.internal.method;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
+import ch.sourcepond.utils.podescoin.internal.Enhancer;
 import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
 public class MethodInjectionClassVisitor extends SerializableClassVisitor {
-
 	public MethodInjectionClassVisitor(final ClassVisitor pVisitor, final Inspector pInspector) {
 		super(pInspector, pVisitor);
 	}
 
 	@Override
 	protected boolean isEnhancementNecessary() {
-		final String[][] components = inspector.getReadComponents();
+		final String[][] components = inspector.getNamedComponents();
 		return components != null && components.length > 0;
 	}
 
 	@Override
-	protected ReadObjectVisitor createReadObjectVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode,
+	protected Enhancer createInjectionMethodVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode,
 			final DefaultStreamCallGenerator pDefaultReadGenerator) {
-		return new InjectorMethodReadObjectVisitor(inspector, pWriter, pEnhanceMode, pDefaultReadGenerator);
+		return new InjectorMethodEnhancer(inspector, pWriter, pEnhanceMode, pDefaultReadGenerator);
 	}
 }

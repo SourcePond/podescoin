@@ -21,7 +21,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.internal.Access;
-import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
+import ch.sourcepond.utils.podescoin.internal.Enhancer;
 import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
@@ -81,7 +81,7 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 	}
 
 	@Override
-	protected ReadObjectVisitor createReadObjectVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode,
+	protected Enhancer createInjectionMethodVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode,
 			final DefaultStreamCallGenerator pDefaultReadGenerator) {
 		if (illegalFields != null) {
 			final StringBuilder errorMessage = new StringBuilder("Failed to enhance ").append(inspector.getClassName())
@@ -93,8 +93,7 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 			throw new IllegalFieldDeclarationException(errorMessage.toString());
 		}
 
-		final FieldInjectionReadObjectVisitor visitor = new FieldInjectionReadObjectVisitor(pEnhanceMode,
-				pDefaultReadGenerator, pWriter);
+		final FieldInjectionEnhancer visitor = new FieldInjectionEnhancer(pEnhanceMode, pDefaultReadGenerator, pWriter);
 		visitor.setNamedComponents(namedComponents);
 		return visitor;
 	}

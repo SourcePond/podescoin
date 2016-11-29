@@ -51,16 +51,19 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	protected static final String WRITE_OBJECT_METHOD_NAME = "writeObject";
 	protected static final String READ_OBJECT_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(ObjectInputStream.class));
+	protected static final String WRITE_OBJECT_METHOD_DESC = getMethodDescriptor(getType(void.class),
+			getType(ObjectOutputStream.class));
 	protected static final String CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME = getInternalName(
 			ClassNotFoundException.class);
 	protected static final String IO_EXCEPTION_INTERNAL_NAME = getInternalName(IOException.class);
 	protected static final String[] READ_OBJECT_METHOD_EXCEPTIONS = new String[] { IO_EXCEPTION_INTERNAL_NAME,
 			CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME };
+	protected static final String[] WRITE_OBJECT_METHOD_EXCEPTIONS = new String[] { IO_EXCEPTION_INTERNAL_NAME };
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String OBJECT_OUTPUT_STREAM_NAME = ObjectOutputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
 	protected Inspector inspector;
-	private ReadObjectVisitor readObjectEnhancer;
+	private Enhancer injectionMethodEnhancer;
 
 	protected SerializableClassVisitor(final Inspector pInspector, final ClassVisitor pWriter) {
 		super(pWriter);
@@ -99,7 +102,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 		}
 	}
 
-	protected abstract ReadObjectVisitor createReadObjectVisitor(MethodVisitor pWriter, boolean pEnhanceMode,
+	protected abstract Enhancer createInjectionMethodVisitor(MethodVisitor pWriter, boolean pEnhanceMode,
 			DefaultStreamCallGenerator pDefaultReadGenerator);
 
 	protected abstract boolean isEnhancementNecessary();
@@ -111,14 +114,21 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 			LOG.debug("{} : enhancing existing readObject method", getClassName());
 
 			// Create visitor which should enhance readObject
-			readObjectEnhancer = createReadObjectVisitor(super.visitMethod(access, name, desc, signature, exceptions),
-					true, inspector.getDefaultStreamCallGenerator());
+			injectionMethodEnhancer = createInjectionMethodVisitor(
+					super.visitMethod(access, name, desc, signature, exceptions), true,
+					inspector.getDefaultStreamCallGenerator());
 
 			// Enhance existing readObject method now
-			readObjectEnhancer.visitEnhance();
-			return readObjectEnhancer;
+			injectionMethodEnhancer.visitEnhance();
+			return injectionMethodEnhancer;
 		}
 		return super.visitMethod(access, name, desc, signature, exceptions);
+	}
+
+	protected MethodVisitor createInjectionMethodWriter() {
+		LOG.debug("{} : create new readObject method", getClassName());
+		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
+				READ_OBJECT_METHOD_EXCEPTIONS);
 	}
 
 	@Override
@@ -126,18 +136,15 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 		// If no existing readObject method was enhanced we need create a new
 		// one if necessary.
 		if (isEnhancementNecessary()) {
-			if (readObjectEnhancer == null) {
-				LOG.debug("{} : create new readObject method", getClassName());
-
+			if (injectionMethodEnhancer == null) {
 				// Create visitor which should create readObject
-				readObjectEnhancer = createReadObjectVisitor(cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME,
-						READ_OBJECT_METHOD_DESC, null, READ_OBJECT_METHOD_EXCEPTIONS), false,
+				injectionMethodEnhancer = createInjectionMethodVisitor(createInjectionMethodWriter(), false,
 						inspector.getDefaultStreamCallGenerator());
 
 				// Create new readObject method now
-				readObjectEnhancer.visitEnhance();
+				injectionMethodEnhancer.visitEnhance();
 			}
-			readObjectEnhancer.visitEndEnhance();
+			injectionMethodEnhancer.visitEndEnhance();
 		}
 		super.visitEnd();
 	}

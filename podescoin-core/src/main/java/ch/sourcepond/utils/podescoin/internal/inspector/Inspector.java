@@ -73,8 +73,8 @@ public abstract class Inspector extends NamedClassVisitor {
 	protected abstract Class<? extends Annotation> getInjectorMethodAnnotation();
 
 	@Override
-	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
-			final String[] exceptions) {
+	public final MethodVisitor visitMethod(final int access, final String name, final String desc,
+			final String signature, final String[] exceptions) {
 		MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
 		if (injectionAware) {
 			if (!CONSTRUCTOR_NAME.equals(name)) {
@@ -88,19 +88,19 @@ public abstract class Inspector extends NamedClassVisitor {
 		return visitor;
 	}
 
-	protected void registerNamedComponent(final String pComponentId, final int pParameterIndex) {
+	final void registerNamedComponent(final String pComponentId, final int pParameterIndex) {
 		namedComponents[hasStreamArgument ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
 	}
 
-	public String[][] getReadComponents() {
+	public final String[][] getNamedComponents() {
 		return namedComponents;
 	}
 
-	public boolean hasObjectInputStream() {
+	public final boolean hasObjectInputStream() {
 		return hasStreamArgument;
 	}
 
-	protected void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
+	final void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
 			final String pInjectorMethodDesc) {
 		if (namedComponents != null) {
 			throw new AmbiguousInjectorMethodsException(
@@ -135,11 +135,11 @@ public abstract class Inspector extends NamedClassVisitor {
 		return defaultStreamCallGenerator;
 	}
 
-	public String getInjectorMethodName() {
+	public final String getInjectorMethodName() {
 		return injectorMethodName;
 	}
 
-	public String getInjectorMethodDesc() {
+	public final String getInjectorMethodDesc() {
 		return injectorMethodDesc;
 	}
 }

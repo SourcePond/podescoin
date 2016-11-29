@@ -32,10 +32,10 @@ import java.util.List;
 
 import org.objectweb.asm.MethodVisitor;
 
-import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
+import ch.sourcepond.utils.podescoin.internal.Enhancer;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 
-final class FieldInjectionReadObjectVisitor extends ReadObjectVisitor {
+final class FieldInjectionEnhancer extends Enhancer {
 	static final String INJECT_BLUEPRINT_COMPONENTS_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(ObjectInputStream.class));
 	private static final String INJECTOR_METHOD_NAME = "injectComponents";
@@ -45,7 +45,7 @@ final class FieldInjectionReadObjectVisitor extends ReadObjectVisitor {
 	private static final String SECOND_DIMENSION_INTERNAL_NAME = getInternalName(String.class);
 	private List<String[]> namedComponents;
 
-	FieldInjectionReadObjectVisitor(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReadGenerator,
+	FieldInjectionEnhancer(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReadGenerator,
 			final MethodVisitor pDelegate) {
 		super(pEnhanceMode, pDefaultReadGenerator, pDelegate);
 	}

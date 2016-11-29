@@ -37,11 +37,11 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import ch.sourcepond.utils.podescoin.Container;
-import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
+import ch.sourcepond.utils.podescoin.internal.Enhancer;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
-final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
+final class InjectorMethodEnhancer extends Enhancer {
 	private static final String CONTAINER_INTERNAL_NAME = getInternalName(Container.class);
 	private static final String GET_CONTAINER_METHOD_NAME = "getContainer";
 	private static final String GET_CONTAINER_METHOD_DESC = getMethodDescriptor(getType(Container.class),
@@ -62,8 +62,8 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private static final int MIN_STACK_SIZE = 4;
 	private final Inspector inspector;
 
-	InjectorMethodReadObjectVisitor(final Inspector pInspector, final MethodVisitor pDelegate,
-			final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReadGenerator) {
+	InjectorMethodEnhancer(final Inspector pInspector, final MethodVisitor pDelegate, final boolean pEnhanceMode,
+			final DefaultStreamCallGenerator pDefaultReadGenerator) {
 		super(pEnhanceMode, pDefaultReadGenerator, pDelegate);
 		inspector = pInspector;
 	}
@@ -98,7 +98,7 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 			stackSize++;
 		}
 
-		final String[][] components = inspector.getReadComponents();
+		final String[][] components = inspector.getNamedComponents();
 
 		boolean increaseByOne = false;
 		for (int i = 0; i < components.length; i++, stackSize++) {
