@@ -22,7 +22,7 @@ public class PrintASMInstructions {
 
 	@Test
 	public void printInstructions() throws Exception {
-		final ClassReader reader = new ClassReader(InjectorMethodClass.class.getName());
+		final ClassReader reader = new ClassReader(WriteInjectorMethodClass.class.getName());
 		final ClassVisitor visitor = new PrintClassVisitor(
 				new TraceClassVisitor(null, new ASMifier(), new PrintWriter(System.out)));
 		reader.accept(visitor, ClassReader.SKIP_DEBUG);

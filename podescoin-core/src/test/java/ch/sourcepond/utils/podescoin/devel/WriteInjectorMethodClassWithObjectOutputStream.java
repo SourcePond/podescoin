@@ -11,31 +11,31 @@ limitations under the License.*/
 package ch.sourcepond.utils.podescoin.devel;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import ch.sourcepond.utils.podescoin.Container;
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
-public class InjectorMethodClassWithObjectInputStream implements Serializable {
+public class WriteInjectorMethodClassWithObjectOutputStream implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void initObject(final ObjectInputStream in, final TestComponent pComponent, final TestComponent pComponent1,
+	public void initObject(final ObjectOutputStream in, final TestComponent pComponent, final TestComponent pComponent1,
 			final TestComponent pComponent2, final TestComponent pComponent3, final TestComponent pComponent4,
 			final TestComponent pComponent5, final TestComponent pComponent6, final TestComponent pComponent7,
 			final TestComponent pComponent8, final TestComponent pComponent9) throws Exception {
 
 	}
 
-	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private void writeObject(final ObjectOutputStream out) throws IOException {
 		final Container injector = Injector.getContainer(this);
 		try {
-			initObject(in, injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent", 0),
+			initObject(out, injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent", 0),
 					injector.getComponentById("componentId2", "ch.sourcepond.utils.bci.TestComponent", 1),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 2),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 3),
@@ -46,7 +46,7 @@ public class InjectorMethodClassWithObjectInputStream implements Serializable {
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 8),
 					injector.getComponentById("componentId6", "ch.sourcepond.utils.bci.TestComponent", 9));
 		} catch (final Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new IOException(e.getMessage(), e);
 		}
 	}
 }

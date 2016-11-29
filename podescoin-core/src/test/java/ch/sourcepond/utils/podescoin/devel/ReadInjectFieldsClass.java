@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 import ch.sourcepond.utils.podescoin.Injector;
 
-public class InjectFieldsClass implements Serializable {
+public class ReadInjectFieldsClass implements Serializable {
 
 	/**
 	 * 

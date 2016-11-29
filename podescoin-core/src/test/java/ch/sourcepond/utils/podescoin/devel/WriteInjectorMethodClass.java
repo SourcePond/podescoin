@@ -11,14 +11,14 @@ limitations under the License.*/
 package ch.sourcepond.utils.podescoin.devel;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import ch.sourcepond.utils.podescoin.Container;
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.TestComponent;
 
-public class InjectorMethodClass implements Serializable {
+public class WriteInjectorMethodClass implements Serializable {
 
 	/**
 	* 
@@ -32,8 +32,8 @@ public class InjectorMethodClass implements Serializable {
 
 	}
 
-	private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
+	private void writeObject(final ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
 		final Container injector = Injector.getContainer(this);
 		try {
 			initObject(injector.getComponentById("componentId1", "ch.sourcepond.utils.bci.TestComponent", 0),
@@ -46,14 +46,10 @@ public class InjectorMethodClass implements Serializable {
 					injector.getComponentById("componentId5", "ch.sourcepond.utils.bci.TestComponent", 7),
 					injector.getComponentByTypeName("ch.sourcepond.utils.bci.TestComponent", 8),
 					injector.getComponentById("componentId6", "ch.sourcepond.utils.bci.TestComponent", 9));
-		} catch (final ClassNotFoundException e) {
-			throw e;
 		} catch (final IOException e) {
 			throw e;
 		} catch (final Exception e) {
 			throw new IOException(e.getMessage(), e);
 		}
-
-		in.defaultReadObject();
 	}
 }
