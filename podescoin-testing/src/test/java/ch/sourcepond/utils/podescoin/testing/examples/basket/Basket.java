@@ -17,8 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 
 @Recipient
@@ -56,7 +55,7 @@ public class Basket implements Serializable {
 		out.writeUTF(address.getAddressId());
 	}
 
-	@Inject
+	@ReadObject
 	void readObject(final ObjectInputStream in, final AddressService addressService)
 			throws ClassNotFoundException, IOException {
 		final String oid = in.readUTF();

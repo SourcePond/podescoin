@@ -24,12 +24,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
 
@@ -47,8 +46,8 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
-		void doInject(final TestComponent pComponent) {
+		@ReadObject
+		void readObject(final TestComponent pComponent) {
 			injectCalls.add(PARENT);
 		}
 
@@ -66,8 +65,8 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		@Inject
-		void doInject(final TestComponent pComponent) {
+		@ReadObject
+		void readObject(final TestComponent pComponent) {
 			injectCalls.add(CHILD);
 		}
 

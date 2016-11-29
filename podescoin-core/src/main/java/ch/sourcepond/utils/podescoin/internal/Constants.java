@@ -16,8 +16,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.sourcepond.utils.podescoin.Injector;
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 
 public interface Constants {
+	String READ_OBJECT_ANNOTATION_NAME = ReadObject.class.getName();
 	String INJECT_ANNOTATION_NAME = Inject.class.getName();
 	String NAMED_ANNOTATION_NAME = Named.class.getName();
 	String INJECTOR_INTERNAL_NAME = getInternalName(Injector.class);

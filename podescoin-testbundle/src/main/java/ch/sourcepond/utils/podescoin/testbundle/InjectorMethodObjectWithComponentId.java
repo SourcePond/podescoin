@@ -10,9 +10,9 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousDateService;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService;
@@ -30,8 +30,8 @@ public class InjectorMethodObjectWithComponentId implements Injected {
 
 	public transient AmbiguousDateService dateService;
 
-	@Inject
-	public void inject(@Named("testservice.ambiguousName1") final AmbiguousNameService pNameService,
+	@ReadObject
+	public void readObject(@Named("testservice.ambiguousName1") final AmbiguousNameService pNameService,
 			@Named("testservice.ambiguousDate2") final AmbiguousDateService pDateService) {
 		nameService = pNameService;
 		dateService = pDateService;

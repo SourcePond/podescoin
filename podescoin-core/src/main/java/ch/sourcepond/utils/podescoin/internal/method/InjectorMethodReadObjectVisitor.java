@@ -98,7 +98,7 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 			stackSize++;
 		}
 
-		final String[][] components = inspector.getComponents();
+		final String[][] components = inspector.getReadComponents();
 
 		boolean increaseByOne = false;
 		for (int i = 0; i < components.length; i++, stackSize++) {
@@ -122,8 +122,8 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 			visitTypeInsn(CHECKCAST, components[i][1].replace('.', '/'));
 		}
 
-		visitMethodInsn(Opcodes.INVOKESPECIAL, inspector.getInternalClassName(), inspector.getInjectorMethodName(),
-				inspector.getInjectorMethodDesc(), false);
+		visitMethodInsn(Opcodes.INVOKESPECIAL, inspector.getInternalClassName(), inspector.getReadInjectorMethodName(),
+				inspector.getReadInjectorMethodDesc(), false);
 
 		visitLabel(l1);
 		final Label l5 = new Label();

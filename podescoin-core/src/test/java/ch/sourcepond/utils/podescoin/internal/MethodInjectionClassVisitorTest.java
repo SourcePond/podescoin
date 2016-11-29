@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.Test;
@@ -34,6 +33,7 @@ import org.mockito.InOrder;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.method.SuperMethodInvokationException;
 
@@ -58,8 +58,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		boolean injectCalledBeforeInject;
 		private TestComponent component1;
 
-		@Inject
-		public void injectServices(final TestComponent pComponent1) {
+		@ReadObject
+		public void readObject(final TestComponent pComponent1) {
 			component1 = pComponent1;
 		}
 
@@ -90,8 +90,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private static final long serialVersionUID = 1L;
 		TestComponent component1;
 
-		@Inject
-		public void injectServices(final TestComponent pComponent1) {
+		@ReadObject
+		public void readObject(final TestComponent pComponent1) {
 			component1 = pComponent1;
 		}
 	}
@@ -117,8 +117,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private static final long serialVersionUID = 1L;
 		TestComponent component1;
 
-		@Inject
-		public void injectServices(final ObjectInputStream in, final TestComponent pComponent1)
+		@ReadObject
+		public void readObject(final ObjectInputStream in, final TestComponent pComponent1)
 				throws ClassNotFoundException, IOException {
 			component1 = pComponent1;
 		}
@@ -149,8 +149,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		TestComponent component1;
 		TestComponent component2;
 
-		@Inject
-		public void injectServices(@Named("componentId1") final TestComponent pComponent1,
+		@ReadObject
+		public void readObject(@Named("componentId1") final TestComponent pComponent1,
 				@Named("componentId2") final TestComponent pComponent2) {
 			component1 = pComponent1;
 			component2 = pComponent2;
@@ -184,8 +184,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private TestComponent component1;
 		private TestComponent component2;
 
-		@Inject
-		public void injectServices(final ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
+		@ReadObject
+		public void readObject(final ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
 				@Named("componentId2") final TestComponent pComponent2) throws IOException, ClassNotFoundException {
 			component1 = pComponent1;
 			component2 = pComponent2;
@@ -225,8 +225,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private static final long serialVersionUID = 1L;
 		private final Exception exception = new Exception();
 
-		@Inject
-		public void injectServices(@Named("componentId1") final TestComponent pComponent1,
+		@ReadObject
+		public void readObject(@Named("componentId1") final TestComponent pComponent1,
 				@Named("componentId2") final TestComponent pComponent2) throws Exception {
 			throw exception;
 		}
@@ -274,14 +274,15 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		
+
+		@Override
 		public void anyMethod() {
 			super.anyMethod();
 		}
-		
-		@Inject
+
+		@ReadObject
 		public void inject() {
-			
+
 		}
 
 	}
@@ -300,8 +301,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
-		public void inject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
+		@ReadObject
+		public void readObject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
 			in.defaultReadObject();
 		}
 	}
@@ -324,10 +325,10 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
+		@ReadObject
 		@Override
-		public void inject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
-			super.inject(in);
+		public void readObject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
+			super.readObject(in);
 			System.out.println("Do something");
 		}
 	}
@@ -352,8 +353,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
-		public void inject(final TestComponent c) throws ClassNotFoundException, IOException {
+		@ReadObject
+		public void readObject(final TestComponent c) throws ClassNotFoundException, IOException {
 			throw EXPECTED_CNF_EX;
 		}
 	}
@@ -379,8 +380,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
-		public void inject(final TestComponent c) throws ClassNotFoundException, IOException {
+		@ReadObject
+		public void readObject(final TestComponent c) throws ClassNotFoundException, IOException {
 			throw EXPECTED_IO_EX;
 		}
 	}
@@ -406,8 +407,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
-		public void inject(final TestComponent c) throws ClassNotFoundException, IOException {
+		@ReadObject
+		public void readObject(final TestComponent c) throws ClassNotFoundException, IOException {
 			throw UNEXPECTED_EX;
 		}
 	}

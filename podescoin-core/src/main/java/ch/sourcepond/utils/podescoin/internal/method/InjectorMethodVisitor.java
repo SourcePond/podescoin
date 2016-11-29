@@ -10,8 +10,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.method;
 
-import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.NAMED_ANNOTATION_NAME;
+import static ch.sourcepond.utils.podescoin.internal.Constants.READ_OBJECT_ANNOTATION_NAME;
 import static ch.sourcepond.utils.podescoin.internal.NamedClassVisitor.toClassName;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getArgumentTypes;
@@ -33,38 +33,38 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 	private final Inspector classVisitor;
 	private final String classInternalName;
 	private final String superClassInternalNameOrNull;
-	private final String injectorMethodName;
-	private final String injectorMethodDesc;
-	private boolean isInjectorMethod;
+	private final String readInjectorMethodName;
+	private final String readInjectorMethodDesc;
+	private boolean isReadInjectorMethod;
 
-	public InjectorMethodVisitor(final Inspector pClassVisitor, final MethodVisitor mv,
-			final String pClassName, final String pSuperClassNameOrNull, final String pInjectorMethodName,
-			final String pInjectorMethodDesc) {
+	public InjectorMethodVisitor(final Inspector pClassVisitor, final MethodVisitor mv, final String pClassName,
+			final String pSuperClassNameOrNull, final String pInjectorMethodName, final String pInjectorMethodDesc) {
 		super(ASM5, mv);
 		classVisitor = pClassVisitor;
 		classInternalName = pClassName;
 		superClassInternalNameOrNull = pSuperClassNameOrNull;
-		injectorMethodName = pInjectorMethodName;
-		injectorMethodDesc = pInjectorMethodDesc;
+		readInjectorMethodName = pInjectorMethodName;
+		readInjectorMethodDesc = pInjectorMethodDesc;
 	}
 
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-		if (!isInjectorMethod) {
-			isInjectorMethod = INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName());
+		if (!isReadInjectorMethod) {
+			isReadInjectorMethod = READ_OBJECT_ANNOTATION_NAME.equals(getType(desc).getClassName());
 		}
 
-		if (visible && isInjectorMethod) {
-			LOG.debug("{} : {} : added with descriptor {}", classVisitor.getClassName(), injectorMethodName,
-					injectorMethodDesc);
-			classVisitor.initArgumentTypes(includeObjectInputStream(), injectorMethodName, injectorMethodDesc);
+		if (visible && isReadInjectorMethod) {
+			LOG.debug("{} : {} : added with descriptor {}", classVisitor.getClassName(), readInjectorMethodName,
+					readInjectorMethodDesc);
+			classVisitor.initReadObjectArgumentTypes(includeObjectInputStream(), readInjectorMethodName,
+					readInjectorMethodDesc);
 		}
 		return super.visitAnnotation(desc, visible);
 	}
 
 	@Override
 	public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
-		if (classVisitor.isArgumentTypesInitialized()) {
+		if (classVisitor.isReadArgumentTypesInitialized()) {
 			if (NAMED_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
 				return new NamedAnnotationOnParameterVisitor(this,
 						super.visitParameterAnnotation(parameter, desc, visible), parameter);
@@ -76,8 +76,8 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 	@Override
 	public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc,
 			final boolean itf) {
-		if (Opcodes.INVOKESPECIAL == opcode && isInjectorMethod && owner.equals(superClassInternalNameOrNull)
-				&& name.equals(injectorMethodName) && desc.equals(injectorMethodDesc)) {
+		if (Opcodes.INVOKESPECIAL == opcode && isReadInjectorMethod && owner.equals(superClassInternalNameOrNull)
+				&& name.equals(readInjectorMethodName) && desc.equals(readInjectorMethodDesc)) {
 			final StringBuilder errorMessage = new StringBuilder("Failed to enhance ")
 					.append(toClassName(classInternalName)).append("\n")
 					.append(String.format("Injector method '%s' is not allowed to call 'super.%s'", name, name))
@@ -89,7 +89,7 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 
 	private boolean includeObjectInputStream() {
 		boolean includeObjectInputStream = false;
-		final Type[] argumentTypes = getArgumentTypes(injectorMethodDesc);
+		final Type[] argumentTypes = getArgumentTypes(readInjectorMethodDesc);
 		if (argumentTypes.length > 0) {
 			includeObjectInputStream = ObjectInputStream.class.getName().equals(argumentTypes[0].getClassName());
 		}
@@ -98,7 +98,7 @@ public final class InjectorMethodVisitor extends MethodVisitor {
 
 	void setComponentId(final String pComponentId, final int pParameterIndex) {
 		LOG.debug("{} : {} : use component-id {} for parameter index {}", classVisitor.getClassName(),
-				injectorMethodName, pComponentId, pParameterIndex);
-		classVisitor.addNamedComponent(pComponentId, pParameterIndex);
+				readInjectorMethodName, pComponentId, pParameterIndex);
+		classVisitor.addReadNamedComponent(pComponentId, pParameterIndex);
 	}
 }

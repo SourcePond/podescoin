@@ -18,6 +18,7 @@ import java.io.Serializable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 
 @Recipient
@@ -48,8 +49,8 @@ public class Item implements Serializable {
 		return stock;
 	}
 
-	@Inject
-	void initProduct(final ObjectInputStream in, @Named("product.service") final ProductService pProductService)
+	@ReadObject
+	void readObject(final ObjectInputStream in, @Named("product.service") final ProductService pProductService)
 			throws ClassNotFoundException, IOException {
 		product = pProductService.load(in.readUTF());
 		stock = stockService.getStock(product.getProductId());

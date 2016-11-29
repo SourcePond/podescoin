@@ -15,16 +15,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.AnnotatedElement;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
-import javax.inject.Inject;
-
+import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.Activator;
 
 public class PodesCoinClassLoader extends ClassLoader {
@@ -66,7 +61,8 @@ public class PodesCoinClassLoader extends ClassLoader {
 			Class<?> enhancedClass = enhancedClasses.get(name);
 			if (enhancedClass == null) {
 				final Class<?> originalClass = getParentLoader().loadClass(name);
-				if (Serializable.class.isAssignableFrom(originalClass) && isInjectionCapable(originalClass)) {
+				if (Serializable.class.isAssignableFrom(originalClass)
+						&& originalClass.isAnnotationPresent(Recipient.class)) {
 					enhanceClassHierarchy(originalClass);
 					enhancedClass = enhancedClasses.get(name);
 				} else {
@@ -76,31 +72,6 @@ public class PodesCoinClassLoader extends ClassLoader {
 			}
 			return enhancedClass;
 		}
-	}
-
-	private static <T extends AccessibleObject> boolean hasAnnotation(final Class<?> pClass,
-			final Function<Class<?>, T[]> pFunc, final Predicate<AnnotatedElement> pTester) {
-		if (pClass != null) {
-			for (final T member : pFunc.apply(pClass)) {
-				if (pTester.test(member)) {
-					return true;
-				}
-			}
-			return hasAnnotation(pClass.getSuperclass(), pFunc, pTester);
-		}
-		return false;
-	}
-
-	private static boolean hasAnnotation(final Class<?> pClass) {
-		final Predicate<AnnotatedElement> tester = e -> e.isAnnotationPresent(Inject.class);
-		return hasAnnotation(pClass, cl -> cl.getDeclaredFields(), tester)
-				|| hasAnnotation(pClass, cl -> cl.getDeclaredMethods(), tester);
-	}
-
-	private boolean isInjectionCapable(final Class<?> pOriginalClass) {
-		final Predicate<AnnotatedElement> predicate = f -> f.isAnnotationPresent(Inject.class);
-		return hasAnnotation(pOriginalClass, cl -> cl.getDeclaredFields(), predicate)
-				|| hasAnnotation(pOriginalClass, cl -> cl.getDeclaredMethods(), predicate);
 	}
 
 	private void enhanceClassHierarchy(final Class<?> pOriginalClass) throws ClassNotFoundException {
@@ -113,7 +84,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 					enhanceClassHierarchy(ifs);
 				}
 
-				if (!pOriginalClass.isInterface() && hasAnnotation(pOriginalClass)) {
+				if (!pOriginalClass.isInterface() && pOriginalClass.isAnnotationPresent(Recipient.class)) {
 					enhanceClass(pOriginalClass);
 				} else {
 					final byte[] classData = toByteArray(pOriginalClass);

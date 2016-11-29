@@ -10,8 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
-import javax.inject.Inject;
-
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.testservice.DateService;
 import ch.sourcepond.utils.podescoin.testservice.NameService;
@@ -24,13 +23,13 @@ public class InjectorMethodObject implements Injected {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	public transient NameService nameService;
-	
+
 	public transient DateService dateService;
 
-	@Inject
-	public void inject(final NameService pNameService, final DateService pDateService) {
+	@ReadObject
+	public void readObject(final NameService pNameService, final DateService pDateService) {
 		nameService = pNameService;
 		dateService = pDateService;
 	}
