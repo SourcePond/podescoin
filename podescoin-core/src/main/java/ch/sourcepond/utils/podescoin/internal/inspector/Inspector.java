@@ -66,8 +66,6 @@ public abstract class Inspector extends NamedClassVisitor {
 
 	protected abstract DefaultStreamCallGenerator createDefaultStreamCallGenerator();
 
-	protected abstract DefaultStreamCallGenerator createNoopStreamCallGenerator();
-
 	protected abstract boolean isInjectorMethod(int access, String name, String desc, String[] exceptions);
 
 	protected abstract Class<?> getObjectStreamClass();
@@ -83,7 +81,8 @@ public abstract class Inspector extends NamedClassVisitor {
 				visitor = createMethodInspector(visitor, name, desc);
 			}
 			if (defaultStreamCallGenerator == null && isInjectorMethod(access, name, desc, exceptions)) {
-				defaultStreamCallGenerator = createNoopStreamCallGenerator();
+				defaultStreamCallGenerator = m -> {
+				};
 			}
 		}
 		return visitor;

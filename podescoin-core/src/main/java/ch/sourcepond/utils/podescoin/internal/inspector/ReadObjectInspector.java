@@ -28,12 +28,6 @@ public final class ReadObjectInspector extends Inspector {
 	}
 
 	@Override
-	protected DefaultStreamCallGenerator createNoopStreamCallGenerator() {
-		return m -> {
-		};
-	}
-
-	@Override
 	protected boolean isInjectorMethod(final int access, final String name, final String desc,
 			final String[] exceptions) {
 		return SerializableClassVisitor.isReadObjectMethod(access, name, desc, exceptions);
