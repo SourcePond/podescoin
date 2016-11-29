@@ -29,8 +29,8 @@ import ch.sourcepond.utils.podescoin.internal.method.SuperMethodInvokationExcept
  * @author rolandhauser
  *
  */
-final class InjectorMethodVisitor extends MethodVisitor {
-	private static final Logger LOG = getLogger(InjectorMethodVisitor.class);
+final class InjectorMethodInspector extends MethodVisitor {
+	private static final Logger LOG = getLogger(InjectorMethodInspector.class);
 	private InjectorMethodArgumentTypesInitializer initializer;
 	private NamedComponentRegistration namedComponentRegistration;
 	private Class<?> objectStreamClass;
@@ -41,7 +41,7 @@ final class InjectorMethodVisitor extends MethodVisitor {
 	private String injectorMethodAnnotationName;
 	private boolean injectorMethodDetected;
 
-	public InjectorMethodVisitor(final MethodVisitor mv) {
+	public InjectorMethodInspector(final MethodVisitor mv) {
 		super(ASM5, mv);
 	}
 

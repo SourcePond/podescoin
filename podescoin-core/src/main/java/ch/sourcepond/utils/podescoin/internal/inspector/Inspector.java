@@ -54,7 +54,7 @@ public final class Inspector<T> extends NamedClassVisitor {
 	}
 
 	private MethodVisitor createMethodInspector(final MethodVisitor pVisitor, final String name, final String desc) {
-		final InjectorMethodVisitor injectorMethodVisitor = new InjectorMethodVisitor(pVisitor);
+		final InjectorMethodInspector injectorMethodVisitor = new InjectorMethodInspector(pVisitor);
 
 		injectorMethodVisitor.setInitializer((pIncludeStream, pMethodName,
 				pMethodDesc) -> initReadObjectArgumentTypes(pIncludeStream, pMethodName, pMethodDesc));

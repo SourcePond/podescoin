@@ -15,10 +15,10 @@ import static org.objectweb.asm.Opcodes.ASM5;
 import org.objectweb.asm.AnnotationVisitor;
 
 public class NamedAnnotationOnParameterVisitor extends AnnotationVisitor {
-	private final InjectorMethodVisitor methodVisitor;
+	private final InjectorMethodInspector methodVisitor;
 	private final int parameterIndex;
 
-	NamedAnnotationOnParameterVisitor(final InjectorMethodVisitor pMethodVisitor,
+	NamedAnnotationOnParameterVisitor(final InjectorMethodInspector pMethodVisitor,
 			final AnnotationVisitor pDelegate, final int pParameterIndex) {
 		super(ASM5, pDelegate);
 		methodVisitor = pMethodVisitor;
