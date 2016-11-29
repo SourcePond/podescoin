@@ -12,7 +12,7 @@ package ch.sourcepond.utils.podescoin.internal.method;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.INJECTOR_INTERNAL_NAME;
-import static ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator.OBJECT_INPUT_STREAM_INTERNAL_NAME;
+import static ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator.OBJECT_INPUT_STREAM_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.ATHROW;
@@ -38,7 +38,7 @@ import org.objectweb.asm.Opcodes;
 
 import ch.sourcepond.utils.podescoin.Container;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectVisitor;
-import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
 final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
@@ -63,7 +63,7 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 	private final Inspector inspector;
 
 	InjectorMethodReadObjectVisitor(final Inspector pInspector, final MethodVisitor pDelegate,
-			final boolean pEnhanceMode, final DefaultReadObjectGenerator pDefaultReadGenerator) {
+			final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReadGenerator) {
 		super(pEnhanceMode, pDefaultReadGenerator, pDelegate);
 		inspector = pInspector;
 	}
@@ -122,8 +122,8 @@ final class InjectorMethodReadObjectVisitor extends ReadObjectVisitor {
 			visitTypeInsn(CHECKCAST, components[i][1].replace('.', '/'));
 		}
 
-		visitMethodInsn(Opcodes.INVOKESPECIAL, inspector.getInternalClassName(), inspector.getReadInjectorMethodName(),
-				inspector.getReadInjectorMethodDesc(), false);
+		visitMethodInsn(Opcodes.INVOKESPECIAL, inspector.getInternalClassName(), inspector.getInjectorMethodName(),
+				inspector.getInjectorMethodDesc(), false);
 
 		visitLabel(l1);
 		final Label l5 = new Label();

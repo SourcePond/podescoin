@@ -12,13 +12,12 @@ package ch.sourcepond.utils.podescoin.internal.inspector;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static ch.sourcepond.utils.podescoin.internal.Constants.READ_OBJECT_ANNOTATION_NAME;
-import static ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor.isReadObjectMethod;
 import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
 import static org.objectweb.asm.Type.getType;
 
-import java.io.ObjectInputStream;
+import java.lang.annotation.Annotation;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -28,14 +27,14 @@ import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.AmbiguousInjectorMethodsException;
 import ch.sourcepond.utils.podescoin.internal.NamedClassVisitor;
 
-public final class Inspector<T> extends NamedClassVisitor {
+public abstract class Inspector extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
 	private boolean injectionAware;
-	private String[][] readNamedComponents;
+	private String[][] namedComponents;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasStreamArgument;
-	private DefaultReadObjectGenerator defaultReadGenerator;
+	private DefaultStreamCallGenerator defaultStreamCallGenerator;
 
 	public Inspector() {
 		super(null);
@@ -55,20 +54,25 @@ public final class Inspector<T> extends NamedClassVisitor {
 
 	private MethodVisitor createMethodInspector(final MethodVisitor pVisitor, final String name, final String desc) {
 		final InjectorMethodInspector injectorMethodVisitor = new InjectorMethodInspector(pVisitor);
-
-		injectorMethodVisitor.setInitializer((pIncludeStream, pMethodName,
-				pMethodDesc) -> initReadObjectArgumentTypes(pIncludeStream, pMethodName, pMethodDesc));
-		injectorMethodVisitor.setNamedComponentRegistration(
-				(pComponentId, pParameterIndex) -> registerReadNamedComponent(pComponentId, pParameterIndex));
-
+		injectorMethodVisitor.setInspector(this);
 		injectorMethodVisitor.setClassInternalName(classInternalName);
-		injectorMethodVisitor.setInjectorMethodAnnotationName(READ_OBJECT_ANNOTATION_NAME);
+		injectorMethodVisitor.setInjectorMethodAnnotationName(getInjectorMethodAnnotation().getName());
 		injectorMethodVisitor.setInjectorMethodDesc(desc);
 		injectorMethodVisitor.setInjectorMethodName(name);
-		injectorMethodVisitor.setObjectStreamClass(ObjectInputStream.class);
+		injectorMethodVisitor.setObjectStreamClass(getObjectStreamClass());
 		injectorMethodVisitor.setSuperClassInternalNameOrNull(superClassInternalNameOrNull);
 		return injectorMethodVisitor;
 	}
+
+	protected abstract DefaultStreamCallGenerator createDefaultStreamCallGenerator();
+
+	protected abstract DefaultStreamCallGenerator createNoopStreamCallGenerator();
+
+	protected abstract boolean isInjectorMethod(int access, String name, String desc, String[] exceptions);
+
+	protected abstract Class<?> getObjectStreamClass();
+
+	protected abstract Class<? extends Annotation> getInjectorMethodAnnotation();
 
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
@@ -78,32 +82,28 @@ public final class Inspector<T> extends NamedClassVisitor {
 			if (!CONSTRUCTOR_NAME.equals(name)) {
 				visitor = createMethodInspector(visitor, name, desc);
 			}
-			if (defaultReadGenerator == null && isReadObjectMethod(access, name, desc, exceptions)) {
-				defaultReadGenerator = new NoopDefaultReadObjectGenerator();
+			if (defaultStreamCallGenerator == null && isInjectorMethod(access, name, desc, exceptions)) {
+				defaultStreamCallGenerator = createNoopStreamCallGenerator();
 			}
 		}
 		return visitor;
 	}
 
-	private void registerReadNamedComponent(final String pComponentId, final int pParameterIndex) {
-		readNamedComponents[hasStreamArgument ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
-	}
-
-	boolean isReadArgumentTypesInitialized() {
-		return readNamedComponents != null;
+	protected void registerNamedComponent(final String pComponentId, final int pParameterIndex) {
+		namedComponents[hasStreamArgument ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
 	}
 
 	public String[][] getReadComponents() {
-		return readNamedComponents;
+		return namedComponents;
 	}
 
 	public boolean hasObjectInputStream() {
 		return hasStreamArgument;
 	}
 
-	private void initReadObjectArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
+	protected void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
 			final String pInjectorMethodDesc) {
-		if (isReadArgumentTypesInitialized()) {
+		if (namedComponents != null) {
 			throw new AmbiguousInjectorMethodsException(
 					format("More than one method detected which is annotated with %s", READ_OBJECT_ANNOTATION_NAME));
 		}
@@ -120,27 +120,27 @@ public final class Inspector<T> extends NamedClassVisitor {
 		}
 
 		if (argumentTypes.length > 0) {
-			readNamedComponents = new String[argumentTypes.length][2];
+			namedComponents = new String[argumentTypes.length][2];
 			for (int i = 0; i < argumentTypes.length; i++) {
-				readNamedComponents[i][1] = argumentTypes[i].getClassName();
+				namedComponents[i][1] = argumentTypes[i].getClassName();
 			}
 		} else {
-			readNamedComponents = EMPTY;
+			namedComponents = EMPTY;
 		}
 	}
 
-	public DefaultReadObjectGenerator getDefaultReadGenerator() {
-		if (defaultReadGenerator == null) {
-			defaultReadGenerator = new DefaultReadObjectVisitor();
+	public final DefaultStreamCallGenerator getDefaultStreamCallGenerator() {
+		if (defaultStreamCallGenerator == null) {
+			defaultStreamCallGenerator = createDefaultStreamCallGenerator();
 		}
-		return defaultReadGenerator;
+		return defaultStreamCallGenerator;
 	}
 
-	public String getReadInjectorMethodName() {
+	public String getInjectorMethodName() {
 		return injectorMethodName;
 	}
 
-	public String getReadInjectorMethodDesc() {
+	public String getInjectorMethodDesc() {
 		return injectorMethodDesc;
 	}
 }

@@ -10,8 +10,9 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.inspector;
 
-@FunctionalInterface
-interface InjectorMethodArgumentTypesInitializer {
+import org.objectweb.asm.MethodVisitor;
 
-	void initArgumentTypes(boolean pIncludeStream, String pMethodName, String pMethodDesc);
+interface MethodInspectorFactory {
+
+	MethodVisitor createMethodInspector(MethodVisitor pVisitor, String name, String desc);
 }

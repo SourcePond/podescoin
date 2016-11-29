@@ -31,8 +31,7 @@ import ch.sourcepond.utils.podescoin.internal.method.SuperMethodInvokationExcept
  */
 final class InjectorMethodInspector extends MethodVisitor {
 	private static final Logger LOG = getLogger(InjectorMethodInspector.class);
-	private InjectorMethodArgumentTypesInitializer initializer;
-	private NamedComponentRegistration namedComponentRegistration;
+	private Inspector inspector;
 	private Class<?> objectStreamClass;
 	private String classInternalName;
 	private String superClassInternalNameOrNull;
@@ -45,12 +44,8 @@ final class InjectorMethodInspector extends MethodVisitor {
 		super(ASM5, mv);
 	}
 
-	public void setInitializer(final InjectorMethodArgumentTypesInitializer initializer) {
-		this.initializer = initializer;
-	}
-
-	public void setNamedComponentRegistration(final NamedComponentRegistration namedComponentRegistration) {
-		this.namedComponentRegistration = namedComponentRegistration;
+	public void setInspector(final Inspector pInspector) {
+		this.inspector = pInspector;
 	}
 
 	public void setObjectStreamClass(final Class<?> objectStreamClass) {
@@ -92,7 +87,7 @@ final class InjectorMethodInspector extends MethodVisitor {
 				LOG.debug("{} : {} : added with descriptor {}", classInternalName.replace('/', '.'), injectorMethodName,
 						injectorMethodDesc);
 			}
-			initializer.initArgumentTypes(includeObjectStream(), injectorMethodName, injectorMethodDesc);
+			inspector.initArgumentTypes(includeObjectStream(), injectorMethodName, injectorMethodDesc);
 		}
 		return super.visitAnnotation(desc, visible);
 	}
@@ -134,6 +129,6 @@ final class InjectorMethodInspector extends MethodVisitor {
 			LOG.debug("{} : {} : use component-id {} for parameter index {}", classInternalName.replace('/', '.'),
 					injectorMethodName, pComponentId, pParameterIndex);
 		}
-		namedComponentRegistration.registerNamedComponent(pComponentId, pParameterIndex);
+		inspector.registerNamedComponent(pComponentId, pParameterIndex);
 	}
 }

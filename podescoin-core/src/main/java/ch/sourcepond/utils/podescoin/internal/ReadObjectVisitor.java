@@ -12,7 +12,7 @@ import static org.objectweb.asm.Opcodes.RETURN;
 
 import org.objectweb.asm.MethodVisitor;
 
-import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 
 public abstract class ReadObjectVisitor extends MethodVisitor {
 	private static final int _ICONST_0 = 0;
@@ -22,12 +22,12 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 	private static final int _ICONST_4 = 4;
 	private static final int _ICONST_5 = 5;
 	private final boolean enhanceMode;
-	private final DefaultReadObjectGenerator defaultReadGenerator;
+	private final DefaultStreamCallGenerator defaultReadGenerator;
 	private boolean codeVisited = false;
 	private int maxStack;
 	private int maxLocals;
 
-	public ReadObjectVisitor(final boolean pEnhanceMode, final DefaultReadObjectGenerator pDefaultReqdGenerator,
+	public ReadObjectVisitor(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReqdGenerator,
 			final MethodVisitor mv) {
 		super(ASM5, mv);
 		enhanceMode = pEnhanceMode;
@@ -35,7 +35,7 @@ public abstract class ReadObjectVisitor extends MethodVisitor {
 	}
 
 	protected final void visitDefaultRead() {
-		defaultReadGenerator.visitDefaultRead(this);
+		defaultReadGenerator.visitDefaultStreamCall(this);
 	}
 
 	protected final void pushByteConstant(final MethodVisitor mv, final int idx) {

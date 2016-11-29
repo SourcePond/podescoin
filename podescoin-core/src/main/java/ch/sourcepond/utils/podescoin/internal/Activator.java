@@ -25,6 +25,7 @@ import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
+import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
 import ch.sourcepond.utils.podescoin.internal.method.MethodInjectionClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
@@ -66,7 +67,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// the class in order to find all possibilities. If more than one
 		// injector method has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
-		final Inspector inspector = new Inspector();
+		final Inspector inspector = new ReadObjectInspector();
 		reader.accept(inspector, 0);
 		byte[] classData = pOriginalClassBytes;
 

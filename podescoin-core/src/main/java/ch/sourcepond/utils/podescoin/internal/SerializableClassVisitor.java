@@ -35,7 +35,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
-import ch.sourcepond.utils.podescoin.internal.inspector.DefaultReadObjectGenerator;
+import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
 public abstract class SerializableClassVisitor extends NamedClassVisitor {
@@ -97,7 +97,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	}
 
 	protected abstract ReadObjectVisitor createReadObjectVisitor(MethodVisitor pWriter, boolean pEnhanceMode,
-			DefaultReadObjectGenerator pDefaultReadGenerator);
+			DefaultStreamCallGenerator pDefaultReadGenerator);
 
 	protected abstract boolean isEnhancementNecessary();
 
@@ -109,7 +109,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 
 			// Create visitor which should enhance readObject
 			readObjectEnhancer = createReadObjectVisitor(super.visitMethod(access, name, desc, signature, exceptions),
-					true, inspector.getDefaultReadGenerator());
+					true, inspector.getDefaultStreamCallGenerator());
 
 			// Enhance existing readObject method now
 			readObjectEnhancer.visitEnhance();
@@ -129,7 +129,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 				// Create visitor which should create readObject
 				readObjectEnhancer = createReadObjectVisitor(cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME,
 						READ_OBJECT_METHOD_DESC, null, READ_OBJECT_METHOD_EXCEPTIONS), false,
-						inspector.getDefaultReadGenerator());
+						inspector.getDefaultStreamCallGenerator());
 
 				// Create new readObject method now
 				readObjectEnhancer.visitEnhance();
