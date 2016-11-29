@@ -27,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import org.objectweb.asm.ClassVisitor;
@@ -47,6 +48,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	private static final int _ICONST_4 = 4;
 	private static final int _ICONST_5 = 5;
 	protected static final String READ_OBJECT_METHOD_NAME = "readObject";
+	protected static final String WRITE_OBJECT_METHOD_NAME = "writeObject";
 	protected static final String READ_OBJECT_METHOD_DESC = getMethodDescriptor(getType(void.class),
 			getType(ObjectInputStream.class));
 	protected static final String CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME = getInternalName(
@@ -55,6 +57,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	protected static final String[] READ_OBJECT_METHOD_EXCEPTIONS = new String[] { IO_EXCEPTION_INTERNAL_NAME,
 			CLASS_NOT_FOUND_EXCEPTION_INTERNAL_NAME };
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
+	protected static final String OBJECT_OUTPUT_STREAM_NAME = ObjectOutputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
 	protected Inspector inspector;
 	private ReadObjectVisitor readObjectEnhancer;
@@ -181,6 +184,51 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 					// injection method.
 					return argumentTypes.length == 1
 							&& OBJECT_INPUT_STREAM_NAME.equals(argumentTypes[0].getClassName());
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Determines whether the current method is the writeObject method with
+	 * following signature:
+	 * 
+	 * <pre>
+	 * private void writeObject(java.io.ObjectOutputStream out) throws IOException
+	 * </pre>
+	 * 
+	 * See {@link Serializable} for further information.
+	 * 
+	 * @param access
+	 *            the method's access flags (see {@link Opcodes}). This
+	 *            parameter also indicates if the method is synthetic and/or
+	 *            deprecated.
+	 * @param name
+	 *            the method's name.
+	 * @param desc
+	 *            the method's descriptor (see {@link Type}).
+	 * @param exceptions
+	 *            the internal names of the method's exception classes (see
+	 *            {@link Type#getInternalName()} ). May be null.
+	 * @return {@code true} if the method specified is the writeObject method as
+	 *         described by {@link Serializable}, {@code false} otherwise
+	 */
+	public static boolean isWriteObjectMethod(final int access, final String name, final String desc,
+			final String[] exceptions) {
+		if (ACC_PRIVATE == access && WRITE_OBJECT_METHOD_NAME.equals(name) && exceptions != null
+				&& exceptions.length == 1) {
+			if (IO_EXCEPTION_INTERNAL_NAME.equals(exceptions[0])) {
+				final Type returnType = getReturnType(desc);
+
+				if (VOID_NAME.equals(returnType.getClassName())) {
+					final Type[] argumentTypes = getArgumentTypes(desc);
+
+					// We need this information later when we generate the
+					// concrete
+					// injection method.
+					return argumentTypes.length == 1
+							&& OBJECT_OUTPUT_STREAM_NAME.equals(argumentTypes[0].getClassName());
 				}
 			}
 		}
