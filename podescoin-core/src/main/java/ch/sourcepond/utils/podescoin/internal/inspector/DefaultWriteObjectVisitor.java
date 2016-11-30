@@ -13,23 +13,23 @@ package ch.sourcepond.utils.podescoin.internal.inspector;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getType;
 
-final class DefaultReadObjectVisitor extends BaseStreamCallGenerator {
-	private static final String DEFAULT_READ_OBJECT = "defaultReadObject";
-	private static final String DEFAULT_READ_OBJECT_DESC = getMethodDescriptor(getType(void.class));
+final class DefaultWriteObjectVisitor extends BaseStreamCallGenerator {
+	private static final String DEFAULT_WRITE_OBJECT = "defaultWriteObject";
+	private static final String DEFAULT_WRITE_OBJECT_DESC = getMethodDescriptor(getType(void.class));
 
 	@Override
 	protected String getStreamInternalName() {
-		return OBJECT_INPUT_STREAM_INTERNAL_NAME;
+		return OBJECT_OUTPUT_STREAM_INTERNAL_NAME;
 	}
 
 	@Override
 	protected String getMethodName() {
-		return DEFAULT_READ_OBJECT;
+		return DEFAULT_WRITE_OBJECT;
 	}
 
 	@Override
 	protected String getMethodDesc() {
-		return DEFAULT_READ_OBJECT_DESC;
+		return DEFAULT_WRITE_OBJECT_DESC;
 	}
 
 }

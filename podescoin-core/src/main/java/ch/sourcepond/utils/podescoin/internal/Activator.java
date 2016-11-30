@@ -26,7 +26,9 @@ import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
+import ch.sourcepond.utils.podescoin.internal.inspector.WriteObjectInspector;
 import ch.sourcepond.utils.podescoin.internal.method.ReadObjectMethodClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.method.WriteObjectMethodClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
 	private static final String RECIPIENT_CLASS_NAME = Recipient.class.getName();
@@ -63,11 +65,12 @@ public final class Activator implements BundleActivator, WeavingHook {
 	public static byte[] transform(final byte[] pOriginalClassBytes) {
 		ClassReader reader = new ClassReader(pOriginalClassBytes);
 
-		// First step: determine injector methods; this needs a full visit of
+		// First step: determine readObject injector methods; this needs a full
+		// visit of
 		// the class in order to find all possibilities. If more than one
-		// injector method has been detected, an
+		// injector method for readObject has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
-		final Inspector inspector = new ReadObjectInspector();
+		Inspector inspector = new ReadObjectInspector();
 		reader.accept(inspector, 0);
 		byte[] classData = pOriginalClassBytes;
 
@@ -88,6 +91,19 @@ public final class Activator implements BundleActivator, WeavingHook {
 			writer = new ClassWriter(reader, 0);
 			visitor = new FieldInjectionClassVisitor(inspector, writer);
 			reader.accept(visitor, 0);
+
+			// Forth step: determine writeObject injector methods; this needs a
+			// full visit of
+			// the class in order to find all possibilities. If more than one
+			// injector method for writeObject has been detected, an
+			// AmbiguousInjectorMethodsException will be caused to be thrown.
+			inspector = new WriteObjectInspector();
+			reader = new ClassReader(writer.toByteArray());
+			reader.accept(inspector, 0);
+			writer = new ClassWriter(reader, 0);
+			visitor = new WriteObjectMethodClassVisitor(writer, inspector);
+			reader.accept(visitor, 0);
+
 			classData = writer.toByteArray();
 		}
 		return classData;
