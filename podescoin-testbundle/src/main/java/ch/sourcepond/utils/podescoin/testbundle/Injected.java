@@ -17,6 +17,6 @@ import ch.sourcepond.utils.podescoin.testservice.TestService;
 public interface Injected extends Serializable {
 
 	TestService getDateService();
-	
+
 	TestService getNameService();
 }

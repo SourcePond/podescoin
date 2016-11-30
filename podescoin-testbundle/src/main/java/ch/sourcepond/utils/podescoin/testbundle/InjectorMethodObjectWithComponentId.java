@@ -10,16 +10,24 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.inject.Named;
 
 import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.WriteObject;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousDateService;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService;
+import ch.sourcepond.utils.podescoin.testservice.DateService;
+import ch.sourcepond.utils.podescoin.testservice.NameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
 @Recipient
-public class InjectorMethodObjectWithComponentId implements Injected {
+public class InjectorMethodObjectWithComponentId implements DataTransferInclInjection {
+	public static final String TEST_PREFIX = "test_";
 
 	/**
 	 * 
@@ -30,11 +38,26 @@ public class InjectorMethodObjectWithComponentId implements Injected {
 
 	public transient AmbiguousDateService dateService;
 
+	private transient String transferredNameServiceId;
+	private transient String transferredDateServiceId;
+
 	@ReadObject
-	public void readObject(@Named("testservice.ambiguousName1") final AmbiguousNameService pNameService,
-			@Named("testservice.ambiguousDate2") final AmbiguousDateService pDateService) {
+	public void readObject(final ObjectInputStream in,
+			@Named("testservice.ambiguousName1") final AmbiguousNameService pNameService,
+			@Named("testservice.ambiguousDate2") final AmbiguousDateService pDateService) throws IOException {
 		nameService = pNameService;
 		dateService = pDateService;
+
+		transferredNameServiceId = in.readUTF();
+		transferredDateServiceId = in.readUTF();
+	}
+
+	@WriteObject
+	public void writeObject(final ObjectOutputStream out,
+			@Named("testservice.ambiguousName1") final AmbiguousNameService pNameService,
+			@Named("testservice.ambiguousDate2") final AmbiguousDateService pDateService) throws IOException {
+		out.writeUTF(TEST_PREFIX + pNameService.getId());
+		out.writeUTF(TEST_PREFIX + pDateService.getId());
 	}
 
 	@Override
@@ -45,5 +68,15 @@ public class InjectorMethodObjectWithComponentId implements Injected {
 	@Override
 	public TestService getNameService() {
 		return nameService;
+	}
+
+	@Override
+	public String getTransferredNameServiceId() {
+		return transferredNameServiceId;
+	}
+
+	@Override
+	public String getTransferredDateServiceId() {
+		return transferredDateServiceId;
 	}
 }

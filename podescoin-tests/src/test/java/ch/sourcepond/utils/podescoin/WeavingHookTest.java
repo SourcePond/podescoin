@@ -73,12 +73,16 @@ public class WeavingHookTest {
 	@Test
 	public void verifyInjectorMethod() throws Exception {
 		final InjectorMethodObject obj = factory.getInjectorMethodObject();
+		assertEquals("test_testservice.date", obj.getTransferredDateServiceId());
+		assertEquals("test_testservice.name", obj.getTransferredNameServiceId());
 		verifyService(obj, "testservice.date", "testservice.name");
 	}
 
 	@Test
 	public void verifyInjectorMethodWithComponentId() throws Exception {
 		final InjectorMethodObjectWithComponentId obj = factory.getInjectorMethodObjectWithComponentId();
+		assertEquals("test_testservice.ambiguousDate2", obj.getTransferredDateServiceId());
+		assertEquals("test_testservice.ambiguousName1", obj.getTransferredNameServiceId());
 		verifyService(obj, "testservice.ambiguousDate2", "testservice.ambiguousName1");
 	}
 

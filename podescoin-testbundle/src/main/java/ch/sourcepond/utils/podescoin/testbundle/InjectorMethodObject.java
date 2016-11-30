@@ -10,14 +10,20 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.WriteObject;
 import ch.sourcepond.utils.podescoin.testservice.DateService;
 import ch.sourcepond.utils.podescoin.testservice.NameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
 @Recipient
-public class InjectorMethodObject implements Injected {
+public class InjectorMethodObject implements DataTransferInclInjection {
+	public static final String TEST_PREFIX = "test_";
 
 	/**
 	 * 
@@ -28,10 +34,24 @@ public class InjectorMethodObject implements Injected {
 
 	public transient DateService dateService;
 
+	private transient String transferredNameServiceId;
+	private transient String transferredDateServiceId;
+
 	@ReadObject
-	public void readObject(final NameService pNameService, final DateService pDateService) {
+	public void readObject(final ObjectInputStream in, final NameService pNameService, final DateService pDateService)
+			throws IOException {
 		nameService = pNameService;
 		dateService = pDateService;
+
+		transferredNameServiceId = in.readUTF();
+		transferredDateServiceId = in.readUTF();
+	}
+
+	@WriteObject
+	public void writeObject(final ObjectOutputStream out, final NameService pNameService,
+			final DateService pDateService) throws IOException {
+		out.writeUTF(TEST_PREFIX + pNameService.getId());
+		out.writeUTF(TEST_PREFIX + pDateService.getId());
 	}
 
 	@Override
@@ -42,5 +62,15 @@ public class InjectorMethodObject implements Injected {
 	@Override
 	public TestService getNameService() {
 		return nameService;
+	}
+
+	@Override
+	public String getTransferredNameServiceId() {
+		return transferredNameServiceId;
+	}
+
+	@Override
+	public String getTransferredDateServiceId() {
+		return transferredDateServiceId;
 	}
 }

@@ -10,7 +10,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
-import static ch.sourcepond.utils.podescoin.internal.WriteReadObjectTest.ClassWithReadAndWriteInjectorMethod.TEST_STRING;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -126,7 +125,7 @@ public class WriteReadObjectTest extends ClassVisitorTest {
 		try (final ObjectInputStream in = new PodesCoinObjectInputStream(loader,
 				new ByteArrayInputStream(bout.toByteArray()))) {
 			final Object clone = in.readObject();
-			assertEquals(TEST_STRING, cl.getField("testString").get(clone));
+			assertEquals(ClassWithReadAndWriteInjectorMethod.TEST_STRING, cl.getField("testString").get(clone));
 		}
 	}
 }
