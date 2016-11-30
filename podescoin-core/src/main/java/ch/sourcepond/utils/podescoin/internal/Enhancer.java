@@ -22,20 +22,20 @@ public abstract class Enhancer extends MethodVisitor {
 	private static final int _ICONST_4 = 4;
 	private static final int _ICONST_5 = 5;
 	private final boolean enhanceMode;
-	private final DefaultStreamCallGenerator defaultReadGenerator;
+	private final DefaultStreamCallGenerator defaultStreamCallGenerator;
 	private boolean codeVisited = false;
 	private int maxStack;
 	private int maxLocals;
 
-	public Enhancer(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultReqdGenerator,
+	public Enhancer(final boolean pEnhanceMode, final DefaultStreamCallGenerator pDefaultStreamCallGenerator,
 			final MethodVisitor mv) {
 		super(ASM5, mv);
 		enhanceMode = pEnhanceMode;
-		defaultReadGenerator = pDefaultReqdGenerator;
+		defaultStreamCallGenerator = pDefaultStreamCallGenerator;
 	}
 
-	protected final void visitDefaultRead() {
-		defaultReadGenerator.visitDefaultStreamCall(this);
+	protected final void visitStreamDefaultCall() {
+		defaultStreamCallGenerator.visitDefaultStreamCall(this);
 	}
 
 	protected final void pushByteConstant(final MethodVisitor mv, final int idx) {

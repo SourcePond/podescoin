@@ -103,7 +103,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	}
 
 	protected abstract Enhancer createInjectionMethodVisitor(MethodVisitor pWriter, boolean pEnhanceMode,
-			DefaultStreamCallGenerator pDefaultReadGenerator);
+			DefaultStreamCallGenerator pDefaultStreamCallGenerator);
 
 	protected abstract boolean isEnhancementNecessary();
 
@@ -125,11 +125,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 		return super.visitMethod(access, name, desc, signature, exceptions);
 	}
 
-	protected MethodVisitor createInjectionMethodWriter() {
-		LOG.debug("{} : create new readObject method", getClassName());
-		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
-				READ_OBJECT_METHOD_EXCEPTIONS);
-	}
+	protected abstract MethodVisitor createInjectionMethodWriter();
 
 	@Override
 	public final void visitEnd() {

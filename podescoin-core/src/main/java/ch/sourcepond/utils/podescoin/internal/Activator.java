@@ -26,7 +26,7 @@ import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
-import ch.sourcepond.utils.podescoin.internal.method.MethodInjectionClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.method.ReadObjectMethodClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
 	private static final String RECIPIENT_CLASS_NAME = Recipient.class.getName();
@@ -76,7 +76,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 			// injector
 			// method
 			ClassWriter writer = new ClassWriter(reader, 0);
-			ClassVisitor visitor = new MethodInjectionClassVisitor(writer, inspector);
+			ClassVisitor visitor = new ReadObjectMethodClassVisitor(writer, inspector);
 			reader.accept(visitor, 0);
 
 			// Third step: create or enhance readObject which injects fields.

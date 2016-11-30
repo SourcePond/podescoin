@@ -30,7 +30,7 @@ import ch.sourcepond.utils.podescoin.internal.NamedClassVisitor;
 public abstract class Inspector extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
 	private boolean injectionAware;
-	private String[][] namedComponents;
+	private String[][] components;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasStreamArgument;
@@ -89,11 +89,11 @@ public abstract class Inspector extends NamedClassVisitor {
 	}
 
 	final void registerNamedComponent(final String pComponentId, final int pParameterIndex) {
-		namedComponents[hasStreamArgument ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
+		components[hasStreamArgument ? pParameterIndex - 1 : pParameterIndex][0] = pComponentId;
 	}
 
-	public final String[][] getNamedComponents() {
-		return namedComponents;
+	public final String[][] getComponents() {
+		return components;
 	}
 
 	public final boolean hasObjectInputStream() {
@@ -102,7 +102,7 @@ public abstract class Inspector extends NamedClassVisitor {
 
 	final void initArgumentTypes(final boolean pHasObjectInputStream, final String pInjectorMethodName,
 			final String pInjectorMethodDesc) {
-		if (namedComponents != null) {
+		if (components != null) {
 			throw new AmbiguousInjectorMethodsException(
 					format("More than one method detected which is annotated with %s", READ_OBJECT_ANNOTATION_NAME));
 		}
@@ -119,12 +119,12 @@ public abstract class Inspector extends NamedClassVisitor {
 		}
 
 		if (argumentTypes.length > 0) {
-			namedComponents = new String[argumentTypes.length][2];
+			components = new String[argumentTypes.length][2];
 			for (int i = 0; i < argumentTypes.length; i++) {
-				namedComponents[i][1] = argumentTypes[i].getClassName();
+				components[i][1] = argumentTypes[i].getClassName();
 			}
 		} else {
-			namedComponents = EMPTY;
+			components = EMPTY;
 		}
 	}
 

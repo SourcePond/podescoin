@@ -13,11 +13,13 @@ package ch.sourcepond.utils.podescoin.internal.inspector;
 import static org.objectweb.asm.Type.getInternalName;
 
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import org.objectweb.asm.MethodVisitor;
 
 public interface DefaultStreamCallGenerator {
 	String OBJECT_INPUT_STREAM_INTERNAL_NAME = getInternalName(ObjectInputStream.class);
+	String OBJECT_OUTPUT_STREAM_INTERNAL_NAME = getInternalName(ObjectOutputStream.class);
 
 	void visitDefaultStreamCall(MethodVisitor pVisitor);
 }

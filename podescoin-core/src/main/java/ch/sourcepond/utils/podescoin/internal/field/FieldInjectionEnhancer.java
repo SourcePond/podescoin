@@ -61,7 +61,7 @@ final class FieldInjectionEnhancer extends Enhancer {
 
 		visitCode();
 
-		visitDefaultRead();
+		visitStreamDefaultCall();
 
 		// Load 'this' reference on operand stack (first operand for calling
 		// static method ch.sourcepond.utils.podescoin.Injector#injectComponent)

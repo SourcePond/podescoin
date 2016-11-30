@@ -10,28 +10,34 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.method;
 
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.sourcepond.utils.podescoin.internal.Enhancer;
-import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
-public class MethodInjectionClassVisitor extends SerializableClassVisitor {
-	public MethodInjectionClassVisitor(final ClassVisitor pVisitor, final Inspector pInspector) {
+public class ReadObjectMethodClassVisitor extends InjectorMethodClassVisitor {
+	private static final Logger LOG = LoggerFactory.getLogger(ReadObjectMethodClassVisitor.class);
+
+	public ReadObjectMethodClassVisitor(final ClassVisitor pVisitor, final Inspector pInspector) {
 		super(pInspector, pVisitor);
 	}
 
 	@Override
-	protected boolean isEnhancementNecessary() {
-		final String[][] components = inspector.getNamedComponents();
-		return components != null && components.length > 0;
+	protected MethodVisitor createInjectionMethodWriter() {
+		LOG.debug("{} : create new readObject method", getClassName());
+		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
+				READ_OBJECT_METHOD_EXCEPTIONS);
 	}
 
 	@Override
 	protected Enhancer createInjectionMethodVisitor(final MethodVisitor pWriter, final boolean pEnhanceMode,
 			final DefaultStreamCallGenerator pDefaultReadGenerator) {
-		return new InjectorMethodEnhancer(inspector, pWriter, pEnhanceMode, pDefaultReadGenerator);
+		return new ReadObjectEnhancer(inspector, pWriter, pEnhanceMode, pDefaultReadGenerator);
 	}
 }

@@ -10,7 +10,9 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.field;
 
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Type.getType;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.slf4j.Logger;
 
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.internal.Access;
@@ -27,6 +30,7 @@ import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerat
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
 public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
+	private static final Logger LOG = getLogger(FieldInjectionClassVisitor.class);
 	private List<String> illegalFields;
 	private List<String[]> namedComponents;
 
@@ -96,5 +100,11 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 		final FieldInjectionEnhancer visitor = new FieldInjectionEnhancer(pEnhanceMode, pDefaultReadGenerator, pWriter);
 		visitor.setNamedComponents(namedComponents);
 		return visitor;
+	}
+	
+	protected MethodVisitor createInjectionMethodWriter() {
+		LOG.debug("{} : create new readObject method", getClassName());
+		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
+				READ_OBJECT_METHOD_EXCEPTIONS);
 	}
 }
