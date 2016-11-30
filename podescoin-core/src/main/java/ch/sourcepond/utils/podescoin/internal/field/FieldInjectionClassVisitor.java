@@ -101,10 +101,17 @@ public final class FieldInjectionClassVisitor extends SerializableClassVisitor {
 		visitor.setNamedComponents(namedComponents);
 		return visitor;
 	}
-	
+
+	@Override
 	protected MethodVisitor createInjectionMethodWriter() {
 		LOG.debug("{} : create new readObject method", getClassName());
 		return cv.visitMethod(ACC_PRIVATE, READ_OBJECT_METHOD_NAME, READ_OBJECT_METHOD_DESC, null,
 				READ_OBJECT_METHOD_EXCEPTIONS);
+	}
+
+	@Override
+	protected boolean isInjectorMethod(final int access, final String name, final String desc,
+			final String[] exceptions) {
+		return isReadObjectMethod(access, name, desc, exceptions);
 	}
 }

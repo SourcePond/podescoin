@@ -40,4 +40,10 @@ public class ReadObjectMethodClassVisitor extends InjectorMethodClassVisitor {
 			final DefaultStreamCallGenerator pDefaultReadGenerator) {
 		return new ReadObjectEnhancer(inspector, pWriter, pEnhanceMode, pDefaultReadGenerator);
 	}
+
+	@Override
+	protected boolean isInjectorMethod(final int access, final String name, final String desc,
+			final String[] exceptions) {
+		return isReadObjectMethod(access, name, desc, exceptions);
+	}
 }

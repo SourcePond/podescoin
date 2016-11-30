@@ -107,11 +107,13 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 
 	protected abstract boolean isEnhancementNecessary();
 
+	protected abstract boolean isInjectorMethod(int access, String name, String desc, String[] exceptions);
+
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
 			final String[] exceptions) {
-		if (isReadObjectMethod(access, name, desc, exceptions) && isEnhancementNecessary()) {
-			LOG.debug("{} : enhancing existing readObject method", getClassName());
+		if (isInjectorMethod(access, name, desc, exceptions) && isEnhancementNecessary()) {
+			LOG.debug("{} : enhancing existing method {}", getClassName(), name);
 
 			// Create visitor which should enhance readObject
 			injectionMethodEnhancer = createInjectionMethodVisitor(

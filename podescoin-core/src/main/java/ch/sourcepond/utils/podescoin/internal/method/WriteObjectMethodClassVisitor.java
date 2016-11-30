@@ -30,4 +30,10 @@ public class WriteObjectMethodClassVisitor extends InjectorMethodClassVisitor {
 			final DefaultStreamCallGenerator pDefaultStreamCallGenerator) {
 		return new WriteObjectEnhancer(inspector, pWriter, pEnhanceMode, pDefaultStreamCallGenerator);
 	}
+
+	@Override
+	protected boolean isInjectorMethod(final int access, final String name, final String desc,
+			final String[] exceptions) {
+		return isWriteObjectMethod(access, name, desc, exceptions);
+	}
 }

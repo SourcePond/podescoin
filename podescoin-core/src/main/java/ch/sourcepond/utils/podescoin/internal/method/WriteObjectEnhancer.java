@@ -28,16 +28,17 @@ public class WriteObjectEnhancer extends InjectorMethodEnhancer {
 		super(pInspector, pDelegate, pEnhanceMode, pDefaultStreamCallGenerator);
 	}
 
+	@Override
 	protected void tryBlock() {
 		visitTryCatchBlock(l0, l1, l2, IO_EXCEPTION_INTERNAL_NAME);
 		visitTryCatchBlock(l0, l1, l3, EXCEPTION_INTERNAL_NAME);
 	}
 
+	@Override
 	protected void catchBlock() {
 		visitJumpInsn(GOTO, l4);
-		visitJumpInsn(GOTO, l4);
 		visitLabel(l2);
-		visitFrame(Opcodes.F_FULL, 3, new Object[] { inspector.getInjectorMethodName(),
+		visitFrame(Opcodes.F_FULL, 3, new Object[] { inspector.getInternalClassName(),
 				OBJECT_OUTPUT_STREAM_INTERNAL_NAME, CONTAINER_INTERNAL_NAME }, 1,
 				new Object[] { IO_EXCEPTION_INTERNAL_NAME });
 		visitVarInsn(ASTORE, 3);
