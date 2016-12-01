@@ -12,12 +12,11 @@ package ch.sourcepond.utils.podescoin.testing;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import ch.sourcepond.utils.podescoin.internal.util.FieldCollector;
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
@@ -25,7 +24,6 @@ final class Cloner {
 	private static final Unsafe UNSAFE;
 	static {
 		try {
-
 			final Field singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
 			singleoneInstanceField.setAccessible(true);
 			UNSAFE = (Unsafe) singleoneInstanceField.get(null);
@@ -43,28 +41,10 @@ final class Cloner {
 		loader = pLoader;
 	}
 
-	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType,
-			final Map<Field, Field> pCollectedFields) throws NoSuchFieldException, SecurityException {
-		if (pSourceType != null) {
-			for (final Field f : pSourceType.getDeclaredFields()) {
-				if (!Modifier.isStatic(f.getModifiers())) {
-					pCollectedFields.put(f, pTargetType.getDeclaredField(f.getName()));
-				}
-			}
-			return getDeclaredFields(pSourceType.getSuperclass(), pTargetType.getSuperclass(), pCollectedFields);
-		}
-		return pCollectedFields;
-	}
-
-	private Map<Field, Field> getDeclaredFields(final Class<?> pSourceType, final Class<?> pTargetType)
-			throws NoSuchFieldException, SecurityException {
-		return getDeclaredFields(pSourceType, pTargetType, new LinkedHashMap<>());
-	}
-
 	private Object copyState(final Class<?> pSourceType, final Class<?> pTargetType, final Object pSource,
 			final Object pTarget) throws NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException, InstantiationException, ClassNotFoundException {
-		for (final Map.Entry<Field, Field> fieldEntry : getDeclaredFields(pSourceType, pTargetType).entrySet()) {
+		for (final Map.Entry<Field, Field> fieldEntry : new FieldCollector(pSourceType, pTargetType).entrySet()) {
 			final Field sourceField = fieldEntry.getKey();
 			sourceField.setAccessible(true);
 			final Object sourceValue = sourceField.get(pSource);

@@ -79,7 +79,7 @@
 				<configuration>
 					<instructions>
 						<Embed-Dependency>asm</Embed-Dependency>
-						<Import-Package>!org.objectweb.asm.*,*</Import-Package>
+						<Import-Package>!org.objectweb.asm.*,!sun.misc,*</Import-Package>
 						<Bundle-Activator>ch.sourcepond.utils.podescoin.internal.Activator</Bundle-Activator>
 					</instructions>
 				</configuration>

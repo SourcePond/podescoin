@@ -50,6 +50,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
+import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectOutputStream;
 
 /**
  * @author rolandhauser
@@ -233,7 +234,7 @@ public class PodesCoinTestingContext implements TestRule {
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> T deepClone(final T obj) throws IOException, ClassNotFoundException {
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try (final ObjectOutputStream oout = new ObjectOutputStream(out)) {
+		try (final ObjectOutputStream oout = new PodesCoinObjectOutputStream(loader, out)) {
 			oout.writeObject(obj);
 			try (final ObjectInputStream in = new PodesCoinObjectInputStream(loader,
 					new ByteArrayInputStream(out.toByteArray()))) {
