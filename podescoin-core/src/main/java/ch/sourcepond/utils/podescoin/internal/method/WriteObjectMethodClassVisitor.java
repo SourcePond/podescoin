@@ -19,12 +19,12 @@ import org.slf4j.Logger;
 
 import ch.sourcepond.utils.podescoin.internal.Enhancer;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
-import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
+import ch.sourcepond.utils.podescoin.internal.inspector.WriteObjectInspector;
 
 public class WriteObjectMethodClassVisitor extends InjectorMethodClassVisitor {
 	private static final Logger LOG = getLogger(WriteObjectMethodClassVisitor.class);
 
-	public WriteObjectMethodClassVisitor(final ClassVisitor pVisitor, final Inspector pInspector) {
+	public WriteObjectMethodClassVisitor(final ClassVisitor pVisitor, final WriteObjectInspector pInspector) {
 		super(pInspector, pVisitor);
 	}
 

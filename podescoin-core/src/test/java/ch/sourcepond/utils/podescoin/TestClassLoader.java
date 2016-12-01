@@ -23,7 +23,7 @@ import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 
-import ch.sourcepond.utils.podescoin.internal.FieldInjectionClassVisitorTest;
+import ch.sourcepond.utils.podescoin.internal.ReadObjectFieldInjectionClassVisitorTest;
 
 public class TestClassLoader extends ClassLoader implements BundleReference {
 	private final Class<?> testSerializableClass;
@@ -87,7 +87,7 @@ public class TestClassLoader extends ClassLoader implements BundleReference {
 			}
 			return cl;
 		}
-		return FieldInjectionClassVisitorTest.class.getClassLoader().loadClass(name);
+		return ReadObjectFieldInjectionClassVisitorTest.class.getClassLoader().loadClass(name);
 	}
 
 	@Override

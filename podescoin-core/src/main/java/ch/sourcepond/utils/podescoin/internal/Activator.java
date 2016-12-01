@@ -24,7 +24,7 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.ReadObjectFieldInjectionClassVisitor;
-import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
+import ch.sourcepond.utils.podescoin.internal.field.WriteObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
 import ch.sourcepond.utils.podescoin.internal.inspector.WriteObjectInspector;
 import ch.sourcepond.utils.podescoin.internal.method.ReadObjectMethodClassVisitor;
@@ -70,8 +70,10 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// the class in order to find all possibilities. If more than one
 		// injector method for readObject has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
-		Inspector inspector = new ReadObjectInspector();
+		final ReadObjectInspector inspector = new ReadObjectInspector();
+		final WriteObjectInspector writeObjectInspector = new WriteObjectInspector();
 		reader.accept(inspector, 0);
+		reader.accept(writeObjectInspector, 0);
 		byte[] classData = pOriginalClassBytes;
 
 		if (inspector.isInjectionAware()) {
@@ -97,13 +99,22 @@ public final class Activator implements BundleActivator, WeavingHook {
 			// the class in order to find all possibilities. If more than one
 			// injector method for writeObject has been detected, an
 			// AmbiguousInjectorMethodsException will be caused to be thrown.
-			inspector = new WriteObjectInspector();
 			reader = new ClassReader(writer.toByteArray());
-			reader.accept(inspector, 0);
 			writer = new ClassWriter(reader, 0);
-			visitor = new WriteObjectMethodClassVisitor(writer, inspector);
+			visitor = new WriteObjectMethodClassVisitor(writer, writeObjectInspector);
 			reader.accept(visitor, 0);
 
+			// Fifth step: create or enhance writeObject which injects fields.
+			// This
+			// is done at the end because fields should have been injected
+			// before an
+			// injector method is called (LIFO order)
+			reader = new ClassReader(writer.toByteArray());
+			writer = new ClassWriter(reader, 0);
+			visitor = new WriteObjectFieldInjectionClassVisitor(writeObjectInspector, writer);
+			reader.accept(visitor, 0);
+
+			// Transformation is done
 			classData = writer.toByteArray();
 		}
 		return classData;

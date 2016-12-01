@@ -11,7 +11,6 @@ limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.inspector;
 
 import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
-import static ch.sourcepond.utils.podescoin.internal.Constants.READ_OBJECT_ANNOTATION_NAME;
 import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
@@ -34,6 +33,7 @@ public abstract class Inspector extends NamedClassVisitor {
 	private String injectorMethodName;
 	private String injectorMethodDesc;
 	private boolean hasStreamArgument;
+	private boolean hasStandardMethod;
 	private DefaultStreamCallGenerator defaultStreamCallGenerator;
 
 	public Inspector() {
@@ -42,6 +42,10 @@ public abstract class Inspector extends NamedClassVisitor {
 
 	public boolean isInjectionAware() {
 		return injectionAware;
+	}
+
+	public boolean hasStandardMethod() {
+		return hasStandardMethod;
 	}
 
 	@Override
@@ -79,10 +83,15 @@ public abstract class Inspector extends NamedClassVisitor {
 		if (injectionAware) {
 			if (!CONSTRUCTOR_NAME.equals(name)) {
 				visitor = createMethodInspector(visitor, name, desc);
-			}
-			if (defaultStreamCallGenerator == null && isInjectorMethod(access, name, desc, exceptions)) {
-				defaultStreamCallGenerator = m -> {
-				};
+				final boolean hasStandardMethod = isInjectorMethod(access, name, desc, exceptions);
+				if (!this.hasStandardMethod && hasStandardMethod) {
+					this.hasStandardMethod = hasStandardMethod;
+				}
+
+				if (defaultStreamCallGenerator == null && hasStandardMethod) {
+					defaultStreamCallGenerator = m -> {
+					};
+				}
 			}
 		}
 		return visitor;
@@ -104,7 +113,8 @@ public abstract class Inspector extends NamedClassVisitor {
 			final String pInjectorMethodDesc) {
 		if (components != null) {
 			throw new AmbiguousInjectorMethodsException(
-					format("More than one method detected which is annotated with %s", READ_OBJECT_ANNOTATION_NAME));
+					format("More than one method detected which is annotated with %s",
+							getInjectorMethodAnnotation().getName()));
 		}
 
 		hasStreamArgument = pHasObjectInputStream;
