@@ -23,7 +23,7 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 
 import ch.sourcepond.utils.podescoin.Injector;
 import ch.sourcepond.utils.podescoin.api.Recipient;
-import ch.sourcepond.utils.podescoin.internal.field.FieldInjectionClassVisitor;
+import ch.sourcepond.utils.podescoin.internal.field.ReadObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
 import ch.sourcepond.utils.podescoin.internal.inspector.WriteObjectInspector;
@@ -89,7 +89,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 			// injector method is called (LIFO order)
 			reader = new ClassReader(writer.toByteArray());
 			writer = new ClassWriter(reader, 0);
-			visitor = new FieldInjectionClassVisitor(inspector, writer);
+			visitor = new ReadObjectFieldInjectionClassVisitor(inspector, writer);
 			reader.accept(visitor, 0);
 
 			// Forth step: determine writeObject injector methods; this needs a
