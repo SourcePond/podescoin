@@ -17,7 +17,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * @author rolandhauser
+ * Activates a serializable class for dependency injection. This annotation is
+ * <em>not</em> inherited and must be applied on every class which wants to use
+ * dependency injection.
  *
  */
 @Retention(RUNTIME)
