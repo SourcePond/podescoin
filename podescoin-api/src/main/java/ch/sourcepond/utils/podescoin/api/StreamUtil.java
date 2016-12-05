@@ -316,7 +316,7 @@ public final class StreamUtil {
 	}
 
 	/**
-	 * Reads a {@link Integer} from the stream specified using
+	 * Reads an {@link Integer} from the stream specified using
 	 * {@link ObjectInputStream#readInt()} which is then passed as argument to
 	 * the function specified to evaluate an object. The resulting object will
 	 * be wrapped into an {@link Optional} which will be returned to the caller.
@@ -350,7 +350,7 @@ public final class StreamUtil {
 	}
 
 	/**
-	 * Reads a {@link Integer} from the stream specified using
+	 * Reads an {@link Integer} from the stream specified using
 	 * {@link ObjectInputStream#readInt()} which is then passed as argument to
 	 * the function specified to evaluate an object. The resulting object will
 	 * be wrapped into an {@link Optional} which will be returned to the caller.
@@ -860,9 +860,9 @@ public final class StreamUtil {
 	}
 
 	/**
-	 * Evaluates a {@link Integer} from the source object specified applying the
-	 * function specified. If not {@code null}, the resulting {@code Integer}
-	 * will be written to the stream specified using
+	 * Evaluates an {@link Integer} from the source object specified applying
+	 * the function specified. If not {@code null}, the resulting
+	 * {@code Integer} will be written to the stream specified using
 	 * {@link ObjectOutputStream#writeInt(int)}. If the source object itself or
 	 * the result is {@code null}, {@code -1} will be written instead.
 	 * 
@@ -890,9 +890,9 @@ public final class StreamUtil {
 	}
 
 	/**
-	 * Evaluates a {@link Integer} from the source object specified applying the
-	 * function specified. If not {@code null}, the resulting {@code Integer}
-	 * will be written to the stream specified using
+	 * Evaluates an {@link Integer} from the source object specified applying
+	 * the function specified. If not {@code null}, the resulting
+	 * {@code Integer} will be written to the stream specified using
 	 * {@link ObjectOutputStream#writeInt(int)}. If the source object itself or
 	 * the result is {@code null}, the null-token specified will be written
 	 * instead.
