@@ -47,8 +47,9 @@ public class WeavingHookTest {
 		return options(mavenBundle("ch.sourcepond.utils", "podescoin-api").versionAsInProject(),
 				mavenBundle("ch.sourcepond.utils", "podescoin-core").versionAsInProject(),
 				mavenBundle("ch.sourcepond.utils", "podescoin-testbundle").versionAsInProject(),
-				mavenBundle("ch.sourcepond.utils", "podescoin-testservice").versionAsInProject(), blueprintBundles(),
-				junitBundles());
+				mavenBundle("ch.sourcepond.utils", "podescoin-testservice").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.tinybundles", "tinybundles").versionAsInProject(),
+				mavenBundle("biz.aQute.bnd", "bndlib").versionAsInProject(), blueprintBundles(), junitBundles());
 	}
 
 	private void verifyService(final Injected pInjected, final String pDateServiceId, final String pNameServiceId) {
@@ -56,6 +57,12 @@ public class WeavingHookTest {
 		assertNotNull(pInjected.getNameService());
 		assertEquals(pDateServiceId, pInjected.getDateService().getId());
 		assertEquals(pNameServiceId, pInjected.getNameService().getId());
+	}
+
+	@Test
+	public void verifyUnserializableObject() throws Exception {
+		// Should not cause an exception
+		factory.getUnserializableObject();
 	}
 
 	@Test

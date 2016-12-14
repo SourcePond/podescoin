@@ -10,15 +10,16 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
-public interface TestObjectFactory {
+import ch.sourcepond.utils.podescoin.api.Component;
+import ch.sourcepond.utils.podescoin.testservice.NameService;
 
-	UnserializableObject getUnserializableObject() throws Exception;
+/**
+ * The framework should be able to enhance this class, but, should log that it
+ * is not serializable.
+ *
+ */
+public class UnserializableObject {
 
-	FieldInjectionObject getFieldInjectionObject() throws Exception;
-
-	FieldInjectionObjectWithComponentId getFieldInjectionObjectWithComponentId() throws Exception;
-
-	InjectorMethodObject getInjectorMethodObject() throws Exception;
-
-	InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception;
+	@Component
+	private transient NameService nameService;
 }

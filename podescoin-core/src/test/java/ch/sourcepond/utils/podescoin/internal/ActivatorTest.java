@@ -34,6 +34,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.hooks.weaving.WovenClassListener;
 import org.osgi.framework.wiring.BundleWiring;
 
 import ch.sourcepond.utils.podescoin.TestObject;
@@ -85,7 +86,8 @@ public class ActivatorTest {
 	@Test
 	public void start() throws Exception {
 		activator.start(context);
-		verify(context).registerService(WeavingHook.class, activator, null);
+		verify(context).registerService(
+				new String[] { WeavingHook.class.getName(), WovenClassListener.class.getName() }, activator, null);
 	}
 
 	@Test

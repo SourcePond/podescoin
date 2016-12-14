@@ -28,36 +28,56 @@ public class TestObjectFactoryImpl implements TestObjectFactory {
 			return (T) in.readObject();
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#getFieldInjectionObject()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#
+	 * getFieldInjectionObject()
 	 */
 	@Override
 	public FieldInjectionObject getFieldInjectionObject() throws Exception {
 		return serializeDeserialize(new FieldInjectionObject());
 	}
-	
-	/* (non-Javadoc)
-	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#getFieldInjectionObjectWithComponentId()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#
+	 * getFieldInjectionObjectWithComponentId()
 	 */
 	@Override
 	public FieldInjectionObjectWithComponentId getFieldInjectionObjectWithComponentId() throws Exception {
 		return serializeDeserialize(new FieldInjectionObjectWithComponentId());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#getInjectorMethodObject()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#
+	 * getInjectorMethodObject()
 	 */
 	@Override
 	public InjectorMethodObject getInjectorMethodObject() throws Exception {
 		return serializeDeserialize(new InjectorMethodObject());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#getInjectorMethodObjectWithComponentId()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#
+	 * getInjectorMethodObjectWithComponentId()
 	 */
 	@Override
 	public InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception {
 		return serializeDeserialize(new InjectorMethodObjectWithComponentId());
+	}
+
+	@Override
+	public UnserializableObject getUnserializableObject() throws Exception {
+		// Loading class UnserializableObject should not cause an exception,
+		// but, the fact that the class is not serializable should be logged by
+		// the framework.
+		return new UnserializableObject();
 	}
 }

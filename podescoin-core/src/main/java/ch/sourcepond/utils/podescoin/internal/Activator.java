@@ -10,7 +10,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
+import static org.osgi.framework.hooks.weaving.WovenClass.DEFINED;
 import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
+
+import java.io.Serializable;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -20,8 +23,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.hooks.weaving.WovenClassListener;
 
 import ch.sourcepond.utils.podescoin.Injector;
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.ReadObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.field.WriteObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
@@ -29,13 +34,14 @@ import ch.sourcepond.utils.podescoin.internal.inspector.WriteObjectInspector;
 import ch.sourcepond.utils.podescoin.internal.method.ReadObjectMethodClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.method.WriteObjectMethodClassVisitor;
 
-public final class Activator implements BundleActivator, WeavingHook {
+public final class Activator implements BundleActivator, WeavingHook, WovenClassListener {
 	private BundleContext context;
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		this.context = context;
-		context.registerService(WeavingHook.class, this, null);
+		context.registerService(new String[] { WeavingHook.class.getName(), WovenClassListener.class.getName() }, this,
+				null);
 	}
 
 	@Override
@@ -49,19 +55,23 @@ public final class Activator implements BundleActivator, WeavingHook {
 
 	@Override
 	public void weave(final WovenClass wovenClass) {
-		switch (wovenClass.getState()) {
-		case TRANSFORMING: {
-			if (isAllowed(wovenClass)) {
-				try {
-					wovenClass.setBytes(transform(wovenClass.getBytes()));
-					wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
-				} catch (final Throwable e) {
-					throw new WeavingException(String.format("Enhancement of %s failed!", wovenClass.getClassName()),
-							e);
-				}
+		if (wovenClass.getState() == TRANSFORMING && isAllowed(wovenClass)) {
+			try {
+				wovenClass.setBytes(transform(wovenClass.getBytes()));
+				wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
+			} catch (final Throwable e) {
+				throw new WeavingException(String.format("Enhancement of %s failed!", wovenClass.getClassName()), e);
 			}
-			break;
 		}
+	}
+
+	@Override
+	public void modified(final WovenClass wovenClass) {
+		if (wovenClass.getState() == DEFINED) {
+			final Class<?> cl = wovenClass.getDefinedClass();
+			if (cl.isAnnotationPresent(Recipient.class) && !Serializable.class.isAssignableFrom(cl)) {
+				throw new UnserializableClassWarning(cl);
+			}
 		}
 	}
 

@@ -24,7 +24,6 @@ import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getReturnType;
 import static org.objectweb.asm.Type.getType;
-import static org.objectweb.asm.TypeReference.CLASS_EXTENDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -146,7 +145,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 				injectionMethodEnhancer.visitEnhance();
 			}
 			injectionMethodEnhancer.visitEndEnhance();
-			visitTypeAnnotation(CLASS_EXTENDS, null, getDescriptor(Recipient.class), true);
+			visitAnnotation(getDescriptor(Recipient.class), true);
 		}
 		super.visitEnd();
 	}

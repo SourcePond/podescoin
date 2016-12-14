@@ -8,17 +8,18 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.utils.podescoin.testbundle;
+package ch.sourcepond.utils.podescoin.internal;
 
-public interface TestObjectFactory {
+import static java.lang.String.format;
 
-	UnserializableObject getUnserializableObject() throws Exception;
+final class UnserializableClassWarning extends RuntimeException {
 
-	FieldInjectionObject getFieldInjectionObject() throws Exception;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	FieldInjectionObjectWithComponentId getFieldInjectionObjectWithComponentId() throws Exception;
-
-	InjectorMethodObject getInjectorMethodObject() throws Exception;
-
-	InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception;
+	public UnserializableClassWarning(final Class<?> cl) {
+		super(format("%s is not serializable!", cl.getName()));
+	}
 }
