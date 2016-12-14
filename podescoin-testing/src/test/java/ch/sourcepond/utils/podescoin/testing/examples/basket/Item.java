@@ -15,13 +15,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 
-@Recipient
 public class Item implements Serializable {
 
 	/**
@@ -29,8 +25,7 @@ public class Item implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("stock.service")
+	@Component("stock.service")
 	private transient StockService stockService;
 
 	private transient Product product;
@@ -50,7 +45,7 @@ public class Item implements Serializable {
 	}
 
 	@ReadObject
-	void readObject(final ObjectInputStream in, @Named("product.service") final ProductService pProductService)
+	void readObject(final ObjectInputStream in, @Component("product.service") final ProductService pProductService)
 			throws ClassNotFoundException, IOException {
 		product = pProductService.load(in.readUTF());
 		stock = stockService.getStock(product.getProductId());

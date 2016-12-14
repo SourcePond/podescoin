@@ -29,7 +29,6 @@ import org.junit.Test;
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
 
 public class ReadObjectCallOrderTest extends ClassVisitorTest {
@@ -38,7 +37,6 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 	public static List<String> readObjectCalls = new LinkedList<>();
 	public static List<String> injectCalls = new ArrayList<>(2);
 
-	@Recipient
 	public static class Parent implements Serializable {
 
 		/**
@@ -56,7 +54,6 @@ public class ReadObjectCallOrderTest extends ClassVisitorTest {
 		}
 	}
 
-	@Recipient
 	public static class Child extends Parent {
 
 		/**

@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.inspector;
 
-import static ch.sourcepond.utils.podescoin.internal.Constants.NAMED_ANNOTATION_NAME;
+import static ch.sourcepond.utils.podescoin.internal.Constants.ID_ANNOTATION_NAME;
 import static ch.sourcepond.utils.podescoin.internal.NamedClassVisitor.toClassName;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getArgumentTypes;
@@ -94,7 +94,7 @@ final class InjectorMethodInspector extends MethodVisitor {
 
 	@Override
 	public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
-		if (injectorMethodDetected && NAMED_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
+		if (injectorMethodDetected && ID_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
 			return new NamedAnnotationOnParameterVisitor(this, super.visitParameterAnnotation(parameter, desc, visible),
 					parameter);
 		}

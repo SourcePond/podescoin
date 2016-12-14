@@ -15,13 +15,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import ch.sourcepond.utils.podescoin.api.ReadObject;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.api.WriteObject;
 import ch.sourcepond.utils.podescoin.testservice.DateService;
 import ch.sourcepond.utils.podescoin.testservice.NameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
-@Recipient
 public class InjectorMethodObject implements DataTransferInclInjection {
 	public static final String TEST_PREFIX = "test_";
 

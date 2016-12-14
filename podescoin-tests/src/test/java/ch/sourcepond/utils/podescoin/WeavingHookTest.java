@@ -25,7 +25,7 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.testbundle.FieldInjectionObject;
 import ch.sourcepond.utils.podescoin.testbundle.FieldInjectionObjectWithComponentId;
 import ch.sourcepond.utils.podescoin.testbundle.Injected;
@@ -42,7 +42,7 @@ public class WeavingHookTest {
 	@Configuration
 	public Option[] configure() {
 		// Generate import
-		Recipient.class.getName();
+		Component.class.getName();
 
 		return options(mavenBundle("ch.sourcepond.utils", "podescoin-api").versionAsInProject(),
 				mavenBundle("ch.sourcepond.utils", "podescoin-core").versionAsInProject(),

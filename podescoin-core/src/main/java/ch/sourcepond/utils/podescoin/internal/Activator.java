@@ -22,7 +22,6 @@ import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
 import ch.sourcepond.utils.podescoin.Injector;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.field.ReadObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.field.WriteObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
@@ -31,7 +30,6 @@ import ch.sourcepond.utils.podescoin.internal.method.ReadObjectMethodClassVisito
 import ch.sourcepond.utils.podescoin.internal.method.WriteObjectMethodClassVisitor;
 
 public final class Activator implements BundleActivator, WeavingHook {
-	private static final String RECIPIENT_CLASS_NAME = Recipient.class.getName();
 	private BundleContext context;
 
 	@Override
@@ -46,19 +44,24 @@ public final class Activator implements BundleActivator, WeavingHook {
 	}
 
 	private boolean isAllowed(final WovenClass wovenClass) {
-		return !RECIPIENT_CLASS_NAME.equals(wovenClass.getClassName())
-				&& !context.getBundle().equals(wovenClass.getBundleWiring().getBundle());
+		return !context.getBundle().equals(wovenClass.getBundleWiring().getBundle());
 	}
 
 	@Override
 	public void weave(final WovenClass wovenClass) {
-		if (TRANSFORMING == wovenClass.getState() && isAllowed(wovenClass)) {
-			try {
-				wovenClass.setBytes(transform(wovenClass.getBytes()));
-				wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
-			} catch (final Throwable e) {
-				throw new WeavingException(String.format("Enhancement of %s failed!", wovenClass.getClassName()), e);
+		switch (wovenClass.getState()) {
+		case TRANSFORMING: {
+			if (isAllowed(wovenClass)) {
+				try {
+					wovenClass.setBytes(transform(wovenClass.getBytes()));
+					wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
+				} catch (final Throwable e) {
+					throw new WeavingException(String.format("Enhancement of %s failed!", wovenClass.getClassName()),
+							e);
+				}
 			}
+			break;
+		}
 		}
 	}
 
@@ -70,18 +73,18 @@ public final class Activator implements BundleActivator, WeavingHook {
 		// the class in order to find all possibilities. If more than one
 		// injector method for readObject has been detected, an
 		// AmbiguousInjectorMethodsException will be caused to be thrown.
-		final ReadObjectInspector inspector = new ReadObjectInspector();
+		final ReadObjectInspector readObjectInspector = new ReadObjectInspector();
 		final WriteObjectInspector writeObjectInspector = new WriteObjectInspector();
-		reader.accept(inspector, 0);
+		reader.accept(readObjectInspector, 0);
 		reader.accept(writeObjectInspector, 0);
 		byte[] classData = pOriginalClassBytes;
 
-		if (inspector.isInjectionAware()) {
+		if (readObjectInspector.isInjectionAware() || writeObjectInspector.isInjectionAware()) {
 			// Second step: create or enhance readObject which calls the
 			// injector
 			// method
 			ClassWriter writer = new ClassWriter(reader, 0);
-			ClassVisitor visitor = new ReadObjectMethodClassVisitor(writer, inspector);
+			ClassVisitor visitor = new ReadObjectMethodClassVisitor(writer, readObjectInspector);
 			reader.accept(visitor, 0);
 
 			// Third step: create or enhance readObject which injects fields.
@@ -91,7 +94,7 @@ public final class Activator implements BundleActivator, WeavingHook {
 			// injector method is called (LIFO order)
 			reader = new ClassReader(writer.toByteArray());
 			writer = new ClassWriter(reader, 0);
-			visitor = new ReadObjectFieldInjectionClassVisitor(inspector, writer);
+			visitor = new ReadObjectFieldInjectionClassVisitor(readObjectInspector, writer);
 			reader.accept(visitor, 0);
 
 			// Forth step: determine writeObject injector methods; this needs a

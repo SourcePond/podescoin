@@ -10,10 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousDateService;
 import ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
@@ -21,7 +18,6 @@ import ch.sourcepond.utils.podescoin.testservice.TestService;
 /**
  *
  */
-@Recipient
 public class FieldInjectionObjectWithComponentId implements Injected {
 
 	/**
@@ -29,14 +25,12 @@ public class FieldInjectionObjectWithComponentId implements Injected {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("testservice.ambiguousName1")
+	@Component("testservice.ambiguousName1")
 	private transient AmbiguousNameService nameService;
 
-	@Inject
-	@Named("testservice.ambiguousDate2")
+	@Component("testservice.ambiguousDate2")
 	private transient AmbiguousDateService dateService;
-	
+
 	@Override
 	public TestService getDateService() {
 		return dateService;

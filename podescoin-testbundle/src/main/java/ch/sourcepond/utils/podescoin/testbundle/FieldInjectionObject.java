@@ -10,14 +10,11 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
-import javax.inject.Inject;
-
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.testservice.DateService;
 import ch.sourcepond.utils.podescoin.testservice.NameService;
 import ch.sourcepond.utils.podescoin.testservice.TestService;
 
-@Recipient
 public class FieldInjectionObject implements Injected {
 
 	/**
@@ -25,10 +22,10 @@ public class FieldInjectionObject implements Injected {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Inject
+	@Component
 	private transient NameService nameService;
-	
-	@Inject
+
+	@Component
 	private transient DateService dateService;
 
 	@Override

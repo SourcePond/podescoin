@@ -13,6 +13,8 @@ package ch.sourcepond.utils.podescoin.internal.inspector;
 import java.io.ObjectInputStream;
 import java.lang.annotation.Annotation;
 
+import org.objectweb.asm.FieldVisitor;
+
 import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
 
@@ -21,6 +23,7 @@ import ch.sourcepond.utils.podescoin.internal.SerializableClassVisitor;
  *
  */
 public final class ReadObjectInspector extends Inspector {
+	private boolean componentFieldFound;
 
 	@Override
 	protected DefaultStreamCallGenerator createDefaultStreamCallGenerator() {
@@ -41,5 +44,22 @@ public final class ReadObjectInspector extends Inspector {
 	@Override
 	protected Class<? extends Annotation> getInjectorMethodAnnotation() {
 		return ReadObject.class;
+	}
+
+	@Override
+	public FieldVisitor visitField(final int access, final String name, final String desc, final String signature,
+			final Object value) {
+		return new IsComponentFieldVisitor(this, super.visitField(access, name, desc, signature, value));
+	}
+
+	@Override
+	public boolean isInjectionAware() {
+		return componentFieldFound || super.isInjectionAware();
+	}
+
+	void componentFieldFound() {
+		if (!componentFieldFound) {
+			componentFieldFound = true;
+		}
 	}
 }

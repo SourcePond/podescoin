@@ -10,8 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.field;
 
-import static ch.sourcepond.utils.podescoin.internal.Constants.INJECT_ANNOTATION_NAME;
-import static ch.sourcepond.utils.podescoin.internal.Constants.NAMED_ANNOTATION_NAME;
+import static ch.sourcepond.utils.podescoin.internal.Constants.ID_ANNOTATION_NAME;
 import static org.objectweb.asm.Opcodes.ASM5;
 import static org.objectweb.asm.Type.getType;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -47,15 +46,13 @@ public final class ComponentFieldVisitor extends FieldVisitor {
 	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
 		if (visible) {
-			if (INJECT_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
+			if (ID_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
 
 				if (!Access.isTransient(access) || Access.isFinal(access)) {
 					classVisitor.addIllegalField(fieldName, fieldType, access);
 				}
 
 				inject = true;
-			}
-			if (NAMED_ANNOTATION_NAME.equals(getType(desc).getClassName())) {
 				return new NamedAnnotationOnFieldVisitor(this, fv.visitAnnotation(desc, visible));
 			}
 		}

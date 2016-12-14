@@ -16,14 +16,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import javax.inject.Named;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.testing.PodesCoinTestingContext;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.Address;
 import ch.sourcepond.utils.podescoin.testing.examples.basket.AddressService;
@@ -40,15 +39,15 @@ public class BasketExample2Test {
 	private static final int QUANTITY = 2;
 	private static final int STOCK = 10;
 
-	@Named
+	@Component
 	@Mock
 	private AddressService addressService;
 
-	@Named("product.service")
+	@Component("product.service")
 	@Mock
 	private ProductService productService;
 
-	@Named("stock.service")
+	@Component("stock.service")
 	@Mock
 	private StockService stockService;
 

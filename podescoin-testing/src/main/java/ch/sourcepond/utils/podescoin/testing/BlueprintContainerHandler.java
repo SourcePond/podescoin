@@ -13,9 +13,9 @@ package ch.sourcepond.utils.podescoin.testing;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import javax.inject.Named;
-
 import org.osgi.service.blueprint.container.BlueprintContainer;
+
+import ch.sourcepond.utils.podescoin.api.Component;
 
 final class BlueprintContainerHandler implements InvocationHandler {
 	private final BlueprintContainer delegate;
@@ -30,7 +30,7 @@ final class BlueprintContainerHandler implements InvocationHandler {
 		if (result == null && args.length == 1) {
 			throw new AssertionError(String.format(
 					"\nInvocation of %s on %s with arguments %s returned null!\nYou may add following annotation to the appropriate mock:\n%s(\"%s\")",
-					method.getName(), delegate, args[0], Named.class.getName(), args[0]));
+					method.getName(), delegate, args[0], Component.class.getName(), args[0]));
 		}
 		return result;
 	}

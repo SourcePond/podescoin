@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.inject.Named;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -49,6 +47,7 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 import ch.sourcepond.utils.podescoin.Injector;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectOutputStream;
 
@@ -150,7 +149,7 @@ public class PodesCoinTestingContext implements TestRule {
 	 * @param pNamed
 	 * @return
 	 */
-	private static String toComponentId(final Named pNamed) {
+	private static String toComponentId(final Component pNamed) {
 		String componentId = null;
 		if (pNamed != null) {
 			componentId = pNamed.value();
@@ -180,7 +179,7 @@ public class PodesCoinTestingContext implements TestRule {
 	 * @param pComponentType
 	 * @return
 	 */
-	private PodesCoinTestingContext addComponentMetadata(final Named pNamed, final Object pComponent,
+	private PodesCoinTestingContext addComponentMetadata(final Component pNamed, final Object pComponent,
 			final Class<?> pComponentType) {
 		when(blueprintContainer.getComponentInstance(setupMetadata(toComponentId(pNamed), pComponentType)))
 				.thenReturn(pComponent);
@@ -214,7 +213,7 @@ public class PodesCoinTestingContext implements TestRule {
 	 * @param pNamed
 	 * @param pField
 	 */
-	private void addComponent(final Object pTest, final Named pNamed, final Field pField) {
+	private void addComponent(final Object pTest, final Component pNamed, final Field pField) {
 		when(blueprintContainer.getComponentInstance(setupMetadata(toComponentId(pNamed), pField.getType())))
 				.thenAnswer(new Answer<Object>() {
 
@@ -285,7 +284,7 @@ public class PodesCoinTestingContext implements TestRule {
 	private static List<Field> collectFields(final Class<?> pClassOrNull, final List<Field> pFields) {
 		if (pClassOrNull != null) {
 			for (final Field f : pClassOrNull.getDeclaredFields()) {
-				if (f.isAnnotationPresent(Named.class)) {
+				if (f.isAnnotationPresent(Component.class)) {
 					f.setAccessible(true);
 					pFields.add(f);
 				}
@@ -303,7 +302,7 @@ public class PodesCoinTestingContext implements TestRule {
 		try {
 			final PodesCoinTestingContext context = new PodesCoinTestingContext(pTest);
 			for (final Field f : collectFields(pTest.getClass(), new LinkedList<>())) {
-				final Named component = f.getAnnotation(Named.class);
+				final Component component = f.getAnnotation(Component.class);
 				try {
 					context.addComponent(pTest, component, f);
 				} catch (final IllegalArgumentException e) {

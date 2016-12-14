@@ -18,14 +18,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 
 /**
  *
@@ -39,7 +37,6 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		getMethod(obj, "readObject", ObjectInputStream.class).invoke(obj, objInStream);
 	}
 
-	@Recipient
 	public static class InjectorMethodWithCustomReadObject implements Serializable {
 
 		/**
@@ -65,7 +62,6 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		verify(objInStream, never()).defaultReadObject();
 	}
 
-	@Recipient
 	public static class InjectorMethod implements Serializable {
 
 		/**
@@ -88,7 +84,6 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		verify(objInStream).defaultReadObject();
 	}
 
-	@Recipient
 	public static class FieldInjectionWithCustomReadObject implements Serializable {
 
 		/**
@@ -96,7 +91,7 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
+		@Component
 		public transient TestComponent component;
 
 		private void readObject(final ObjectInputStream in) throws ClassNotFoundException, IOException {
@@ -112,7 +107,6 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		verify(objInStream, never()).defaultReadObject();
 	}
 
-	@Recipient
 	public static class FieldInjection implements Serializable {
 
 		/**
@@ -120,7 +114,7 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
+		@Component
 		public transient TestComponent component;
 
 	}
@@ -133,7 +127,6 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		verify(objInStream).defaultReadObject();
 	}
 
-	@Recipient
 	public static class ClassWithFieldsAndInjectionMethod implements Serializable {
 
 		/**
@@ -141,7 +134,7 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
+		@Component
 		transient TestComponent component1;
 
 		TestComponent component2;
@@ -161,7 +154,6 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		verify(objInStream).defaultReadObject();
 	}
 
-	@Recipient
 	public static class ClassWithFieldsAndInjectionMethodWithCustomReadObject implements Serializable {
 
 		/**
@@ -169,7 +161,7 @@ public class DefaultReadObjectTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
+		@Component
 		transient TestComponent component1;
 
 		TestComponent component2;

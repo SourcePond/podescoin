@@ -16,7 +16,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Map.Entry;
 
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.Recipient;
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")

@@ -10,20 +10,23 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.api;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Activates a serializable class for dependency injection. This annotation is
- * <em>not</em> inherited and must be applied on every class which wants to use
- * dependency injection.
- *
+ * Connects a field or parameter on a serializable class with a component.
+ * Fields annotated with this type will be initialized before a
+ * {@code readObject} or {@code writeObject} method is called. A field marked
+ * with this annotation must be {@code transient} and must not be {@code final}.
+ * 
  */
 @Retention(RUNTIME)
-@Target(TYPE)
-public @interface Recipient {
+@Target({ FIELD, PARAMETER })
+public @interface Component {
 
+	String value() default "";
 }

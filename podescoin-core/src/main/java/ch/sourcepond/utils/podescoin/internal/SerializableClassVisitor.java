@@ -19,10 +19,12 @@ import static org.objectweb.asm.Opcodes.ICONST_3;
 import static org.objectweb.asm.Opcodes.ICONST_4;
 import static org.objectweb.asm.Opcodes.ICONST_5;
 import static org.objectweb.asm.Type.getArgumentTypes;
+import static org.objectweb.asm.Type.getDescriptor;
 import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getReturnType;
 import static org.objectweb.asm.Type.getType;
+import static org.objectweb.asm.TypeReference.CLASS_EXTENDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -36,6 +38,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 
+import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.internal.inspector.DefaultStreamCallGenerator;
 import ch.sourcepond.utils.podescoin.internal.inspector.Inspector;
 
@@ -143,6 +146,7 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 				injectionMethodEnhancer.visitEnhance();
 			}
 			injectionMethodEnhancer.visitEndEnhance();
+			visitTypeAnnotation(CLASS_EXTENDS, null, getDescriptor(Recipient.class), true);
 		}
 		super.visitEnd();
 	}

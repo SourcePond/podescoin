@@ -10,17 +10,20 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin;
 
-import java.io.Serializable;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import ch.sourcepond.utils.podescoin.api.Component;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public class TestObject implements Serializable {
+/**
+ * Activates a serializable class for dependency injection. This annotation is
+ * <em>not</em> inherited and must be applied on every class which wants to use
+ * dependency injection.
+ *
+ */
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Recipient {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Component("anyComponent")
-	private transient TestComponent component;
 }

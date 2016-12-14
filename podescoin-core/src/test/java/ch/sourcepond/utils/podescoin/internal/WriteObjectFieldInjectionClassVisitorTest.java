@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -29,7 +26,7 @@ import org.mockito.Mockito;
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.TestComponent;
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.Component;
 
 public class WriteObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 
@@ -37,31 +34,30 @@ public class WriteObjectFieldInjectionClassVisitorTest extends ClassVisitorTest 
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class VerifyPushByteConstant implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		@Inject
+		@Component
 		transient TestComponent component1;
-		@Inject
+		@Component
 		transient TestComponent component2;
-		@Inject
+		@Component
 		transient TestComponent component3;
-		@Inject
+		@Component
 		transient TestComponent component4;
-		@Inject
+		@Component
 		transient TestComponent component5;
-		@Inject
+		@Component
 		transient TestComponent component6;
-		@Inject
+		@Component
 		transient TestComponent component7;
-		@Inject
+		@Component
 		transient TestComponent component8;
-		@Inject
+		@Component
 		transient TestComponent component9;
-		@Inject
+		@Component
 		transient TestComponent component10;
 	}
 
@@ -84,15 +80,13 @@ public class WriteObjectFieldInjectionClassVisitorTest extends ClassVisitorTest 
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class VerifyPushByteConstantWriteObjectAlreadyDefined implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private transient TestComponent component1;
 
 		private void writeObject(final ObjectOutputStream out) throws IOException {
@@ -120,15 +114,13 @@ public class WriteObjectFieldInjectionClassVisitorTest extends ClassVisitorTest 
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class DoNotVisitFinalField implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private transient final TestComponent component1 = new TestComponent();
 
 		private void writeObject(final ObjectOutputStream out) throws IOException {
@@ -152,15 +144,13 @@ public class WriteObjectFieldInjectionClassVisitorTest extends ClassVisitorTest 
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class DoNotVisitPersistentField implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private final TestComponent component1 = new TestComponent();
 
 		private void writeObject(final ObjectOutputStream out) throws IOException {

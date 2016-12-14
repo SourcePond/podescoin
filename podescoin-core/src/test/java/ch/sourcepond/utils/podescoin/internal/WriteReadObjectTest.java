@@ -27,7 +27,6 @@ import org.junit.Test;
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.api.WriteObject;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinClassLoader;
 import ch.sourcepond.utils.podescoin.internal.util.PodesCoinObjectInputStream;
@@ -44,7 +43,6 @@ public class WriteReadObjectTest extends ClassVisitorTest {
 		getMethod(obj, "writeObject", ObjectOutputStream.class).invoke(obj, objOutStream);
 	}
 
-	@Recipient
 	public static class InjectorMethodWithCustomWriteObject implements Serializable {
 
 		/**
@@ -70,7 +68,6 @@ public class WriteReadObjectTest extends ClassVisitorTest {
 		verify(objOutStream, never()).defaultWriteObject();
 	}
 
-	@Recipient
 	public static class InjectorMethod implements Serializable {
 
 		/**
@@ -93,7 +90,6 @@ public class WriteReadObjectTest extends ClassVisitorTest {
 		verify(objOutStream).defaultWriteObject();
 	}
 
-	@Recipient
 	public static class ClassWithReadAndWriteInjectorMethod implements Serializable {
 		/**
 		 * 

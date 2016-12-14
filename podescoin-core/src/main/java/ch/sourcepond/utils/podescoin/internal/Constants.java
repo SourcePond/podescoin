@@ -12,16 +12,13 @@ package ch.sourcepond.utils.podescoin.internal;
 
 import static org.objectweb.asm.Type.getInternalName;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ch.sourcepond.utils.podescoin.Injector;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
 
 public interface Constants {
 	String READ_OBJECT_ANNOTATION_NAME = ReadObject.class.getName();
-	String INJECT_ANNOTATION_NAME = Inject.class.getName();
-	String NAMED_ANNOTATION_NAME = Named.class.getName();
+	String ID_ANNOTATION_NAME = Component.class.getName();
 	String INJECTOR_INTERNAL_NAME = getInternalName(Injector.class);
 	String CONSTRUCTOR_NAME = "<init>";
 }

@@ -14,21 +14,17 @@ import static ch.sourcepond.utils.podescoin.internal.Constants.CONSTRUCTOR_NAME;
 import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static org.objectweb.asm.Type.getArgumentTypes;
-import static org.objectweb.asm.Type.getType;
 
 import java.lang.annotation.Annotation;
 
-import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.AmbiguousInjectorMethodsException;
 import ch.sourcepond.utils.podescoin.internal.NamedClassVisitor;
 
 public abstract class Inspector extends NamedClassVisitor {
 	private static final String[][] EMPTY = new String[0][0];
-	private boolean injectionAware;
 	private String[][] components;
 	private String injectorMethodName;
 	private String injectorMethodDesc;
@@ -41,19 +37,11 @@ public abstract class Inspector extends NamedClassVisitor {
 	}
 
 	public boolean isInjectionAware() {
-		return injectionAware;
+		return components != null;
 	}
 
 	public boolean hasStandardMethod() {
 		return hasStandardMethod;
-	}
-
-	@Override
-	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-		if (!injectionAware) {
-			injectionAware = Recipient.class.getName().equals(getType(desc).getClassName());
-		}
-		return super.visitAnnotation(desc, visible);
 	}
 
 	private MethodVisitor createMethodInspector(final MethodVisitor pVisitor, final String name, final String desc) {
@@ -80,18 +68,16 @@ public abstract class Inspector extends NamedClassVisitor {
 	public final MethodVisitor visitMethod(final int access, final String name, final String desc,
 			final String signature, final String[] exceptions) {
 		MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
-		if (injectionAware) {
-			if (!CONSTRUCTOR_NAME.equals(name)) {
-				visitor = createMethodInspector(visitor, name, desc);
-				final boolean hasStandardMethod = isInjectorMethod(access, name, desc, exceptions);
-				if (!this.hasStandardMethod && hasStandardMethod) {
-					this.hasStandardMethod = hasStandardMethod;
-				}
+		if (!CONSTRUCTOR_NAME.equals(name)) {
+			visitor = createMethodInspector(visitor, name, desc);
+			final boolean hasStandardMethod = isInjectorMethod(access, name, desc, exceptions);
+			if (!this.hasStandardMethod && hasStandardMethod) {
+				this.hasStandardMethod = hasStandardMethod;
+			}
 
-				if (defaultStreamCallGenerator == null && hasStandardMethod) {
-					defaultStreamCallGenerator = m -> {
-					};
-				}
+			if (defaultStreamCallGenerator == null && hasStandardMethod) {
+				defaultStreamCallGenerator = m -> {
+				};
 			}
 		}
 		return visitor;

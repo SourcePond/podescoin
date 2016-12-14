@@ -26,15 +26,13 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.inject.Named;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.method.SuperMethodInvokationException;
 
 public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
@@ -49,7 +47,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		}
 	}
 
-	@Recipient
 	public static class ReadObjectSpecified_WithType implements Serializable {
 		/**
 		 * 
@@ -82,7 +79,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertTrue((Boolean) getFieldValue("injectCalledBeforeInject", obj));
 	}
 
-	@Recipient
 	public static class NoReadObjectSpecified_WithType implements Serializable {
 		/**
 		 * 
@@ -109,7 +105,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component1, getFieldValue("component1", obj));
 	}
 
-	@Recipient
 	public static class NoReadObjectSpecified_WithType_And_ObjectInputStream implements Serializable {
 		/**
 		 * 
@@ -140,7 +135,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component1, getFieldValue("component1", obj));
 	}
 
-	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId implements Serializable {
 		/**
 		 * 
@@ -150,8 +144,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		TestComponent component2;
 
 		@ReadObject
-		public void readObject(@Named("componentId1") final TestComponent pComponent1,
-				@Named("componentId2") final TestComponent pComponent2) {
+		public void readObject(@Component("componentId1") final TestComponent pComponent1,
+				@Component("componentId2") final TestComponent pComponent2) {
 			component1 = pComponent1;
 			component2 = pComponent2;
 		}
@@ -175,7 +169,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component2, getFieldValue("component2", obj));
 	}
 
-	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId_And_ObjectInputStream implements Serializable {
 		/**
 		 * 
@@ -185,8 +178,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private TestComponent component2;
 
 		@ReadObject
-		public void readObject(final ObjectInputStream in, @Named("componentId1") final TestComponent pComponent1,
-				@Named("componentId2") final TestComponent pComponent2) throws IOException, ClassNotFoundException {
+		public void readObject(final ObjectInputStream in, @Component("componentId1") final TestComponent pComponent1,
+				@Component("componentId2") final TestComponent pComponent2) throws IOException, ClassNotFoundException {
 			component1 = pComponent1;
 			component2 = pComponent2;
 
@@ -217,7 +210,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		assertSame(component2, getFieldValue("component2", obj));
 	}
 
-	@Recipient
 	public static class NoReadObjectSpecified_WithComponentId_ThrowException implements Serializable {
 		/**
 		 * 
@@ -226,8 +218,8 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		private final Exception exception = new Exception();
 
 		@ReadObject
-		public void readObject(@Named("componentId1") final TestComponent pComponent1,
-				@Named("componentId2") final TestComponent pComponent2) throws Exception {
+		public void readObject(@Component("componentId1") final TestComponent pComponent1,
+				@Component("componentId2") final TestComponent pComponent2) throws Exception {
 			throw exception;
 		}
 	}
@@ -254,7 +246,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		order.verify(injector).getComponentById("componentId2", TestComponent.class.getName(), 1);
 	}
 
-	@Recipient
 	public static class AllowNonInjectorMethodSuperMethodCall_A implements Serializable {
 
 		/**
@@ -267,7 +258,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		}
 	}
 
-	@Recipient
 	public static class AllowNonInjectorMethodSuperMethodCall_B extends AllowNonInjectorMethodSuperMethodCall_A {
 
 		/**
@@ -293,7 +283,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		loader.loadClass(AllowNonInjectorMethodSuperMethodCall_B.class.getName());
 	}
 
-	@Recipient
 	public static class DoNotCallSuperMethod_A implements Serializable {
 
 		/**
@@ -307,7 +296,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 		}
 	}
 
-	@Recipient
 	public static class DoNotCallSuperMethod_B extends DoNotCallSuperMethod_A {
 
 		/**
@@ -317,7 +305,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	}
 
-	@Recipient
 	public static class DoNotCallSuperMethod_C extends DoNotCallSuperMethod_B {
 
 		/**
@@ -345,7 +332,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	public static ClassNotFoundException EXPECTED_CNF_EX = new ClassNotFoundException("");
 
-	@Recipient
 	public static class ClassNotFoundExceptionReThrown implements Serializable {
 
 		/**
@@ -372,7 +358,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	public static ClassNotFoundException EXPECTED_IO_EX = new ClassNotFoundException("");
 
-	@Recipient
 	public static class IOExceptionReThrown implements Serializable {
 
 		/**
@@ -399,7 +384,6 @@ public class MethodInjectionClassVisitorTest extends ClassVisitorTest {
 
 	public static RuntimeException UNEXPECTED_EX = new RuntimeException();
 
-	@Recipient
 	public static class WrapUnexpectedExceptionIntoIOException implements Serializable {
 
 		/**

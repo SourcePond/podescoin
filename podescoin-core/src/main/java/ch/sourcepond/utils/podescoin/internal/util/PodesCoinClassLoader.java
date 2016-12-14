@@ -19,7 +19,6 @@ import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.sourcepond.utils.podescoin.api.Recipient;
 import ch.sourcepond.utils.podescoin.internal.Activator;
 
 public class PodesCoinClassLoader extends ClassLoader {
@@ -27,7 +26,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 	private final Map<String, Class<?>> enhancedClasses = new HashMap<>();
 
 	public PodesCoinClassLoader() {
-		super();
+		super(ClassLoader.getSystemClassLoader());
 	}
 
 	public PodesCoinClassLoader(final ClassLoader pParent) {
@@ -61,8 +60,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 			Class<?> enhancedClass = enhancedClasses.get(name);
 			if (enhancedClass == null) {
 				final Class<?> originalClass = getParentLoader().loadClass(name);
-				if (Serializable.class.isAssignableFrom(originalClass)
-						&& originalClass.isAnnotationPresent(Recipient.class)) {
+				if (Serializable.class.isAssignableFrom(originalClass) && isNonJDKClass(originalClass)) {
 					enhanceClassHierarchy(originalClass);
 					enhancedClass = enhancedClasses.get(name);
 				} else {
@@ -84,7 +82,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 					enhanceClassHierarchy(ifs);
 				}
 
-				if (!pOriginalClass.isInterface() && pOriginalClass.isAnnotationPresent(Recipient.class)) {
+				if (!pOriginalClass.isInterface()) {
 					enhanceClass(pOriginalClass);
 				} else {
 					final byte[] classData = toByteArray(pOriginalClass);

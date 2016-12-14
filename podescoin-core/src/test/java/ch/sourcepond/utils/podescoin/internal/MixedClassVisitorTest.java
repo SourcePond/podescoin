@@ -7,20 +7,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.TestComponent;
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.Component;
+import ch.sourcepond.utils.podescoin.api.ReadObject;
 import ch.sourcepond.utils.podescoin.internal.ReadObjectFieldInjectionClassVisitorTest.VerifyPushByteConstantReadObjectAlreadyDefined;
 
 public class MixedClassVisitorTest extends ClassVisitorTest {
 
-	@Recipient
 	public static class ClassWithFieldsAndInjectionMethod implements Serializable {
 
 		/**
@@ -28,12 +26,12 @@ public class MixedClassVisitorTest extends ClassVisitorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Inject
+		@Component
 		transient TestComponent component1;
 
 		TestComponent component2;
 
-		@Inject
+		@ReadObject
 		void inject(final ObjectInputStream in, final TestComponent pComponent2)
 				throws ClassNotFoundException, IOException {
 			in.defaultReadObject();

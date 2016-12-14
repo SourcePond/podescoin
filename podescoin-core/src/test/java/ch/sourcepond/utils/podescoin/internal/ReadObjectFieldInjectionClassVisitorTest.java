@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -30,7 +27,7 @@ import org.mockito.Mockito;
 import ch.sourcepond.utils.podescoin.ClassVisitorTest;
 import ch.sourcepond.utils.podescoin.IllegalFieldDeclarationException;
 import ch.sourcepond.utils.podescoin.TestComponent;
-import ch.sourcepond.utils.podescoin.api.Recipient;
+import ch.sourcepond.utils.podescoin.api.Component;
 
 public class ReadObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 
@@ -38,31 +35,30 @@ public class ReadObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class VerifyPushByteConstant implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		@Inject
+		@Component
 		transient TestComponent component1;
-		@Inject
+		@Component
 		transient TestComponent component2;
-		@Inject
+		@Component
 		transient TestComponent component3;
-		@Inject
+		@Component
 		transient TestComponent component4;
-		@Inject
+		@Component
 		transient TestComponent component5;
-		@Inject
+		@Component
 		transient TestComponent component6;
-		@Inject
+		@Component
 		transient TestComponent component7;
-		@Inject
+		@Component
 		transient TestComponent component8;
-		@Inject
+		@Component
 		transient TestComponent component9;
-		@Inject
+		@Component
 		transient TestComponent component10;
 	}
 
@@ -91,41 +87,39 @@ public class ReadObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class VerifyPushByteConstantWithId implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private transient TestComponent component1;
-		@Named("componentId2")
-		@Inject
+
+		@Component("componentId2")
 		private transient TestComponent component2;
-		@Named("componentId3")
-		@Inject
+
+		@Component("componentId3")
 		private transient TestComponent component3;
-		@Named("componentId4")
-		@Inject
+
+		@Component("componentId4")
 		private transient TestComponent component4;
-		@Named("componentId5")
-		@Inject
+
+		@Component("componentId5")
 		private transient TestComponent component5;
-		@Named("componentId6")
-		@Inject
+
+		@Component("componentId6")
 		private transient TestComponent component6;
-		@Named("componentId7")
-		@Inject
+
+		@Component("componentId7")
 		private transient TestComponent component7;
-		@Named("componentId8")
-		@Inject
+
+		@Component("componentId8")
 		private transient TestComponent component8;
-		@Named("componentId9")
-		@Inject
+
+		@Component("componentId9")
 		private transient TestComponent component9;
-		@Named("componentId10")
-		@Inject
+
+		@Component("componentId10")
 		private transient TestComponent component10;
 	}
 
@@ -154,15 +148,13 @@ public class ReadObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class VerifyPushByteConstantReadObjectAlreadyDefined implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private transient TestComponent component1;
 
 		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -189,15 +181,13 @@ public class ReadObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class DoNotVisitFinalField implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private transient final TestComponent component1 = new TestComponent();
 
 		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -221,15 +211,13 @@ public class ReadObjectFieldInjectionClassVisitorTest extends ClassVisitorTest {
 	 * Test-class for verifying pushByteConstant
 	 *
 	 */
-	@Recipient
 	public static class DoNotVisitPersistentField implements Serializable {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Named("componentId1")
-		@Inject
+		@Component("componentId1")
 		private final TestComponent component1 = new TestComponent();
 
 		private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
