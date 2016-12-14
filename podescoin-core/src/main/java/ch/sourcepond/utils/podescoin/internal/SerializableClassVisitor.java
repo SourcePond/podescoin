@@ -31,6 +31,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -64,8 +65,10 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 	protected static final String OBJECT_INPUT_STREAM_NAME = ObjectInputStream.class.getName();
 	protected static final String OBJECT_OUTPUT_STREAM_NAME = ObjectOutputStream.class.getName();
 	protected static final String VOID_NAME = void.class.getName();
+	private static final String RECIPIENT_DESC = getDescriptor(Recipient.class);
 	protected Inspector inspector;
 	private Enhancer injectionMethodEnhancer;
+	private boolean annotated;
 
 	protected SerializableClassVisitor(final Inspector pInspector, final ClassVisitor pWriter) {
 		super(pWriter);
@@ -102,6 +105,14 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 			mv.visitIntInsn(BIPUSH, idx);
 		}
 		}
+	}
+
+	@Override
+	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+		if (!annotated && desc.equals(RECIPIENT_DESC)) {
+			annotated = true;
+		}
+		return super.visitAnnotation(desc, visible);
 	}
 
 	protected abstract Enhancer createInjectionMethodVisitor(MethodVisitor pWriter, boolean pEnhanceMode,
@@ -145,7 +156,10 @@ public abstract class SerializableClassVisitor extends NamedClassVisitor {
 				injectionMethodEnhancer.visitEnhance();
 			}
 			injectionMethodEnhancer.visitEndEnhance();
-			visitAnnotation(getDescriptor(Recipient.class), true);
+
+			if (!annotated) {
+				visitAnnotation(getDescriptor(Recipient.class), true);
+			}
 		}
 		super.visitEnd();
 	}
