@@ -1,1 +1,1 @@
-See https://sourcepond.ch/ch.sourcepond.utils/podescoin/1.1-SNAPSHOT for further information.
+See https://sourcepond.ch/ch.sourcepond.utils/podescoin/3.0-SNAPSHOT for further information.
