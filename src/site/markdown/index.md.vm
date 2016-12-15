@@ -202,7 +202,6 @@ Working with a writer injector method is like the using reader injector method d
 ```
 import ch.sourcepond.foo.BarService;
 import ch.sourcepond.foo.FoobarService;
-import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.api.WriteObject;
 
 public class Foo implements Serializable {
