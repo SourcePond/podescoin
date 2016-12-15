@@ -10,17 +10,23 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.testbundle;
 
-public interface TestObjectFactory {
+import ch.sourcepond.utils.podescoin.api.Component;
+import ch.sourcepond.utils.podescoin.testservice.AmbiguousNameService;
+import ch.sourcepond.utils.podescoin.testservice.TestService;
 
-	UnserializableObject getUnserializableObject() throws Exception;
+public class ExtendedFieldInjectionObjectWithComponentId extends FieldInjectionObjectWithComponentId {
 
-	FieldInjectionObject getFieldInjectionObject() throws Exception;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	FieldInjectionObjectWithComponentId getFieldInjectionObjectWithComponentId() throws Exception;
+	// The same field is declared on the super class; both fields must be
+	// initialized
+	@Component("testservice.ambiguousName1")
+	private transient AmbiguousNameService nameService;
 
-	ExtendedFieldInjectionObjectWithComponentId getExtendedFieldInjectionObjectWithComponentId() throws Exception;
-
-	InjectorMethodObject getInjectorMethodObject() throws Exception;
-
-	InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception;
+	public TestService getExtendedNameService() {
+		return nameService;
+	}
 }

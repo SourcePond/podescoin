@@ -13,6 +13,7 @@ package ch.sourcepond.utils.podescoin;
 import static ch.sourcepond.testing.OptionsHelper.blueprintBundles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -26,6 +27,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 
 import ch.sourcepond.utils.podescoin.api.Component;
+import ch.sourcepond.utils.podescoin.testbundle.ExtendedFieldInjectionObjectWithComponentId;
 import ch.sourcepond.utils.podescoin.testbundle.FieldInjectionObject;
 import ch.sourcepond.utils.podescoin.testbundle.FieldInjectionObjectWithComponentId;
 import ch.sourcepond.utils.podescoin.testbundle.Injected;
@@ -78,6 +80,14 @@ public class WeavingHookTest {
 	}
 
 	@Test
+	public void verifyExtendedFieldInjectionWithComponentId() throws Exception {
+		final ExtendedFieldInjectionObjectWithComponentId obj = factory
+				.getExtendedFieldInjectionObjectWithComponentId();
+		verifyService(obj, "testservice.ambiguousDate2", "testservice.ambiguousName1");
+		assertSame(obj.getNameService(), obj.getExtendedNameService());
+	}
+
+	@Test
 	public void verifyInjectorMethod() throws Exception {
 		final InjectorMethodObject obj = factory.getInjectorMethodObject();
 		assertEquals("test_testservice.date", obj.getTransferredDateServiceId());
@@ -92,5 +102,4 @@ public class WeavingHookTest {
 		assertEquals("test_testservice.ambiguousName1", obj.getTransferredNameServiceId());
 		verifyService(obj, "testservice.ambiguousDate2", "testservice.ambiguousName1");
 	}
-
 }

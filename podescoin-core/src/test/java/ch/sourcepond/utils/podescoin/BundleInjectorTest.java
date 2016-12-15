@@ -43,10 +43,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 
-import ch.sourcepond.utils.podescoin.AmbiguousComponentException;
-import ch.sourcepond.utils.podescoin.BundleInjectorImpl;
-import ch.sourcepond.utils.podescoin.Injector;
-import ch.sourcepond.utils.podescoin.NoSuchComponentException;
+import ch.sourcepond.utils.podescoin.api.Component;
 
 public class BundleInjectorTest {
 	static final String COMPONENT_ID = "testComponentId";
@@ -140,6 +137,18 @@ public class BundleInjectorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@Component
+		public transient TestComponent testComponent;
+	}
+
+	public static class InitDeserializedObjectWithId implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Component("testComponentId")
 		public transient TestComponent testComponent;
 	}
 
@@ -148,7 +157,7 @@ public class BundleInjectorTest {
 	public void initDeserializedObject() throws Exception {
 		when(container.getComponentInstance(COMPONENT_ID)).thenReturn(testComponent);
 		when(bundle.loadClass(TestComponent.class.getName())).thenReturn((Class) TestComponent.class);
-		final InitDeserializedObject obj = new InitDeserializedObject();
+		final InitDeserializedObjectWithId obj = new InitDeserializedObjectWithId();
 		injector.initDeserializedObject(obj,
 				new String[][] { { FIELD_NAME, COMPONENT_ID, TestComponent.class.getName() } });
 		assertSame(testComponent, obj.testComponent);
@@ -159,7 +168,7 @@ public class BundleInjectorTest {
 	public void initDeserializedObject_ComponentIsNotCompatible() throws Exception {
 		when(container.getComponentInstance(COMPONENT_ID)).thenReturn(new Object());
 		when(bundle.loadClass(TestComponent.class.getName())).thenReturn((Class) TestComponent.class);
-		final InitDeserializedObject obj = new InitDeserializedObject();
+		final InitDeserializedObjectWithId obj = new InitDeserializedObjectWithId();
 
 		try {
 			injector.initDeserializedObject(obj,
@@ -193,6 +202,7 @@ public class BundleInjectorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@Component("testComponentId")
 		public TestComponent testComponent;
 	}
 
@@ -217,6 +227,7 @@ public class BundleInjectorTest {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@Component("testComponentId")
 		public transient final TestComponent testComponent = null;
 	}
 

@@ -55,6 +55,18 @@ public class TestObjectFactoryImpl implements TestObjectFactory {
 	 * (non-Javadoc)
 	 * 
 	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#
+	 * getExtendedFieldInjectionObjectWithComponentId()
+	 */
+	@Override
+	public ExtendedFieldInjectionObjectWithComponentId getExtendedFieldInjectionObjectWithComponentId()
+			throws Exception {
+		return serializeDeserialize(new ExtendedFieldInjectionObjectWithComponentId());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.utils.podescoin.testbundle.TestObjectFactory#
 	 * getInjectorMethodObject()
 	 */
 	@Override

@@ -10,16 +10,24 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.util;
 
+import static ch.sourcepond.utils.podescoin.internal.Transformer.transform;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.AccessibleObject;
 import java.security.ProtectionDomain;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.function.Function;
 
-import ch.sourcepond.utils.podescoin.internal.Activator;
+import ch.sourcepond.utils.podescoin.api.Component;
+import ch.sourcepond.utils.podescoin.api.ReadObject;
+import ch.sourcepond.utils.podescoin.api.WriteObject;
 
 public class PodesCoinClassLoader extends ClassLoader {
 	private static final String[] IGNORED_PACKAGE_PREFIXES = new String[] { "java.", "javax.", "sun." };
@@ -54,13 +62,42 @@ public class PodesCoinClassLoader extends ClassLoader {
 		return parent;
 	}
 
+	private void collectAccessibleObjects(final Class<?> pClass, final Collection<AccessibleObject> pAccessibleObjects,
+			final Function<Class<?>, AccessibleObject[]> pGetAccessibleObjects) {
+		if (pClass != null) {
+			for (final AccessibleObject o : pGetAccessibleObjects.apply(pClass)) {
+				pAccessibleObjects.add(o);
+			}
+
+			collectAccessibleObjects(pClass.getSuperclass(), pAccessibleObjects, pGetAccessibleObjects);
+		}
+	}
+
+	private boolean shouldBeEnhanced(final Class<?> pClass) {
+		if (Serializable.class.isAssignableFrom(pClass) && isNonJDKClass(pClass)) {
+			final Collection<AccessibleObject> accessibleObjects = new LinkedList<>();
+			collectAccessibleObjects(pClass, accessibleObjects, c -> c.getDeclaredFields());
+			collectAccessibleObjects(pClass, accessibleObjects, c -> c.getDeclaredMethods());
+
+			for (final AccessibleObject obj : accessibleObjects) {
+				obj.setAccessible(true);
+				if (obj.isAnnotationPresent(Component.class) || obj.isAnnotationPresent(ReadObject.class)
+						|| obj.isAnnotationPresent(WriteObject.class)) {
+					return true;
+				}
+			}
+		}
+		return false;
+
+	}
+
 	@Override
 	public Class<?> loadClass(final String name) throws ClassNotFoundException {
 		synchronized (enhancedClasses) {
 			Class<?> enhancedClass = enhancedClasses.get(name);
 			if (enhancedClass == null) {
 				final Class<?> originalClass = getParentLoader().loadClass(name);
-				if (Serializable.class.isAssignableFrom(originalClass) && isNonJDKClass(originalClass)) {
+				if (shouldBeEnhanced(originalClass)) {
 					enhanceClassHierarchy(originalClass);
 					enhancedClass = enhancedClasses.get(name);
 				} else {
@@ -111,7 +148,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 	}
 
 	private void enhanceClass(final Class<?> pOriginalClass) throws ClassNotFoundException {
-		final byte[] enhancedClassData = Activator.transform(toByteArray(pOriginalClass));
+		final byte[] enhancedClassData = transform(toByteArray(pOriginalClass));
 		try {
 			defineClass(pOriginalClass, enhancedClassData);
 		} catch (final IllegalAccessError e) {

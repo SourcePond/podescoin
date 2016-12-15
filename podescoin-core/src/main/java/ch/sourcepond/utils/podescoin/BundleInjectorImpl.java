@@ -21,7 +21,10 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -34,6 +37,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 
+import ch.sourcepond.utils.podescoin.api.Component;
 import ch.sourcepond.utils.podescoin.internal.BundleInjector;
 
 /**
@@ -42,6 +46,10 @@ import ch.sourcepond.utils.podescoin.internal.BundleInjector;
  */
 final class BundleInjectorImpl implements ServiceListener, Container, BundleInjector {
 	private static final String OSGI_BLUEPRINT_CONTAINER_SYMBOLICNAME_FILTER = "(osgi.blueprint.container.symbolicname=%s)";
+
+	// We need to keep a list of fields because there could be fields with the
+	// same name on different levels in the class hierarchy.
+	private final ConcurrentMap<String, Collection<Field>> fields = new ConcurrentHashMap<>();
 	private final Bundle bundle;
 	private final ServiceReference<BlueprintContainer> containerRef;
 	private final BlueprintContainer container;
@@ -95,7 +103,7 @@ final class BundleInjectorImpl implements ServiceListener, Container, BundleInje
 	private Object getComponent(final String pFieldNameOrNull, final int pParameterIndex,
 			final String pComponentIdOrNull, final Class<?> pTargetType) throws ClassNotFoundException {
 		final Object component;
-		if (pComponentIdOrNull == null || pComponentIdOrNull.isEmpty()) {
+		if (isComponentIdEmpty(pComponentIdOrNull)) {
 			final Map<String, Object> candidates = findCandidates(pTargetType);
 
 			if (candidates.size() > 1) {
@@ -122,6 +130,50 @@ final class BundleInjectorImpl implements ServiceListener, Container, BundleInje
 		return component;
 	}
 
+	private Collection<Field> findFields(final Class<?> pClass, final String pFieldName,
+			final Collection<Field> pFields) {
+		if (pClass != null) {
+			for (final Field field : pClass.getDeclaredFields()) {
+				if (pFieldName.equals(field.getName())) {
+					pFields.add(field);
+				}
+			}
+			findFields(pClass.getSuperclass(), pFieldName, pFields);
+		}
+		return pFields;
+	}
+
+	private boolean isComponentIdEmpty(final String pComponentIdOrNull) {
+		return pComponentIdOrNull == null || pComponentIdOrNull.isEmpty();
+	}
+
+	private Collection<Field> getDeclaredFields(final Class<?> pClass, final String pFieldName,
+			final String pComponentId) throws NoSuchFieldException {
+		final String key = pClass + "_" + pFieldName + "_" + pComponentId;
+		Collection<Field> fieldCollection = fields.get(key);
+		if (fieldCollection == null) {
+			fieldCollection = findFields(pClass, pFieldName, new LinkedList<>());
+			for (final Iterator<Field> it = fieldCollection.iterator(); it.hasNext();) {
+				final Component component = it.next().getAnnotation(Component.class);
+				if (component != null) {
+					final String expectedId = component.value();
+					final String actualId = pComponentId == null ? "" : pComponentId;
+					if (!expectedId.equals(actualId)) {
+						it.remove();
+					}
+				} else {
+					it.remove();
+				}
+			}
+			if (fieldCollection.isEmpty()) {
+				throw new NoSuchFieldException(String.format(
+						"No field with name %s could be found in class hierarchy of %s", pFieldName, pClass.getName()));
+			}
+			fields.putIfAbsent(key, fieldCollection);
+		}
+		return fieldCollection;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -143,23 +195,24 @@ final class BundleInjectorImpl implements ServiceListener, Container, BundleInje
 
 			final Class<? extends Serializable> cl = pObj.getClass();
 			for (int z = 0; z < componentToField.length; z++) {
-				final Field field = cl.getDeclaredField(componentToField[0]);
-				final int modifiers = field.getModifiers();
+				for (final Field field : getDeclaredFields(cl, componentToField[0], componentToField[1])) {
+					final int modifiers = field.getModifiers();
 
-				if (!isTransient(modifiers)) {
-					throw new IllegalArgumentException(format("Field '%s' must be transient!", field.getName()));
-				}
+					if (!isTransient(modifiers)) {
+						throw new IllegalArgumentException(format("Field '%s' must be transient!", field.getName()));
+					}
 
-				if (isFinal(modifiers)) {
-					throw new IllegalArgumentException(format("Field '%s' cannot be final!", field.getName()));
-				}
+					if (isFinal(modifiers)) {
+						throw new IllegalArgumentException(format("Field '%s' cannot be final!", field.getName()));
+					}
 
-				try {
-					field.setAccessible(true);
-					field.set(pObj, getComponent(field.getName(), 0, componentToField[1],
-							bundle.loadClass(componentToField[2])));
-				} finally {
-					field.setAccessible(false);
+					try {
+						field.setAccessible(true);
+						field.set(pObj, getComponent(field.getName(), 0, componentToField[1],
+								bundle.loadClass(componentToField[2])));
+					} finally {
+						field.setAccessible(false);
+					}
 				}
 			}
 		}
