@@ -116,7 +116,7 @@ public final class Transformer {
 		}
 	}
 
-	public static boolean shouldBeEnhanced(final Class<?> pClass) {
+	public static boolean hasEnhancerAnnotation(final Class<?> pClass) {
 		if (Serializable.class.isAssignableFrom(pClass) && isNonJDKClass(pClass)) {
 			final Collection<AccessibleObject> accessibleObjects = new LinkedList<>();
 			collectAccessibleObjects(pClass, accessibleObjects, c -> c.getDeclaredFields());

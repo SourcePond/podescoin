@@ -11,7 +11,7 @@ limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.util;
 
 import static ch.sourcepond.utils.podescoin.internal.Transformer.isNonJDKClass;
-import static ch.sourcepond.utils.podescoin.internal.Transformer.shouldBeEnhanced;
+import static ch.sourcepond.utils.podescoin.internal.Transformer.hasEnhancerAnnotation;
 import static ch.sourcepond.utils.podescoin.internal.Transformer.transform;
 
 import java.io.BufferedInputStream;
@@ -47,7 +47,7 @@ public class PodesCoinClassLoader extends ClassLoader {
 			Class<?> enhancedClass = enhancedClasses.get(name);
 			if (enhancedClass == null) {
 				final Class<?> originalClass = getParentLoader().loadClass(name);
-				if (shouldBeEnhanced(originalClass)) {
+				if (hasEnhancerAnnotation(originalClass)) {
 					enhanceClassHierarchy(originalClass);
 					enhancedClass = enhancedClasses.get(name);
 				} else {

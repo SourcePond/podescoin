@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
-import static ch.sourcepond.utils.podescoin.internal.Transformer.shouldBeEnhanced;
+import static ch.sourcepond.utils.podescoin.internal.Transformer.hasEnhancerAnnotation;
 import static ch.sourcepond.utils.podescoin.internal.Transformer.transform;
 import static org.osgi.framework.hooks.weaving.WovenClass.DEFINED;
 import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
@@ -61,7 +61,7 @@ public final class Activator implements BundleActivator, WeavingHook, WovenClass
 	public void modified(final WovenClass wovenClass) {
 		if (isAllowed(wovenClass) && wovenClass.getState() == DEFINED) {
 			final Class<?> cl = wovenClass.getDefinedClass();
-			if (shouldBeEnhanced(cl) && !Serializable.class.isAssignableFrom(cl)) {
+			if (hasEnhancerAnnotation(cl) && !Serializable.class.isAssignableFrom(cl)) {
 				throw new UnserializableClassWarning(cl);
 			}
 		}

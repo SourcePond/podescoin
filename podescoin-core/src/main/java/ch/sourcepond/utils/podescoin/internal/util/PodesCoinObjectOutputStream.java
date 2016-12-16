@@ -10,6 +10,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal.util;
 
+import static ch.sourcepond.utils.podescoin.internal.Transformer.hasEnhancerAnnotation;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -46,8 +48,8 @@ public class PodesCoinObjectOutputStream extends ObjectOutputStream {
 	private Object cloneObject(final Object obj) throws IOException {
 		if (obj != null) {
 			try {
-				final Class<?> targetType = loader.loadClass(obj.getClass().getName());
-				if (!targetType.equals(obj.getClass())) {
+				if (hasEnhancerAnnotation(obj.getClass())) {
+					final Class<?> targetType = loader.loadClass(obj.getClass().getName());
 					final Object clone = UNSAFE.allocateInstance(targetType);
 
 					for (final Entry<Field, Field> entry : new FieldCollector(obj.getClass(), targetType).entrySet()) {
