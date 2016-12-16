@@ -6,7 +6,5 @@
 			classes so that Blueprint components
 			can be injected before readObject is executed.
 		</details>
-		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_2
-		</bundle>
 	</feature>
 </features>
