@@ -10,6 +10,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
+import static ch.sourcepond.utils.podescoin.internal.Transformer.shouldBeEnhanced;
 import static ch.sourcepond.utils.podescoin.internal.Transformer.transform;
 import static org.osgi.framework.hooks.weaving.WovenClass.DEFINED;
 import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
@@ -24,7 +25,6 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.hooks.weaving.WovenClassListener;
 
 import ch.sourcepond.utils.podescoin.Injector;
-import ch.sourcepond.utils.podescoin.Recipient;
 
 public final class Activator implements BundleActivator, WeavingHook, WovenClassListener {
 	private BundleContext context;
@@ -59,9 +59,9 @@ public final class Activator implements BundleActivator, WeavingHook, WovenClass
 
 	@Override
 	public void modified(final WovenClass wovenClass) {
-		if (wovenClass.getState() == DEFINED) {
+		if (isAllowed(wovenClass) && wovenClass.getState() == DEFINED) {
 			final Class<?> cl = wovenClass.getDefinedClass();
-			if (cl.isAnnotationPresent(Recipient.class) && !Serializable.class.isAssignableFrom(cl)) {
+			if (shouldBeEnhanced(cl) && !Serializable.class.isAssignableFrom(cl)) {
 				throw new UnserializableClassWarning(cl);
 			}
 		}

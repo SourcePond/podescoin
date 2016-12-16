@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Map.Entry;
 
-import ch.sourcepond.utils.podescoin.Recipient;
 import sun.misc.Unsafe;
 
 @SuppressWarnings("restriction")
@@ -45,18 +44,20 @@ public class PodesCoinObjectOutputStream extends ObjectOutputStream {
 	}
 
 	private Object cloneObject(final Object obj) throws IOException {
-		if (obj != null && obj.getClass().isAnnotationPresent(Recipient.class)) {
+		if (obj != null) {
 			try {
 				final Class<?> targetType = loader.loadClass(obj.getClass().getName());
-				final Object clone = UNSAFE.allocateInstance(targetType);
+				if (!targetType.equals(obj.getClass())) {
+					final Object clone = UNSAFE.allocateInstance(targetType);
 
-				for (final Entry<Field, Field> entry : new FieldCollector(obj.getClass(), targetType).entrySet()) {
-					final Field sourceField = setAccessible(entry.getKey());
-					final Field targetField = setAccessible(entry.getValue());
-					targetField.set(clone, cloneObject(sourceField.get(obj)));
+					for (final Entry<Field, Field> entry : new FieldCollector(obj.getClass(), targetType).entrySet()) {
+						final Field sourceField = setAccessible(entry.getKey());
+						final Field targetField = setAccessible(entry.getValue());
+						targetField.set(clone, cloneObject(sourceField.get(obj)));
+					}
+
+					return clone;
 				}
-
-				return clone;
 			} catch (final ClassNotFoundException | NoSuchFieldException | SecurityException | InstantiationException
 					| IllegalAccessException e) {
 				throw new IOException(e.getMessage(), e);

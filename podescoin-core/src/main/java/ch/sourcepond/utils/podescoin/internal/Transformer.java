@@ -10,10 +10,19 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
+import java.io.Serializable;
+import java.lang.reflect.AccessibleObject;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.function.Function;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
+import ch.sourcepond.utils.podescoin.api.Component;
+import ch.sourcepond.utils.podescoin.api.ReadObject;
+import ch.sourcepond.utils.podescoin.api.WriteObject;
 import ch.sourcepond.utils.podescoin.internal.field.ReadObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.field.WriteObjectFieldInjectionClassVisitor;
 import ch.sourcepond.utils.podescoin.internal.inspector.ReadObjectInspector;
@@ -22,6 +31,7 @@ import ch.sourcepond.utils.podescoin.internal.method.ReadObjectMethodClassVisito
 import ch.sourcepond.utils.podescoin.internal.method.WriteObjectMethodClassVisitor;
 
 public final class Transformer {
+	private static final String[] IGNORED_PACKAGE_PREFIXES = new String[] { "java.", "javax.", "sun." };
 
 	public static byte[] transform(final byte[] pOriginalClassBytes) {
 		ClassReader reader = new ClassReader(pOriginalClassBytes);
@@ -79,5 +89,47 @@ public final class Transformer {
 			classData = writer.toByteArray();
 		}
 		return classData;
+	}
+
+	public static boolean isNonJDKClass(final Class<?> pType) {
+		boolean allowed = pType != null;
+		if (allowed) {
+			for (int i = 0; i < IGNORED_PACKAGE_PREFIXES.length; i++) {
+				if (pType.getName().startsWith(IGNORED_PACKAGE_PREFIXES[i])) {
+					allowed = false;
+					break;
+				}
+			}
+		}
+		return allowed;
+	}
+
+	private static void collectAccessibleObjects(final Class<?> pClass,
+			final Collection<AccessibleObject> pAccessibleObjects,
+			final Function<Class<?>, AccessibleObject[]> pGetAccessibleObjects) {
+		if (pClass != null) {
+			for (final AccessibleObject o : pGetAccessibleObjects.apply(pClass)) {
+				pAccessibleObjects.add(o);
+			}
+
+			collectAccessibleObjects(pClass.getSuperclass(), pAccessibleObjects, pGetAccessibleObjects);
+		}
+	}
+
+	public static boolean shouldBeEnhanced(final Class<?> pClass) {
+		if (Serializable.class.isAssignableFrom(pClass) && isNonJDKClass(pClass)) {
+			final Collection<AccessibleObject> accessibleObjects = new LinkedList<>();
+			collectAccessibleObjects(pClass, accessibleObjects, c -> c.getDeclaredFields());
+			collectAccessibleObjects(pClass, accessibleObjects, c -> c.getDeclaredMethods());
+
+			for (final AccessibleObject obj : accessibleObjects) {
+				obj.setAccessible(true);
+				if (obj.isAnnotationPresent(Component.class) || obj.isAnnotationPresent(ReadObject.class)
+						|| obj.isAnnotationPresent(WriteObject.class)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

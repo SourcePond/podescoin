@@ -17,10 +17,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.sourcepond.utils.podescoin.Recipient;
 import ch.sourcepond.utils.podescoin.api.ReadObject;
 
-@Recipient
 public class Basket implements Serializable {
 	/**
 	 * 
