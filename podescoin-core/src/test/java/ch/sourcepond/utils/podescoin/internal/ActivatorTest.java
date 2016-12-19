@@ -86,8 +86,7 @@ public class ActivatorTest {
 	@Test
 	public void start() throws Exception {
 		activator.start(context);
-		verify(context).registerService(
-				new String[] { WeavingHook.class.getName(), WovenClassListener.class.getName() }, activator, null);
+		verify(context).registerService( WeavingHook.class.getName(), activator, null);
 	}
 
 	@Test

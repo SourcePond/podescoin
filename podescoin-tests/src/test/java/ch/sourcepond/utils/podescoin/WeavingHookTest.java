@@ -62,12 +62,6 @@ public class WeavingHookTest {
 	}
 
 	@Test
-	public void verifyUnserializableObject() throws Exception {
-		// Should not cause an exception
-		factory.getUnserializableObject();
-	}
-
-	@Test
 	public void verifyFieldInjection() throws Exception {
 		final FieldInjectionObject obj = factory.getFieldInjectionObject();
 		verifyService(obj, "testservice.date", "testservice.name");

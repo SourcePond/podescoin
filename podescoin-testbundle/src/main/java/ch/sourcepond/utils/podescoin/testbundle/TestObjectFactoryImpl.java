@@ -84,12 +84,4 @@ public class TestObjectFactoryImpl implements TestObjectFactory {
 	public InjectorMethodObjectWithComponentId getInjectorMethodObjectWithComponentId() throws Exception {
 		return serializeDeserialize(new InjectorMethodObjectWithComponentId());
 	}
-
-	@Override
-	public UnserializableObject getUnserializableObject() throws Exception {
-		// Loading class UnserializableObject should not cause an exception,
-		// but, the fact that the class is not serializable should be logged by
-		// the framework.
-		return new UnserializableObject();
-	}
 }

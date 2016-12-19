@@ -10,30 +10,24 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.utils.podescoin.internal;
 
-import static ch.sourcepond.utils.podescoin.internal.Transformer.hasEnhancerAnnotation;
 import static ch.sourcepond.utils.podescoin.internal.Transformer.transform;
-import static org.osgi.framework.hooks.weaving.WovenClass.DEFINED;
 import static org.osgi.framework.hooks.weaving.WovenClass.TRANSFORMING;
-
-import java.io.Serializable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
-import org.osgi.framework.hooks.weaving.WovenClassListener;
 
 import ch.sourcepond.utils.podescoin.Injector;
 
-public final class Activator implements BundleActivator, WeavingHook, WovenClassListener {
+public final class Activator implements BundleActivator, WeavingHook {
 	private BundleContext context;
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		this.context = context;
-		context.registerService(new String[] { WeavingHook.class.getName(), WovenClassListener.class.getName() }, this,
-				null);
+		context.registerService(WeavingHook.class.getName(), this, null);
 	}
 
 	@Override
@@ -53,16 +47,6 @@ public final class Activator implements BundleActivator, WeavingHook, WovenClass
 				wovenClass.getDynamicImports().add(Injector.class.getPackage().getName());
 			} catch (final Throwable e) {
 				throw new WeavingException(String.format("Enhancement of %s failed!", wovenClass.getClassName()), e);
-			}
-		}
-	}
-
-	@Override
-	public void modified(final WovenClass wovenClass) {
-		if (isAllowed(wovenClass) && wovenClass.getState() == DEFINED) {
-			final Class<?> cl = wovenClass.getDefinedClass();
-			if (hasEnhancerAnnotation(cl) && !Serializable.class.isAssignableFrom(cl)) {
-				throw new UnserializableClassWarning(cl);
 			}
 		}
 	}

@@ -12,8 +12,6 @@ package ch.sourcepond.utils.podescoin.testbundle;
 
 public interface TestObjectFactory {
 
-	UnserializableObject getUnserializableObject() throws Exception;
-
 	FieldInjectionObject getFieldInjectionObject() throws Exception;
 
 	FieldInjectionObjectWithComponentId getFieldInjectionObjectWithComponentId() throws Exception;
